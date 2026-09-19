@@ -3161,3 +3161,24 @@ p {
 .payeh-footer {
     background: var(--payeh-bg);
 }
+
+@media (max-width: 650px) {
+    .payeh-footer__main {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 24px;
+        row-gap: 32px;
+    }
+
+    .payeh-footer__brand {
+        grid-column: 1 / -1;
+    }
+
+    .payeh-footer__column:nth-child(2),
+    .payeh-footer__column:nth-child(3) {
+        grid-column: auto;
+    }
+
+    .payeh-footer__column:nth-child(4) {
+        grid-column: 1 / -1;
+    }
+}
