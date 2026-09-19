@@ -2703,7 +2703,7 @@ p {
 /*footer*/
 .payeh-footer {
     width: 100%;
-    background: #ffffff;
+    background: var(--payeh-bg);
     overflow: hidden;
     direction: rtl;
     border-top: 1px solid rgba(226, 232, 240, 0.55);
@@ -2989,15 +2989,17 @@ p {
 @media (max-width: 650px) {
 
     .payeh-footer__main {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 30px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: 20px;
+        row-gap: 30px;
+        align-items: start;
         padding: 12px 0 32px;
     }
 
     .payeh-footer__brand {
         width: 100%;
+        grid-column: 1 / -1;
         justify-content: center;
         padding-bottom: 2px;
     }
@@ -3012,10 +3014,20 @@ p {
 
     .payeh-footer__column {
         width: 100%;
+        min-width: 0;
+    }
+
+    .payeh-footer__column:nth-child(2),
+    .payeh-footer__column:nth-child(3) {
+        grid-column: span 1;
+    }
+
+    .payeh-footer__column:nth-child(4) {
+        grid-column: 1 / -1;
     }
 
     .payeh-footer__column:not(:first-child) {
-        padding-inline: 4px;
+        padding-inline: 2px;
     }
 
     .payeh-footer__title {
@@ -3036,7 +3048,7 @@ p {
     }
 
     .payeh-footer__contact-item {
-        gap: 11px;
+        gap: 8px;
     }
 
     .payeh-footer__contact-icon {
@@ -3116,7 +3128,8 @@ p {
 @media (max-width: 390px) {
 
     .payeh-footer__main {
-        gap: 27px;
+        column-gap: 16px;
+        row-gap: 27px;
     }
 
     .payeh-footer__logo img {
@@ -3155,30 +3168,5 @@ p {
     .payeh-footer__newsletter-button,
     .payeh-footer__social a {
         transition: none;
-    }
-}
-
-.payeh-footer {
-    background: var(--payeh-bg);
-}
-
-@media (max-width: 650px) {
-    .payeh-footer__main {
-        grid-template-columns: 1fr 1fr;
-        column-gap: 24px;
-        row-gap: 32px;
-    }
-
-    .payeh-footer__brand {
-        grid-column: 1 / -1;
-    }
-
-    .payeh-footer__column:nth-child(2),
-    .payeh-footer__column:nth-child(3) {
-        grid-column: auto;
-    }
-
-    .payeh-footer__column:nth-child(4) {
-        grid-column: 1 / -1;
     }
 }
