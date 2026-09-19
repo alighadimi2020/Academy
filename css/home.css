@@ -1581,3 +1581,1579 @@ p {
 .payeh-why__feature:nth-child(4) {
     transition-delay: 320ms;
 }
+
+/*console*/
+
+.payeh-consultation {
+    position: relative;
+    width: 100%;
+    padding: 18px 0 72px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(34px);
+    transition:
+        opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.payeh-consultation.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.payeh-consultation__card {
+    position: relative;
+    width: 100%;
+    min-height: 360px;
+    display: grid;
+    grid-template-columns: minmax(0, 54%) minmax(0, 46%);
+    align-items: center;
+    padding: 40px 58px 40px 28px;
+    background: #f1f7ff;
+    border: 1px solid #e4eef9;
+    border-radius: 24px;
+    overflow: hidden;
+    direction: rtl;
+}
+
+.payeh-consultation__content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    min-width: 0;
+    padding-right: 4px;
+    text-align: right;
+    direction: rtl;
+}
+
+.payeh-consultation__label {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 8px;
+    color: #0b55a9;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.7;
+}
+
+.payeh-consultation__title {
+    margin: 0 0 22px;
+    color: #0753a8;
+    font-size: clamp(26px, 3vw, 34px);
+    font-weight: 900;
+    line-height: 1.5;
+}
+
+.payeh-consultation__features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.payeh-consultation__feature {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    color: #53657b;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.7;
+}
+
+.payeh-consultation__check {
+    width: 21px;
+    height: 21px;
+    flex: 0 0 21px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffcf28;
+    border-radius: 50%;
+    color: #ffffff;
+}
+
+.payeh-consultation__check svg {
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-consultation__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 155px;
+    min-height: 48px;
+    padding: 0 24px;
+    color: #ffffff;
+    background: #075bc4;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 7px 18px rgba(7, 91, 196, 0.16);
+    transition:
+        transform 250ms ease,
+        background-color 250ms ease,
+        box-shadow 250ms ease;
+}
+
+.payeh-consultation__button:hover {
+    background: #064da7;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(7, 91, 196, 0.21);
+}
+
+.payeh-consultation__button svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-consultation__visual {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    direction: ltr;
+}
+
+.payeh-consultation__circle {
+    position: absolute;
+    width: 310px;
+    height: 310px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: #fff9df;
+}
+
+.payeh-consultation__image {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: min(100%, 480px);
+    max-width: 100%;
+    max-height: 360px;
+    object-fit: contain;
+}
+
+@media (max-width: 1100px) {
+    .payeh-consultation__card {
+        grid-template-columns: minmax(0, 55%) minmax(0, 45%);
+        padding: 38px 46px 38px 24px;
+    }
+
+    .payeh-consultation__content {
+        padding-right: 0;
+    }
+
+    .payeh-consultation__title {
+        font-size: 31px;
+    }
+
+    .payeh-consultation__circle {
+        width: 290px;
+        height: 290px;
+    }
+
+    .payeh-consultation__image {
+        max-height: 335px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .payeh-consultation__card {
+        padding: 36px 42px 36px 26px;
+        min-height: 330px;
+    }
+
+    .payeh-consultation__title {
+        font-size: 28px;
+    }
+
+    .payeh-consultation__feature {
+        font-size: 13px;
+    }
+
+    .payeh-consultation__circle {
+        width: 280px;
+        height: 280px;
+    }
+
+    .payeh-consultation__image {
+        max-height: 320px;
+    }
+}
+
+@media (max-width: 900px) {
+    .payeh-consultation__card {
+        grid-template-columns: minmax(0, 56%) minmax(0, 44%);
+        padding: 32px 30px 32px 22px;
+        min-height: 320px;
+    }
+
+    .payeh-consultation__title {
+        font-size: 26px;
+        margin-bottom: 15px;
+    }
+
+    .payeh-consultation__features {
+        gap: 8px;
+        margin-bottom: 21px;
+    }
+
+    .payeh-consultation__feature {
+        font-size: 12.5px;
+    }
+
+    .payeh-consultation__check {
+        width: 20px;
+        height: 20px;
+        flex-basis: 20px;
+    }
+
+    .payeh-consultation__button {
+        min-width: 145px;
+        min-height: 45px;
+        font-size: 13px;
+    }
+
+    .payeh-consultation__circle {
+        width: 250px;
+        height: 250px;
+    }
+
+    .payeh-consultation__image {
+        max-height: 280px;
+    }
+}
+
+@media (max-width: 700px) {
+    .payeh-consultation {
+        padding: 8px 0 55px;
+    }
+
+    .payeh-consultation__card {
+        min-height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px 22px 26px;
+        border-radius: 20px;
+    }
+
+    .payeh-consultation__visual {
+        order: 1;
+        width: 100%;
+        height: 260px;
+        flex: 0 0 auto;
+    }
+
+    .payeh-consultation__circle {
+        width: 230px;
+        height: 230px;
+    }
+
+    .payeh-consultation__image {
+        width: min(92%, 350px);
+        max-height: 255px;
+    }
+
+    .payeh-consultation__content {
+        order: 2;
+        width: 100%;
+        padding-right: 0;
+        text-align: right;
+    }
+
+    .payeh-consultation__label {
+        margin-bottom: 6px;
+        font-size: 13.5px;
+    }
+
+    .payeh-consultation__title {
+        margin-bottom: 16px;
+        font-size: 27px;
+        line-height: 1.55;
+    }
+
+    .payeh-consultation__features {
+        gap: 11px;
+        margin-bottom: 24px;
+    }
+
+    .payeh-consultation__feature {
+        gap: 11px;
+        font-size: 14.5px;
+        line-height: 1.6;
+    }
+
+    .payeh-consultation__check {
+        width: 22px;
+        height: 22px;
+        flex-basis: 22px;
+    }
+
+    .payeh-consultation__check svg {
+        width: 13px;
+        height: 13px;
+    }
+
+    .payeh-consultation__button {
+        width: 100%;
+        min-height: 50px;
+        border-radius: 25px;
+        font-size: 15px;
+    }
+
+    .payeh-consultation__button svg {
+        width: 19px;
+        height: 19px;
+    }
+}
+
+@media (max-width: 390px) {
+    .payeh-consultation__visual {
+        height: 230px;
+    }
+
+    .payeh-consultation__image {
+        max-height: 225px;
+    }
+
+    .payeh-consultation__circle {
+        width: 200px;
+        height: 200px;
+    }
+
+    .payeh-consultation__title {
+        font-size: 24px;
+    }
+
+    .payeh-consultation__feature {
+        font-size: 13.5px;
+    }
+
+    .payeh-consultation__button {
+        font-size: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .payeh-consultation {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .payeh-consultation__button {
+        transition: none;
+    }
+}
+/*mag*/
+.payeh-magazine {
+    position: relative;
+    width: 100%;
+    padding: 10px 0 76px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+        opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.payeh-magazine.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.payeh-magazine__layout {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    align-items: center;
+    gap: 48px;
+    direction: ltr;
+}
+
+.payeh-magazine__cards-wrapper {
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
+    direction: ltr;
+}
+
+.payeh-magazine__cards {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    direction: ltr;
+}
+
+.payeh-magazine__intro {
+    min-width: 0;
+    direction: rtl;
+    text-align: right;
+}
+
+.payeh-magazine__eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    color: #0b55a9;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.7;
+}
+
+.payeh-magazine__title {
+    margin: 0 0 14px;
+    color: #0753a8;
+    font-size: clamp(25px, 3vw, 32px);
+    font-weight: 900;
+    line-height: 1.55;
+}
+
+.payeh-magazine__description {
+    max-width: 315px;
+    margin: 0 0 22px;
+    color: #68778b;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 2.15;
+}
+
+.payeh-magazine__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #0753a8;
+    font-size: 12.5px;
+    font-weight: 800;
+    transition:
+        gap 250ms ease,
+        color 250ms ease;
+}
+
+.payeh-magazine__all:hover {
+    gap: 12px;
+    color: #06478f;
+}
+
+.payeh-magazine__all svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-magazine__card {
+    min-width: 0;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e9eef5;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(30, 70, 115, 0.055);
+    direction: rtl;
+    transition:
+        transform 280ms ease,
+        box-shadow 280ms ease,
+        border-color 280ms ease;
+}
+
+.payeh-magazine__card:hover {
+    transform: translateY(-5px);
+    border-color: #dce7f3;
+    box-shadow: 0 12px 30px rgba(30, 70, 115, 0.10);
+}
+
+.payeh-magazine__image {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 142px;
+    overflow: hidden;
+    background: #edf4fb;
+}
+
+.payeh-magazine__image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 500ms ease;
+}
+
+.payeh-magazine__card:hover .payeh-magazine__image img {
+    transform: scale(1.035);
+}
+
+.payeh-magazine__content {
+    min-height: 154px;
+    display: flex;
+    flex-direction: column;
+    padding: 14px;
+    direction: rtl;
+    text-align: right;
+}
+
+.payeh-magazine__category {
+    display: block;
+    margin-bottom: 6px;
+    color: #0b55a9;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.7;
+}
+
+.payeh-magazine__card-title {
+    margin: 0;
+    color: #163d73;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.8;
+}
+
+.payeh-magazine__card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 13px;
+}
+
+.payeh-magazine__meta {
+    color: #8995a5;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.payeh-magazine__arrow {
+    width: 27px;
+    height: 27px;
+    flex: 0 0 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0b55a9;
+    background: #f1f7ff;
+    border-radius: 50%;
+    transition:
+        color 220ms ease,
+        background-color 220ms ease,
+        transform 220ms ease;
+}
+
+.payeh-magazine__arrow:hover {
+    color: #ffffff;
+    background: #0753a8;
+    transform: translateX(-2px);
+}
+
+.payeh-magazine__arrow svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+@media (max-width: 1050px) {
+    .payeh-magazine__layout {
+        grid-template-columns: minmax(0, 1fr) 270px;
+        gap: 30px;
+    }
+
+    .payeh-magazine__cards {
+        gap: 10px;
+    }
+
+    .payeh-magazine__image {
+        height: 125px;
+    }
+
+    .payeh-magazine__content {
+        min-height: 145px;
+        padding: 12px;
+    }
+
+    .payeh-magazine__card-title {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 800px) {
+    .payeh-magazine {
+        padding: 8px 0 55px;
+    }
+
+    .payeh-magazine__layout {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 25px;
+        direction: rtl;
+    }
+
+    .payeh-magazine__intro {
+        width: 100%;
+        order: 1;
+    }
+
+    .payeh-magazine__title {
+        font-size: 26px;
+    }
+
+    .payeh-magazine__description {
+        max-width: 100%;
+        font-size: 13px;
+    }
+
+    .payeh-magazine__cards-wrapper {
+        width: 100%;
+        order: 2;
+        overflow: hidden;
+        direction: rtl;
+    }
+
+    .payeh-magazine__cards {
+        width: max-content;
+        max-width: none;
+        display: flex;
+        flex-direction: row;
+        gap: 13px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 4px 2px 13px;
+        direction: rtl;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x proximity;
+        touch-action: pan-x pan-y;
+    }
+
+    .payeh-magazine__cards::-webkit-scrollbar {
+        display: none;
+    }
+
+    .payeh-magazine__card {
+        flex: 0 0 calc((100vw - 45px) / 2);
+        width: calc((100vw - 45px) / 2);
+        scroll-snap-align: start;
+    }
+
+    .payeh-magazine__image {
+        height: auto;
+        aspect-ratio: 1.48 / 1;
+    }
+
+    .payeh-magazine__content {
+        min-height: 150px;
+    }
+}
+
+@media (max-width: 500px) {
+    .payeh-magazine {
+        padding-bottom: 48px;
+    }
+
+    .payeh-magazine__title {
+        font-size: 24px;
+    }
+
+    .payeh-magazine__description {
+        font-size: 12px;
+        line-height: 2;
+    }
+
+    .payeh-magazine__cards {
+        gap: 11px;
+    }
+
+    .payeh-magazine__card {
+        flex-basis: calc((100vw - 39px) / 2);
+        width: calc((100vw - 39px) / 2);
+    }
+
+    .payeh-magazine__content {
+        min-height: 145px;
+        padding: 12px;
+    }
+
+    .payeh-magazine__card-title {
+        font-size: 11.5px;
+    }
+
+    .payeh-magazine__meta {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 390px) {
+    .payeh-magazine__card {
+        flex-basis: calc((100vw - 35px) / 2);
+        width: calc((100vw - 35px) / 2);
+    }
+
+    .payeh-magazine__content {
+        min-height: 140px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .payeh-magazine {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .payeh-magazine__card,
+    .payeh-magazine__image img,
+    .payeh-magazine__all,
+    .payeh-magazine__arrow {
+        transition: none;
+    }
+}
+/*baner*/
+.payeh-final-cta {
+    width: 100%;
+    padding: 0 0 38px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+        opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.payeh-final-cta.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.payeh-final-cta__card {
+    position: relative;
+    width: 100%;
+    height: 137px;
+    overflow: hidden;
+    border-radius: 18px;
+    background:
+        radial-gradient(
+            circle at 8% 115%,
+            rgba(255, 255, 255, 0.07) 0,
+            rgba(255, 255, 255, 0.07) 110px,
+            transparent 111px
+        ),
+        linear-gradient(105deg, #0757b8 0%, #0753b1 55%, #064da5 100%);
+    direction: rtl;
+    isolation: isolate;
+}
+
+.payeh-final-cta__card::before {
+    content: "";
+    position: absolute;
+    width: 390px;
+    height: 390px;
+    left: -145px;
+    bottom: -320px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.045);
+    pointer-events: none;
+}
+
+.payeh-final-cta__card::after {
+    content: "";
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    right: 39%;
+    top: -204px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.025);
+    pointer-events: none;
+}
+
+.payeh-final-cta__content {
+    position: relative;
+    z-index: 5;
+    width: 58%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 38px 0 30px;
+    text-align: right;
+}
+
+.payeh-final-cta__title {
+    margin: 0 0 4px;
+    color: #ffffff;
+    font-size: clamp(22px, 3vw, 29px);
+    font-weight: 900;
+    line-height: 1.5;
+    letter-spacing: -0.35px;
+}
+
+.payeh-final-cta__title span {
+    color: #ffd21c;
+}
+
+.payeh-final-cta__text {
+    margin: 0 0 12px;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1.8;
+}
+
+.payeh-final-cta__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 102px;
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 9px;
+    background: #ffd21c;
+    color: #17477e;
+    font-size: 10.5px;
+    font-weight: 900;
+    text-decoration: none;
+    transition:
+        transform var(--payeh-transition),
+        background-color var(--payeh-transition),
+        box-shadow var(--payeh-transition);
+}
+
+.payeh-final-cta__button:hover {
+    background: #ffdc42;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 210, 28, 0.25);
+}
+
+.payeh-final-cta__button svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-final-cta__illustration {
+    position: absolute;
+    z-index: 3;
+    left: 28px;
+    bottom: 0;
+    width: 285px;
+    height: 132px;
+    pointer-events: none;
+}
+
+/* Sun */
+
+.payeh-final-cta__sun {
+    position: absolute;
+    left: 30px;
+    bottom: 8px;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: #ffd21c;
+    box-shadow:
+        0 0 0 7px rgba(255, 210, 28, 0.08),
+        0 0 0 15px rgba(255, 210, 28, 0.055),
+        0 0 28px rgba(255, 210, 28, 0.22);
+}
+
+.payeh-final-cta__sun::before {
+    content: "";
+    position: absolute;
+    inset: -11px;
+    border: 2px dashed rgba(255, 210, 28, 0.48);
+    border-radius: 50%;
+}
+
+.payeh-final-cta__sun::after {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 50%;
+}
+
+.payeh-final-cta__sun span {
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    background: rgba(255, 232, 104, 0.35);
+}
+
+/* Steps */
+
+.payeh-final-cta__step {
+    position: absolute;
+    bottom: 0;
+    border-radius: 4px 4px 0 0;
+    background: linear-gradient(
+        to right,
+        #164da5,
+        #2b70d0
+    );
+    transform: skewY(-3deg);
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.09),
+        0 -5px 14px rgba(0, 0, 0, 0.06);
+}
+
+.payeh-final-cta__step::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(8, 54, 128, 0.4);
+}
+
+.payeh-final-cta__step--one {
+    left: 69px;
+    width: 57px;
+    height: 31px;
+}
+
+.payeh-final-cta__step--two {
+    left: 100px;
+    width: 64px;
+    height: 47px;
+}
+
+.payeh-final-cta__step--three {
+    left: 134px;
+    width: 69px;
+    height: 64px;
+}
+
+.payeh-final-cta__step--four {
+    left: 169px;
+    width: 75px;
+    height: 81px;
+}
+
+/* Flag */
+
+.payeh-final-cta__flag-pole {
+    position: absolute;
+    left: 219px;
+    bottom: 76px;
+    width: 2px;
+    height: 45px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.88);
+    transform: rotate(3deg);
+    transform-origin: bottom;
+    box-shadow: 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.payeh-final-cta__flag {
+    position: absolute;
+    left: 220px;
+    bottom: 110px;
+    width: 27px;
+    height: 17px;
+    background: #ffd21c;
+    clip-path: polygon(
+        0 0,
+        100% 18%,
+        76% 50%,
+        100% 82%,
+        0 100%
+    );
+    transform: rotate(3deg);
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.08));
+}
+
+/* Clouds */
+
+.payeh-final-cta__cloud {
+    position: absolute;
+    z-index: 2;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.82);
+    filter: blur(0.15px);
+}
+
+.payeh-final-cta__cloud span {
+    position: absolute;
+    border-radius: 50%;
+    background: inherit;
+}
+
+.payeh-final-cta__cloud--one {
+    left: 3px;
+    top: 42px;
+    width: 47px;
+    height: 13px;
+}
+
+.payeh-final-cta__cloud--one span {
+    left: 8px;
+    bottom: 2px;
+    width: 19px;
+    height: 19px;
+}
+
+.payeh-final-cta__cloud--two {
+    left: 38px;
+    top: 26px;
+    width: 53px;
+    height: 14px;
+    opacity: 0.72;
+}
+
+.payeh-final-cta__cloud--two span {
+    left: 11px;
+    bottom: 2px;
+    width: 21px;
+    height: 21px;
+}
+
+/* Stars */
+
+.payeh-final-cta__star {
+    position: absolute;
+    z-index: 2;
+    color: #ffd21c;
+    line-height: 1;
+}
+
+.payeh-final-cta__star--one {
+    left: 7px;
+    top: 70px;
+    font-size: 15px;
+}
+
+.payeh-final-cta__star--two {
+    left: 69px;
+    top: 9px;
+    font-size: 9px;
+    opacity: 0.9;
+}
+
+/* Tablet */
+
+@media (max-width: 850px) {
+    .payeh-final-cta__content {
+        width: 63%;
+        padding-right: 28px;
+    }
+
+    .payeh-final-cta__illustration {
+        left: 12px;
+        transform: scale(0.9);
+        transform-origin: bottom left;
+    }
+}
+
+/* Mobile: completely hidden */
+
+@media (max-width: 650px) {
+    .payeh-final-cta {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .payeh-final-cta {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .payeh-final-cta__button {
+        transition: none;
+    }
+}
+/*footer*/
+.payeh-footer {
+    width: 100%;
+    background: #ffffff;
+    overflow: hidden;
+    direction: rtl;
+    border-top: 1px solid rgba(226, 232, 240, 0.55);
+}
+
+.payeh-footer__main {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1.05fr 0.9fr 1.2fr 1.45fr;
+    align-items: start;
+    gap: 35px;
+    padding: 14px 0 38px;
+}
+
+.payeh-footer__column {
+    min-width: 0;
+}
+
+.payeh-footer__brand {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.payeh-footer__logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.payeh-footer__logo img {
+    display: block;
+    width: 180px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.payeh-footer__title {
+    position: relative;
+    margin: 0 0 19px;
+    color: #0753a8;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.7;
+}
+
+.payeh-footer__links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 9px;
+}
+
+.payeh-footer__links a {
+    position: relative;
+    color: #718095;
+    font-size: 10.5px;
+    font-weight: 500;
+    line-height: 1.8;
+    transition:
+        color var(--payeh-transition-fast),
+        transform var(--payeh-transition-fast);
+}
+
+.payeh-footer__links a:hover {
+    color: #0753a8;
+    transform: translateX(-3px);
+}
+
+.payeh-footer__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.payeh-footer__contact-item {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    direction: rtl;
+}
+
+.payeh-footer__contact-icon {
+    width: 21px;
+    height: 21px;
+    flex: 0 0 21px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0753a8;
+}
+
+.payeh-footer__contact-icon svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-footer__contact-item > span:last-child {
+    min-width: 0;
+    color: #718095;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.payeh-footer__newsletter-text {
+    max-width: 330px;
+    margin: -1px 0 15px;
+    color: #718095;
+    font-size: 10.5px;
+    font-weight: 500;
+    line-height: 2;
+}
+
+.payeh-footer__newsletter {
+    width: 100%;
+    max-width: 335px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border: 1px solid #edf0f4;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(30, 70, 115, 0.035);
+}
+
+.payeh-footer__newsletter-input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 0 15px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #45566c;
+    font-family: inherit;
+    font-size: 10px;
+    text-align: right;
+}
+
+.payeh-footer__newsletter-input::placeholder {
+    color: #a6afb9;
+    opacity: 1;
+}
+
+.payeh-footer__newsletter-button {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 11px;
+    background: #0758b9;
+    color: #ffffff;
+    cursor: pointer;
+    transition:
+        background-color var(--payeh-transition-fast),
+        transform var(--payeh-transition-fast),
+        box-shadow var(--payeh-transition-fast);
+}
+
+.payeh-footer__newsletter-button:hover {
+    background: #064d9f;
+    transform: translateX(-2px);
+    box-shadow: 0 5px 14px rgba(7, 88, 185, 0.18);
+}
+
+.payeh-footer__newsletter-button svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Bottom */
+
+.payeh-footer__bottom {
+    width: 100%;
+    min-height: 61px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    padding: 17px 0;
+    border-top: 1px solid #edf0f4;
+}
+
+.payeh-footer__copyright {
+    width: 100%;
+    margin: 0;
+    color: #8b96a4;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.payeh-footer__social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    direction: ltr;
+}
+
+.payeh-footer__social a {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0753a8;
+    border-radius: 50%;
+    transition:
+        color var(--payeh-transition-fast),
+        background-color var(--payeh-transition-fast),
+        transform var(--payeh-transition-fast);
+}
+
+.payeh-footer__social a:hover {
+    color: #063f80;
+    background: #f1f6ff;
+    transform: translateY(-2px);
+}
+
+.payeh-footer__social svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Tablet */
+
+@media (max-width: 1050px) {
+
+    .payeh-footer__main {
+        grid-template-columns: 1fr 1fr;
+        gap: 38px 50px;
+        padding-bottom: 34px;
+    }
+
+    .payeh-footer__brand {
+        justify-content: center;
+    }
+
+    .payeh-footer__logo {
+        justify-content: center;
+    }
+
+    .payeh-footer__column:nth-child(2),
+    .payeh-footer__column:nth-child(3) {
+        padding-top: 5px;
+    }
+
+    .payeh-footer__newsletter-text,
+    .payeh-footer__newsletter {
+        max-width: 100%;
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 650px) {
+
+    .payeh-footer__main {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 30px;
+        padding: 12px 0 32px;
+    }
+
+    .payeh-footer__brand {
+        width: 100%;
+        justify-content: center;
+        padding-bottom: 2px;
+    }
+
+    .payeh-footer__logo {
+        justify-content: center;
+    }
+
+    .payeh-footer__logo img {
+        width: 150px;
+    }
+
+    .payeh-footer__column {
+        width: 100%;
+    }
+
+    .payeh-footer__column:not(:first-child) {
+        padding-inline: 4px;
+    }
+
+    .payeh-footer__title {
+        margin-bottom: 15px;
+        font-size: 15px;
+    }
+
+    .payeh-footer__links {
+        gap: 11px;
+    }
+
+    .payeh-footer__links a {
+        font-size: 12.5px;
+    }
+
+    .payeh-footer__contact {
+        gap: 13px;
+    }
+
+    .payeh-footer__contact-item {
+        gap: 11px;
+    }
+
+    .payeh-footer__contact-icon {
+        width: 22px;
+        height: 22px;
+        flex-basis: 22px;
+    }
+
+    .payeh-footer__contact-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .payeh-footer__contact-item > span:last-child {
+        font-size: 12.5px;
+    }
+
+    .payeh-footer__newsletter-text {
+        max-width: 100%;
+        margin-bottom: 15px;
+        font-size: 12.5px;
+        line-height: 2;
+    }
+
+    .payeh-footer__newsletter {
+        max-width: 100%;
+        height: 48px;
+        padding: 5px;
+        border-radius: 24px;
+    }
+
+    .payeh-footer__newsletter-input {
+        padding: 0 16px;
+        font-size: 12.5px;
+    }
+
+    .payeh-footer__newsletter-button {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+        border-radius: 12px;
+    }
+
+    .payeh-footer__newsletter-button svg {
+        width: 19px;
+        height: 19px;
+    }
+
+    .payeh-footer__bottom {
+        min-height: auto;
+        gap: 14px;
+        padding: 21px 0;
+    }
+
+    .payeh-footer__copyright {
+        font-size: 11.5px;
+        line-height: 2;
+    }
+
+    .payeh-footer__social {
+        gap: 17px;
+    }
+
+    .payeh-footer__social a {
+        width: 34px;
+        height: 34px;
+    }
+
+    .payeh-footer__social svg {
+        width: 23px;
+        height: 23px;
+    }
+}
+
+/* Small Mobile */
+
+@media (max-width: 390px) {
+
+    .payeh-footer__main {
+        gap: 27px;
+    }
+
+    .payeh-footer__logo img {
+        width: 140px;
+    }
+
+    .payeh-footer__title {
+        font-size: 14px;
+    }
+
+    .payeh-footer__links a,
+    .payeh-footer__contact-item > span:last-child,
+    .payeh-footer__newsletter-text,
+    .payeh-footer__newsletter-input {
+        font-size: 12px;
+    }
+
+    .payeh-footer__copyright {
+        font-size: 11px;
+    }
+
+    .payeh-footer__newsletter {
+        height: 46px;
+    }
+
+    .payeh-footer__newsletter-button {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .payeh-footer__links a,
+    .payeh-footer__newsletter-button,
+    .payeh-footer__social a {
+        transition: none;
+    }
+}
