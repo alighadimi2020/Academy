@@ -3157,3 +3157,7 @@ p {
         transition: none;
     }
 }
+
+.payeh-footer {
+    background: var(--payeh-bg);
+}
