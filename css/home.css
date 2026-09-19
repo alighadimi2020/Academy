@@ -1,0 +1,1583 @@
+:root {
+    --payeh-primary: #0B3DFF;
+    --payeh-primary-dark: #0834D6;
+    --payeh-primary-soft: #E8F1FF;
+    --payeh-primary-light: #93C5FD;
+
+    --payeh-secondary: #FFD600;
+    --payeh-secondary-dark: #F59E0B;
+    --payeh-secondary-soft: #FFF7E6;
+
+    --payeh-bg: #FFFCF5;
+    --payeh-surface: #FFFFFF;
+    --payeh-surface-soft: #F8FAFF;
+
+    --payeh-text: #1E293B;
+    --payeh-text-secondary: #64748B;
+    --payeh-text-muted: #94A3B8;
+
+    --payeh-border: #E2E8F0;
+    --payeh-border-soft: #EEF2F7;
+
+    --payeh-success: #14B8A6;
+    --payeh-danger: #EF4444;
+
+    --payeh-container: 1180px;
+
+    --payeh-radius-sm: 10px;
+    --payeh-radius-md: 16px;
+    --payeh-radius-lg: 24px;
+    --payeh-radius-xl: 32px;
+
+    --payeh-shadow-sm: 0 4px 18px rgba(30, 41, 59, 0.05);
+    --payeh-shadow-md: 0 10px 30px rgba(30, 41, 59, 0.08);
+    --payeh-shadow-lg: 0 18px 50px rgba(30, 41, 59, 0.11);
+
+    --payeh-space-1: 4px;
+    --payeh-space-2: 8px;
+    --payeh-space-3: 12px;
+    --payeh-space-4: 16px;
+    --payeh-space-5: 20px;
+    --payeh-space-6: 24px;
+    --payeh-space-7: 32px;
+    --payeh-space-8: 40px;
+    --payeh-space-9: 48px;
+    --payeh-space-10: 64px;
+    --payeh-space-11: 80px;
+    --payeh-space-12: 96px;
+
+    --payeh-transition-fast: 180ms ease;
+    --payeh-transition: 280ms ease;
+    --payeh-transition-slow: 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+    direction: rtl;
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    direction: rtl;
+    background: var(--payeh-bg);
+    color: var(--payeh-text);
+    font-family: "Vazirmatn", "Tahoma", "Segoe UI", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.8;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+    font-size: inherit;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul,
+ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--payeh-text);
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+p {
+    color: var(--payeh-text-secondary);
+}
+
+::selection {
+    background: var(--payeh-primary);
+    color: #ffffff;
+}
+
+:focus-visible {
+    outline: 3px solid rgba(11, 61, 255, 0.22);
+    outline-offset: 3px;
+}
+
+.payeh-container {
+    width: min(var(--payeh-container), calc(100% - 48px));
+    margin-inline: auto;
+}
+
+.payeh-section {
+    position: relative;
+    width: 100%;
+    padding-block: var(--payeh-space-11);
+}
+
+.payeh-section__heading {
+    margin-bottom: var(--payeh-space-7);
+}
+
+.payeh-section__title {
+    color: var(--payeh-primary);
+    font-size: clamp(1.65rem, 2.4vw, 2.35rem);
+    font-weight: 900;
+    line-height: 1.35;
+}
+
+.payeh-section__description {
+    max-width: 680px;
+    margin-top: var(--payeh-space-3);
+    color: var(--payeh-text-secondary);
+    font-size: 0.95rem;
+}
+
+.payeh-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 10px 22px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1;
+    transition:
+        transform var(--payeh-transition),
+        box-shadow var(--payeh-transition),
+        background-color var(--payeh-transition),
+        border-color var(--payeh-transition);
+}
+
+.payeh-button:hover {
+    transform: translateY(-2px);
+}
+
+.payeh-button--primary {
+    background: var(--payeh-primary);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(11, 61, 255, 0.18);
+}
+
+.payeh-button--primary:hover {
+    background: var(--payeh-primary-dark);
+    box-shadow: 0 12px 28px rgba(11, 61, 255, 0.24);
+}
+
+.payeh-button--secondary {
+    background: var(--payeh-secondary);
+    color: var(--payeh-text);
+    box-shadow: 0 8px 20px rgba(255, 214, 0, 0.16);
+}
+
+.payeh-button--secondary:hover {
+    background: var(--payeh-secondary-dark);
+}
+
+.payeh-button--outline {
+    background: transparent;
+    color: var(--payeh-primary);
+    border: 1px solid var(--payeh-primary);
+}
+
+.payeh-button--outline:hover {
+    background: var(--payeh-primary-soft);
+}
+
+.payeh-card {
+    background: var(--payeh-surface);
+    border: 1px solid var(--payeh-border-soft);
+    border-radius: var(--payeh-radius-lg);
+    box-shadow: var(--payeh-shadow-sm);
+}
+
+.payeh-hidden {
+    display: none !important;
+}
+
+@media (max-width: 992px) {
+    .payeh-container {
+        width: min(var(--payeh-container), calc(100% - 40px));
+    }
+
+    .payeh-section {
+        padding-block: var(--payeh-space-10);
+    }
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 15px;
+    }
+
+    .payeh-container {
+        width: min(var(--payeh-container), calc(100% - 32px));
+    }
+
+    .payeh-section {
+        padding-block: var(--payeh-space-9);
+    }
+
+    .payeh-section__heading {
+        margin-bottom: var(--payeh-space-6);
+    }
+
+    .payeh-button {
+        min-height: 46px;
+        padding-inline: 18px;
+    }
+}
+
+@media (max-width: 576px) {
+    html {
+        font-size: 14px;
+    }
+
+    .payeh-container {
+        width: calc(100% - 24px);
+    }
+
+    .payeh-section {
+        padding-block: var(--payeh-space-8);
+    }
+
+    .payeh-section__title {
+        font-size: 1.55rem;
+    }
+
+    .payeh-button {
+        width: 100%;
+    }
+}
+.payeh-header {
+    position: relative;
+    z-index: 100;
+    width: 100%;
+    padding-top: 22px;
+}
+
+.payeh-header__inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 78px;
+    padding: 8px 14px 8px 12px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    border-radius: 22px;
+    box-shadow: 0 8px 30px rgba(30, 41, 59, 0.06);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.payeh-header__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 150px;
+    height: 68px;
+    margin-inline-start: 6px;
+}
+
+.payeh-header__logo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.payeh-header__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 5px;
+    margin-inline: 30px;
+}
+
+.payeh-header__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    color: var(--payeh-text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition:
+        color var(--payeh-transition-fast),
+        background-color var(--payeh-transition-fast);
+}
+
+.payeh-header__link:hover {
+    color: var(--payeh-primary);
+    background: var(--payeh-primary-soft);
+}
+
+.payeh-header__link--active {
+    color: var(--payeh-primary);
+    font-weight: 800;
+}
+
+.payeh-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+.payeh-header__search {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: transparent;
+    color: var(--payeh-primary);
+    border-radius: 12px;
+    transition:
+        background-color var(--payeh-transition-fast),
+        transform var(--payeh-transition-fast);
+}
+
+.payeh-header__search:hover {
+    background: var(--payeh-primary-soft);
+    transform: translateY(-1px);
+}
+
+.payeh-header__search svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-header__login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 44px;
+    padding: 8px 17px;
+    background: var(--payeh-primary);
+    color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 7px 18px rgba(11, 61, 255, 0.16);
+    font-size: 0.84rem;
+    font-weight: 700;
+    white-space: nowrap;
+    transition:
+        background-color var(--payeh-transition-fast),
+        transform var(--payeh-transition-fast),
+        box-shadow var(--payeh-transition-fast);
+}
+
+.payeh-header__login:hover {
+    background: var(--payeh-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(11, 61, 255, 0.22);
+}
+
+.payeh-header__login svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-header__toggle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.payeh-header__menu-button {
+    display: none;
+}
+
+@media (max-width: 992px) {
+    .payeh-header__logo {
+        width: 130px;
+        height: 60px;
+    }
+
+    .payeh-header__nav {
+        gap: 0;
+        margin-inline: 14px;
+    }
+
+    .payeh-header__link {
+        padding-inline: 10px;
+        font-size: 0.82rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .payeh-header {
+        padding-top: 12px;
+    }
+
+    .payeh-header__inner {
+        min-height: 64px;
+        padding: 5px 8px;
+        border-radius: 17px;
+    }
+
+    .payeh-header__logo {
+        position: absolute;
+        top: 50%;
+        right: 50%;
+        width: 118px;
+        height: 58px;
+        margin: 0;
+        transform: translate(50%, -50%);
+    }
+
+    .payeh-header__actions {
+        margin-inline-start: auto;
+    }
+
+    .payeh-header__search {
+        display: none;
+    }
+
+    .payeh-header__login {
+        min-height: 42px;
+        padding: 7px 12px;
+        border-radius: 11px;
+        font-size: 0.75rem;
+    }
+
+    .payeh-header__login svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .payeh-header__menu-button {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 4px;
+        width: 42px;
+        height: 42px;
+        margin-inline-end: auto;
+        padding: 10px;
+        background: var(--payeh-primary-soft);
+        border-radius: 11px;
+        cursor: pointer;
+    }
+
+    .payeh-header__menu-button span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background: var(--payeh-primary);
+        border-radius: 10px;
+        transition:
+            transform var(--payeh-transition-fast),
+            opacity var(--payeh-transition-fast);
+    }
+
+    .payeh-header__nav {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        margin: 0;
+        padding: 8px;
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid var(--payeh-border-soft);
+        border-radius: 16px;
+        box-shadow: var(--payeh-shadow-md);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        pointer-events: none;
+        transition:
+            opacity var(--payeh-transition-fast),
+            visibility var(--payeh-transition-fast),
+            transform var(--payeh-transition-fast);
+    }
+
+    .payeh-header__link {
+        justify-content: flex-start;
+        min-height: 44px;
+        padding-inline: 14px;
+        border-radius: 10px;
+    }
+
+    .payeh-header__toggle:checked ~ .payeh-header__nav {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .payeh-header__toggle:checked ~ .payeh-header__menu-button span:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+    }
+
+    .payeh-header__toggle:checked ~ .payeh-header__menu-button span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .payeh-header__toggle:checked ~ .payeh-header__menu-button span:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+    }
+}
+
+@media (max-width: 576px) {
+    .payeh-header__inner {
+        min-height: 62px;
+        padding-inline: 6px;
+    }
+
+    .payeh-header__logo {
+        width: 105px;
+        height: 54px;
+    }
+
+    .payeh-header__login {
+        min-height: 40px;
+        padding-inline: 10px;
+        font-size: 0.7rem;
+    }
+
+    .payeh-header__login svg {
+        display: none;
+    }
+
+    .payeh-header__menu-button {
+        width: 40px;
+        height: 40px;
+    }
+}
+.payeh-hero {
+    position: relative;
+    width: 100%;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    overflow: hidden;
+}
+
+.payeh-hero__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    align-items: center;
+    min-height: 560px;
+    gap: 36px;
+}
+
+.payeh-hero__content {
+    position: relative;
+    z-index: 3;
+    max-width: 570px;
+}
+
+.payeh-hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 6px 14px;
+    margin-bottom: 18px;
+    background: var(--payeh-primary-soft);
+    color: var(--payeh-primary);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.payeh-hero__title {
+    max-width: 570px;
+    color: var(--payeh-text);
+    font-size: clamp(2.6rem, 4.6vw, 4.4rem);
+    font-weight: 900;
+    line-height: 1.35;
+    letter-spacing: -1.5px;
+}
+
+.payeh-hero__title span {
+    display: block;
+    color: var(--payeh-primary);
+}
+
+.payeh-hero__description {
+    max-width: 520px;
+    margin-top: 22px;
+    color: var(--payeh-text-secondary);
+    font-size: 1.05rem;
+    line-height: 2;
+}
+
+.payeh-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.payeh-hero__actions .payeh-button {
+    min-width: 150px;
+}
+
+.payeh-hero__trust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+    margin-top: 30px;
+}
+
+.payeh-hero__trust-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--payeh-text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.payeh-hero__trust-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 21px;
+    height: 21px;
+    background: rgba(20, 184, 166, 0.12);
+    color: var(--payeh-success);
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 900;
+}
+
+.payeh-hero__visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 560px;
+    isolation: isolate;
+}
+
+.payeh-hero__visual-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 430px;
+    height: 430px;
+    background: rgba(147, 197, 253, 0.22);
+    border-radius: 50%;
+    filter: blur(35px);
+    transform: translate(-50%, -50%);
+    z-index: -2;
+}
+
+.payeh-hero__image-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(100%, 570px);
+    z-index: 2;
+    animation: payehHeroFloat 5s ease-in-out infinite;
+}
+
+.payeh-hero__image {
+    width: 100%;
+    max-width: 570px;
+    height: auto;
+    object-fit: contain;
+}
+
+.payeh-hero__floating {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 15px;
+    box-shadow: var(--payeh-shadow-md);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--payeh-text);
+    font-size: 0.75rem;
+    font-weight: 700;
+    z-index: 4;
+}
+
+.payeh-hero__floating--top {
+    top: 95px;
+    right: 12px;
+    animation: payehHeroFloatSmall 4s ease-in-out infinite;
+}
+
+.payeh-hero__floating--bottom {
+    right: auto;
+    bottom: 90px;
+    left: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    min-width: 145px;
+    padding: 12px 16px;
+}
+
+.payeh-hero__floating--bottom strong {
+    color: var(--payeh-primary);
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.payeh-hero__floating--bottom span {
+    color: var(--payeh-text-muted);
+    font-size: 0.7rem;
+}
+
+.payeh-hero__floating-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    background: var(--payeh-secondary-soft);
+    color: var(--payeh-secondary-dark);
+    border-radius: 50%;
+}
+
+@keyframes payehHeroFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes payehHeroFloatSmall {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+@media (max-width: 992px) {
+
+    .payeh-hero {
+        padding-top: 24px;
+        padding-bottom: 56px;
+    }
+
+    .payeh-hero__inner {
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 20px;
+        min-height: 500px;
+    }
+
+    .payeh-hero__title {
+        font-size: clamp(2.2rem, 5vw, 3.3rem);
+    }
+
+    .payeh-hero__description {
+        font-size: 0.95rem;
+    }
+
+    .payeh-hero__visual {
+        min-height: 500px;
+    }
+
+    .payeh-hero__floating--top {
+        top: 65px;
+        right: 0;
+    }
+
+    .payeh-hero__floating--bottom {
+        bottom: 65px;
+        left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .payeh-hero {
+        padding-top: 18px;
+        padding-bottom: 42px;
+    }
+
+    .payeh-hero__inner {
+        display: flex;
+        flex-direction: column;
+        min-height: auto;
+        gap: 10px;
+    }
+
+    .payeh-hero__content {
+        width: 100%;
+        max-width: none;
+        text-align: center;
+    }
+
+    .payeh-hero__eyebrow {
+        margin-bottom: 14px;
+        font-size: 0.76rem;
+    }
+
+    .payeh-hero__title {
+        max-width: 620px;
+        margin-inline: auto;
+        font-size: clamp(2rem, 8vw, 3rem);
+        letter-spacing: -0.7px;
+    }
+
+    .payeh-hero__description {
+        max-width: 560px;
+        margin: 16px auto 0;
+        font-size: 0.9rem;
+        line-height: 1.9;
+    }
+
+    .payeh-hero__actions {
+        justify-content: center;
+        margin-top: 22px;
+    }
+
+    .payeh-hero__actions .payeh-button {
+        width: auto;
+        min-width: 145px;
+    }
+
+    .payeh-hero__trust {
+        justify-content: center;
+        gap: 10px 16px;
+        margin-top: 20px;
+    }
+
+    .payeh-hero__visual {
+        width: 100%;
+        min-height: 390px;
+        margin-top: 5px;
+    }
+
+    .payeh-hero__image-wrapper {
+        width: min(100%, 460px);
+    }
+
+    .payeh-hero__visual-glow {
+        width: 330px;
+        height: 330px;
+    }
+
+    .payeh-hero__floating--top {
+        top: 45px;
+        right: 2px;
+    }
+
+    .payeh-hero__floating--bottom {
+        bottom: 40px;
+        left: 2px;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .payeh-hero {
+        padding-top: 12px;
+        padding-bottom: 30px;
+    }
+
+    .payeh-hero__eyebrow {
+        min-height: 32px;
+        padding-inline: 11px;
+        font-size: 0.68rem;
+    }
+
+    .payeh-hero__title {
+        font-size: clamp(1.8rem, 9vw, 2.45rem);
+        line-height: 1.42;
+    }
+
+    .payeh-hero__description {
+        max-width: 340px;
+        font-size: 0.82rem;
+    }
+
+    .payeh-hero__actions {
+        gap: 8px;
+    }
+
+    .payeh-hero__actions .payeh-button {
+        min-width: 0;
+        flex: 1;
+        padding-inline: 12px;
+        font-size: 0.78rem;
+    }
+
+    .payeh-hero__trust {
+        gap: 7px 12px;
+    }
+
+    .payeh-hero__trust-item {
+        font-size: 0.66rem;
+    }
+
+    .payeh-hero__trust-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 0.62rem;
+    }
+
+    .payeh-hero__visual {
+        min-height: 310px;
+    }
+
+    .payeh-hero__image-wrapper {
+        width: min(100%, 360px);
+    }
+
+    .payeh-hero__visual-glow {
+        width: 250px;
+        height: 250px;
+        filter: blur(28px);
+    }
+
+    .payeh-hero__floating {
+        padding: 8px 10px;
+        border-radius: 12px;
+        font-size: 0.62rem;
+    }
+
+    .payeh-hero__floating--top {
+        top: 25px;
+        right: 0;
+    }
+
+    .payeh-hero__floating--bottom {
+        bottom: 22px;
+        left: 0;
+        min-width: 110px;
+        padding: 9px 11px;
+    }
+
+    .payeh-hero__floating--bottom strong {
+        font-size: 0.82rem;
+    }
+
+    .payeh-hero__floating--bottom span {
+        font-size: 0.58rem;
+    }
+
+    .payeh-hero__floating-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 0.65rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .payeh-hero__image-wrapper,
+    .payeh-hero__floating {
+        animation: none;
+    }
+}
+/* service bar*/
+.payeh-advantages {
+    width: 100%;
+    padding: 0 0 34px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(28px);
+    animation: payehAdvantagesReveal 700ms cubic-bezier(0.22, 1, 0.36, 1) 180ms forwards;
+}
+
+.payeh-advantages__box {
+    width: 100%;
+    min-height: 92px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: center;
+    background: #fff9e8;
+    border-radius: 18px;
+    padding: 14px 22px;
+    direction: rtl;
+}
+
+.payeh-advantages__item {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    padding: 8px 18px;
+    text-align: right;
+    direction: rtl;
+    position: relative;
+}
+
+.payeh-advantages__item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 1px;
+    height: 50px;
+    background: #eadfbd;
+}
+
+.payeh-advantages__icon {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e3a900;
+}
+
+.payeh-advantages__icon svg {
+    width: 27px;
+    height: 27px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-advantages__content {
+    min-width: 0;
+}
+
+.payeh-advantages__content h3 {
+    margin: 0 0 4px;
+    color: #164578;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.7;
+}
+
+.payeh-advantages__content p {
+    margin: 0;
+    color: #7a8490;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.8;
+}
+
+@keyframes payehAdvantagesReveal {
+    from {
+        opacity: 0;
+        transform: translateY(28px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 950px) {
+
+    .payeh-advantages__box {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px 0;
+    }
+
+    .payeh-advantages__item:nth-child(2)::after {
+        display: none;
+    }
+
+    .payeh-advantages__item:nth-child(3)::after,
+    .payeh-advantages__item:nth-child(4)::after {
+        top: 8px;
+        height: 50px;
+    }
+
+    .payeh-advantages__item {
+        min-height: 62px;
+    }
+}
+
+@media (max-width: 650px) {
+
+    .payeh-advantages {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .payeh-advantages {
+        opacity: 1;
+        transform: none;
+        animation: none;
+    }
+}
+/*why
+*/
+.payeh-why {
+    position: relative;
+    width: 100%;
+    padding: 46px 0 76px;
+    overflow: hidden;
+}
+
+.payeh-why__layout {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.72fr) minmax(0, 1.28fr);
+    align-items: center;
+    gap: 58px;
+    direction: rtl;
+}
+
+.payeh-why__content {
+    position: relative;
+    z-index: 2;
+    text-align: right;
+}
+.payeh-why__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 7px;
+    color: var(--payeh-primary);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.payeh-why__title {
+    margin: 0 0 13px;
+    color: #0753a8;
+    font-size: clamp(1.75rem, 2.7vw, 2.15rem);
+    font-weight: 900;
+    line-height: 1.45;
+}
+
+.payeh-why__description {
+    max-width: 330px;
+    margin: 0 0 24px;
+    color: #68778b;
+    font-size: 0.82rem;
+    font-weight: 500;
+    line-height: 2.2;
+}
+
+.payeh-why__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 126px;
+    min-height: 43px;
+    padding: 8px 17px;
+    color: #0753a8;
+    background: transparent;
+    border: 1.5px solid #0753a8;
+    border-radius: 24px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    transition:
+        color var(--payeh-transition),
+        background-color var(--payeh-transition),
+        transform var(--payeh-transition),
+        box-shadow var(--payeh-transition);
+}
+
+.payeh-why__button:hover {
+    color: #ffffff;
+    background: #0753a8;
+    transform: translateY(-2px);
+    box-shadow: 0 9px 22px rgba(7, 83, 168, 0.16);
+}
+
+.payeh-why__button svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-why__features {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    direction: rtl;
+}
+
+.payeh-why__feature {
+    position: relative;
+    min-width: 0;
+    min-height: 192px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 22px 12px 17px;
+    text-align: center;
+    background: var(--payeh-surface);
+    border: 1px solid #edf1f6;
+    border-radius: 15px;
+    box-shadow: 0 6px 22px rgba(36, 74, 120, 0.055);
+    transition:
+        transform var(--payeh-transition),
+        box-shadow var(--payeh-transition),
+        border-color var(--payeh-transition);
+}
+
+.payeh-why__feature:nth-child(1) {
+    animation-delay: 180ms;
+}
+
+.payeh-why__feature:nth-child(2) {
+    animation-delay: 250ms;
+}
+
+.payeh-why__feature:nth-child(3) {
+    animation-delay: 320ms;
+}
+
+.payeh-why__feature:nth-child(4) {
+    animation-delay: 390ms;
+}
+
+.payeh-why__feature[data-payeh-reveal].is-visible:hover {
+    transform: translateY(-7px);
+}
+
+.payeh-why__icon {
+    width: 55px;
+    height: 55px;
+    flex: 0 0 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    border-radius: 50%;
+    transition:
+        transform var(--payeh-transition),
+        box-shadow var(--payeh-transition);
+}
+
+.payeh-why__feature:hover .payeh-why__icon {
+    transform: scale(1.07);
+}
+
+.payeh-why__icon--blue {
+    color: #0753a8;
+    background: #f1f7ff;
+}
+
+.payeh-why__icon--yellow {
+    color: #f1b800;
+    background: #fff9e8;
+}
+
+.payeh-why__icon svg {
+    width: 27px;
+    height: 27px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-why__feature h3 {
+    margin: 0 0 9px;
+    color: #0753a8;
+    font-size: 0.86rem;
+    font-weight: 900;
+    line-height: 1.7;
+}
+
+.payeh-why__feature p {
+    max-width: 145px;
+    margin: 0;
+    color: #758296;
+    font-size: 0.68rem;
+    font-weight: 500;
+    line-height: 2;
+}
+
+
+@media (max-width: 1100px) {
+    .payeh-why__layout {
+        grid-template-columns: minmax(230px, 0.7fr) minmax(0, 1.3fr);
+        gap: 34px;
+    }
+
+    .payeh-why__features {
+        gap: 9px;
+    }
+
+    .payeh-why__feature {
+        min-height: 188px;
+        padding-inline: 9px;
+    }
+
+    .payeh-why__feature h3 {
+        font-size: 0.8rem;
+    }
+
+    .payeh-why__feature p {
+        font-size: 0.64rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .payeh-why {
+        padding-block: 38px 62px;
+    }
+
+    .payeh-why__layout {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .payeh-why__content {
+        text-align: right;
+    }
+
+    .payeh-why__description {
+        max-width: 600px;
+    }
+
+    .payeh-why__features {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .payeh-why {
+        padding-block: 34px 52px;
+    }
+
+    .payeh-why__layout {
+        gap: 24px;
+    }
+
+    .payeh-why__title {
+        margin-bottom: 10px;
+        font-size: 1.7rem;
+    }
+
+    .payeh-why__description {
+        max-width: none;
+        margin-bottom: 19px;
+        font-size: 0.8rem;
+        line-height: 2.1;
+    }
+
+    .payeh-why__features {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .payeh-why__feature {
+        min-height: 178px;
+        padding: 19px 10px 15px;
+        border-radius: 14px;
+    }
+
+    .payeh-why__icon {
+        width: 51px;
+        height: 51px;
+        flex-basis: 51px;
+        margin-bottom: 12px;
+    }
+
+    .payeh-why__icon svg {
+        width: 25px;
+        height: 25px;
+    }
+
+    .payeh-why__feature h3 {
+        margin-bottom: 7px;
+        font-size: 0.79rem;
+    }
+
+    .payeh-why__feature p {
+        max-width: 145px;
+        font-size: 0.63rem;
+        line-height: 1.9;
+    }
+}
+
+@media (max-width: 430px) {
+    .payeh-why {
+        padding-block: 28px 44px;
+    }
+
+    .payeh-why__title {
+        font-size: 1.55rem;
+    }
+
+    .payeh-why__description {
+        font-size: 0.76rem;
+    }
+
+    .payeh-why__button {
+        min-height: 41px;
+        min-width: 116px;
+        padding-inline: 15px;
+        font-size: 0.72rem;
+    }
+
+    .payeh-why__features {
+        gap: 8px;
+    }
+
+    .payeh-why__feature {
+        min-height: 168px;
+        padding: 17px 8px 13px;
+    }
+
+    .payeh-why__icon {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+        margin-bottom: 10px;
+    }
+
+    .payeh-why__icon svg {
+        width: 23px;
+        height: 23px;
+    }
+
+    .payeh-why__feature h3 {
+        font-size: 0.75rem;
+    }
+
+    .payeh-why__feature p {
+        font-size: 0.6rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .payeh-why__content,
+    .payeh-why__feature {
+        opacity: 1;
+        transform: none;
+        animation: none;
+    }
+
+    .payeh-why__feature,
+    .payeh-why__icon,
+    .payeh-why__button {
+        transition: none;
+    }
+}
+
+
+
+.payeh-why__feature[data-payeh-reveal] {
+    opacity: 0;
+    transform: translateY(35px);
+    transition:
+        opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow var(--payeh-transition),
+        border-color var(--payeh-transition);
+}
+
+.payeh-why__feature[data-payeh-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.payeh-why__feature:nth-child(1) {
+    transition-delay: 80ms;
+}
+
+.payeh-why__feature:nth-child(2) {
+    transition-delay: 160ms;
+}
+
+.payeh-why__feature:nth-child(3) {
+    transition-delay: 240ms;
+}
+
+.payeh-why__feature:nth-child(4) {
+    transition-delay: 320ms;
+}
