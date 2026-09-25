@@ -39,7 +39,7 @@ body {
     margin: 0;
     background: var(--payeh-login-bg);
     color: var(--payeh-login-text);
-    font-family: "Vazirmatn", "Tahoma", "Segoe UI", sans-serif;
+    font-family: "Peyda", "Tahoma", sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
