@@ -1,0 +1,888 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: #f6f7f5;
+    color: #202321;
+    font-family: "Peyda", "Tahoma", sans-serif;
+}
+
+button,
+a {
+    font-family: inherit;
+}
+
+button {
+    border: 0;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.payeh-student {
+    min-height: 100vh;
+    display: flex;
+    background: #f6f7f5;
+}
+
+.payeh-student__sidebar {
+    width: 270px;
+    min-height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #fff;
+    border-left: 1px solid #e8e9e6;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform .3s ease;
+}
+
+.payeh-student__brand {
+    height: 92px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #ededeb;
+}
+
+.payeh-student__brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: #202321;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.payeh-student__brand strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.payeh-student__brand span {
+    display: block;
+    margin-top: 2px;
+    color: #929690;
+    font-size: 12px;
+}
+
+.payeh-student__nav {
+    padding: 22px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.payeh-student__nav-item {
+    min-height: 48px;
+    padding: 0 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #777c77;
+    font-size: 14px;
+    font-weight: 600;
+    transition: .2s ease;
+}
+
+.payeh-student__nav-item:hover {
+    background: #f2f4f1;
+    color: #202321;
+}
+
+.payeh-student__nav-item.active {
+    background: #202321;
+    color: #fff;
+}
+
+.payeh-student__nav-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payeh-student__nav-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-student__sidebar-bottom {
+    margin-top: auto;
+    padding: 16px;
+    border-top: 1px solid #ededeb;
+}
+
+.payeh-student__account {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+.payeh-student__avatar,
+.payeh-student__header-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #edf0ec;
+    color: #303530;
+    font-weight: 800;
+}
+
+.payeh-student__avatar {
+    width: 42px;
+    height: 42px;
+}
+
+.payeh-student__account-info strong,
+.payeh-student__account-info span {
+    display: block;
+}
+
+.payeh-student__account-info strong {
+    font-size: 13px;
+}
+
+.payeh-student__account-info span {
+    margin-top: 3px;
+    color: #999d98;
+    font-size: 11px;
+}
+
+.payeh-student__logout {
+    width: 100%;
+    height: 42px;
+    margin-top: 8px;
+    border-radius: 10px;
+    background: transparent;
+    color: #888d88;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.payeh-student__logout:hover {
+    background: #f3f4f2;
+    color: #222;
+}
+
+.payeh-student__logout svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-student__main {
+    width: calc(100% - 270px);
+    margin-right: 270px;
+    min-height: 100vh;
+}
+
+.payeh-student__header {
+    height: 92px;
+    padding: 0 34px;
+    background: #fff;
+    border-bottom: 1px solid #e8e9e6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.payeh-student__header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.payeh-student__header h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.payeh-student__header-right > div > span {
+    display: block;
+    margin-top: 4px;
+    color: #999d98;
+    font-size: 12px;
+}
+
+.payeh-student__header-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.payeh-student__header-avatar {
+    width: 42px;
+    height: 42px;
+}
+
+.payeh-student__header-profile strong,
+.payeh-student__header-profile span {
+    display: block;
+}
+
+.payeh-student__header-profile strong {
+    font-size: 13px;
+}
+
+.payeh-student__header-profile span {
+    margin-top: 3px;
+    color: #999d98;
+    font-size: 11px;
+}
+
+.payeh-student__menu {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #f0f2ef;
+    cursor: pointer;
+}
+
+.payeh-student__menu svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+}
+
+.payeh-student__content {
+    padding: 34px;
+}
+
+.payeh-student__dashboard {
+    max-width: 1450px;
+    margin: 0 auto;
+}
+
+.payeh-student__hero {
+    min-height: 245px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    padding: 38px 42px;
+    background:
+        radial-gradient(circle at 82% 30%, rgba(255,255,255,.08), transparent 28%),
+        radial-gradient(circle at 70% 110%, rgba(255,255,255,.05), transparent 30%),
+        #202321;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.payeh-student__hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.payeh-student__hero-label {
+    color: #aeb5ae;
+    font-size: 12px;
+}
+
+.payeh-student__hero h2 {
+    margin: 9px 0 8px;
+    font-size: 31px;
+    font-weight: 800;
+}
+
+.payeh-student__hero p {
+    margin: 0;
+    color: #b9beb9;
+    font-size: 13px;
+}
+
+.payeh-student__hero-button {
+    margin-top: 22px;
+    height: 43px;
+    padding: 0 18px;
+    border-radius: 11px;
+    background: #fff;
+    color: #202321;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    transition: transform .2s ease;
+}
+
+.payeh-student__hero-button:hover {
+    transform: translateY(-2px);
+}
+
+.payeh-student__hero-button svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-student__hero-orbit {
+    width: 230px;
+    height: 230px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 35px;
+}
+
+.payeh-student__hero-orbit::before,
+.payeh-student__hero-orbit::after {
+    content: "";
+    position: absolute;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 50%;
+}
+
+.payeh-student__hero-orbit::before {
+    width: 170px;
+    height: 170px;
+}
+
+.payeh-student__hero-orbit::after {
+    width: 225px;
+    height: 225px;
+}
+
+.payeh-student__hero-circle {
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    z-index: 2;
+}
+
+.payeh-student__hero-circle span {
+    color: #aeb5ae;
+    font-size: 10px;
+}
+
+.payeh-student__hero-circle strong {
+    margin-top: 2px;
+    font-size: 18px;
+}
+
+.payeh-student__hero-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+}
+
+.hero-dot-one {
+    top: 22px;
+    right: 52px;
+}
+
+.hero-dot-two {
+    bottom: 34px;
+    left: 25px;
+}
+
+.hero-dot-three {
+    top: 92px;
+    left: 8px;
+}
+
+.payeh-student__stats {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.payeh-student__stat {
+    min-height: 92px;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid #e6e9e5;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.payeh-student__stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.04);
+}
+
+.payeh-student__stat-icon {
+    width: 43px;
+    height: 43px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #f0f2ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payeh-student__stat-icon svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: #485048;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-student__stat span,
+.payeh-student__stat strong {
+    display: block;
+}
+
+.payeh-student__stat span {
+    color: #999d98;
+    font-size: 11px;
+}
+
+.payeh-student__stat strong {
+    margin-top: 3px;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.payeh-student__main-grid {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1.35fr .65fr;
+    gap: 20px;
+}
+
+.payeh-student__card {
+    background: #fff;
+    border: 1px solid #e6e9e5;
+    border-radius: 21px;
+    padding: 24px;
+}
+
+.payeh-student__card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.payeh-student__card-header > div > span {
+    color: #999d98;
+    font-size: 11px;
+}
+
+.payeh-student__card-header h3 {
+    margin: 4px 0 0;
+    font-size: 18px;
+}
+
+.payeh-student__progress-percent {
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.payeh-student__progress {
+    margin-top: 30px;
+}
+
+.payeh-student__progress-track {
+    height: 9px;
+    border-radius: 20px;
+    background: #edf0ec;
+    overflow: hidden;
+}
+
+.payeh-student__progress-track span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: #303630;
+}
+
+.payeh-student__progress-info {
+    margin-top: 9px;
+    display: flex;
+    justify-content: space-between;
+    color: #999d98;
+    font-size: 10px;
+}
+
+.payeh-student__progress-message {
+    margin-top: 27px;
+    padding: 15px;
+    border-radius: 14px;
+    background: #f6f7f4;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.payeh-student__progress-message-icon {
+    width: 39px;
+    height: 39px;
+    flex-shrink: 0;
+    border-radius: 11px;
+    background: #e9ece8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payeh-student__progress-message-icon svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: #5a625a;
+    stroke-width: 1.6;
+}
+
+.payeh-student__progress-message strong,
+.payeh-student__progress-message span {
+    display: block;
+}
+
+.payeh-student__progress-message strong {
+    font-size: 12px;
+}
+
+.payeh-student__progress-message span {
+    margin-top: 3px;
+    color: #929791;
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.payeh-student__online {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6c756c;
+    font-size: 10px;
+}
+
+.payeh-student__online span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #607963;
+}
+
+.payeh-student__consultant {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.payeh-student__consultant-avatar {
+    width: 51px;
+    height: 51px;
+    border-radius: 16px;
+    background: #edf0ec;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.payeh-student__consultant-info strong,
+.payeh-student__consultant-info span {
+    display: block;
+}
+
+.payeh-student__consultant-info strong {
+    font-size: 14px;
+}
+
+.payeh-student__consultant-info span {
+    margin-top: 3px;
+    color: #999d98;
+    font-size: 11px;
+}
+
+.payeh-student__chat-button {
+    width: 100%;
+    height: 42px;
+    margin-top: 22px;
+    border-radius: 11px;
+    background: #202321;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.payeh-student__chat-button svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-student__activity-card {
+    margin-top: 20px;
+}
+
+.payeh-student__card-header > a {
+    color: #4e554e;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.payeh-student__empty {
+    min-height: 205px;
+    margin-top: 20px;
+    border: 1px dashed #dfe2dd;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 25px;
+}
+
+.payeh-student__empty-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    background: #f0f2ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payeh-student__empty-icon svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: #687068;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-student__empty strong {
+    font-size: 13px;
+}
+
+.payeh-student__empty > span {
+    max-width: 440px;
+    margin-top: 7px;
+    color: #999d98;
+    font-size: 10px;
+    line-height: 1.9;
+}
+
+.payeh-student__empty button {
+    height: 38px;
+    padding: 0 17px;
+    margin-top: 15px;
+    border-radius: 10px;
+    background: #202321;
+    color: #fff;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+@media (max-width: 1150px) {
+
+    .payeh-student__stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .payeh-student__main-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 800px) {
+
+    .payeh-student__sidebar {
+        transform: translateX(100%);
+    }
+
+    .payeh-student__sidebar.open {
+        transform: translateX(0);
+    }
+
+    .payeh-student__main {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .payeh-student__menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .payeh-student__header {
+        padding: 0 18px;
+    }
+
+    .payeh-student__header-profile {
+        display: none;
+    }
+
+    .payeh-student__content {
+        padding: 18px;
+    }
+
+    .payeh-student__hero {
+        padding: 28px;
+    }
+
+    .payeh-student__hero-orbit {
+        width: 170px;
+        height: 170px;
+        margin-left: 0;
+    }
+
+    .payeh-student__hero-orbit::before {
+        width: 130px;
+        height: 130px;
+    }
+
+    .payeh-student__hero-orbit::after {
+        width: 165px;
+        height: 165px;
+    }
+
+}
+
+@media (max-width: 620px) {
+
+    .payeh-student__header {
+        height: 76px;
+    }
+
+    .payeh-student__header h1 {
+        font-size: 18px;
+    }
+
+    .payeh-student__header-right > div > span {
+        font-size: 10px;
+    }
+
+    .payeh-student__hero {
+        min-height: 210px;
+        padding: 25px 22px;
+    }
+
+    .payeh-student__hero h2 {
+        font-size: 24px;
+    }
+
+    .payeh-student__hero p {
+        max-width: 220px;
+        line-height: 1.8;
+    }
+
+    .payeh-student__hero-orbit {
+        display: none;
+    }
+
+    .payeh-student__stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .payeh-student__stat {
+        min-height: 84px;
+        padding: 14px;
+    }
+
+    .payeh-student__stat-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .payeh-student__stat span {
+        font-size: 9px;
+    }
+
+    .payeh-student__stat strong {
+        font-size: 18px;
+    }
+
+    .payeh-student__card {
+        padding: 18px;
+    }
+
+}
+
+@media (max-width: 400px) {
+
+    .payeh-student__stats {
+        grid-template-columns: 1fr;
+    }
+
+    .payeh-student__hero {
+        border-radius: 21px;
+    }
+
+}
