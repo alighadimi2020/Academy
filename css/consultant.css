@@ -1,0 +1,644 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: #f7f7f5;
+    color: #202020;
+    font-family: "Peyda", "Tahoma", sans-serif;
+}
+
+button,
+a {
+    font-family: inherit;
+}
+
+button {
+    border: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.payeh-consultant {
+    min-height: 100vh;
+    display: flex;
+    background: #f7f7f5;
+}
+
+.payeh-consultant__sidebar {
+    width: 270px;
+    min-height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #fff;
+    border-left: 1px solid #e9e9e6;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform .3s ease;
+}
+
+.payeh-consultant__brand {
+    height: 92px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #ededeb;
+}
+
+.payeh-consultant__brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: #1f1f1f;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.payeh-consultant__brand strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.payeh-consultant__brand span {
+    display: block;
+    margin-top: 2px;
+    color: #92928e;
+    font-size: 12px;
+}
+
+.payeh-consultant__nav {
+    padding: 22px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.payeh-consultant__nav-item {
+    min-height: 48px;
+    padding: 0 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #777772;
+    font-size: 14px;
+    font-weight: 600;
+    transition: .2s ease;
+}
+
+.payeh-consultant__nav-item:hover {
+    background: #f5f5f2;
+    color: #222;
+}
+
+.payeh-consultant__nav-item.active {
+    background: #202020;
+    color: #fff;
+}
+
+.payeh-consultant__nav-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.payeh-consultant__nav-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-consultant__sidebar-bottom {
+    margin-top: auto;
+    padding: 16px;
+    border-top: 1px solid #ededeb;
+}
+
+.payeh-consultant__account {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+.payeh-consultant__avatar,
+.payeh-consultant__header-avatar {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eeeeeb;
+    color: #333;
+    font-weight: 800;
+}
+
+.payeh-consultant__avatar {
+    width: 42px;
+    height: 42px;
+}
+
+.payeh-consultant__account-info strong,
+.payeh-consultant__account-info span {
+    display: block;
+}
+
+.payeh-consultant__account-info strong {
+    font-size: 13px;
+}
+
+.payeh-consultant__account-info span {
+    margin-top: 3px;
+    color: #999993;
+    font-size: 11px;
+}
+
+.payeh-consultant__logout {
+    width: 100%;
+    margin-top: 8px;
+    height: 42px;
+    border-radius: 10px;
+    background: transparent;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.payeh-consultant__logout:hover {
+    background: #f5f5f2;
+    color: #222;
+}
+
+.payeh-consultant__logout svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-consultant__main {
+    width: calc(100% - 270px);
+    margin-right: 270px;
+    min-height: 100vh;
+}
+
+.payeh-consultant__header {
+    height: 92px;
+    padding: 0 34px;
+    background: #fff;
+    border-bottom: 1px solid #e9e9e6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.payeh-consultant__header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.payeh-consultant__header h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.payeh-consultant__header-right > div > span {
+    display: block;
+    margin-top: 4px;
+    color: #999993;
+    font-size: 12px;
+}
+
+.payeh-consultant__header-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.payeh-consultant__header-avatar {
+    width: 42px;
+    height: 42px;
+}
+
+.payeh-consultant__header-profile strong,
+.payeh-consultant__header-profile span {
+    display: block;
+}
+
+.payeh-consultant__header-profile strong {
+    font-size: 13px;
+}
+
+.payeh-consultant__header-profile span {
+    margin-top: 3px;
+    color: #999993;
+    font-size: 11px;
+}
+
+.payeh-consultant__menu {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #f1f1ee;
+    cursor: pointer;
+}
+
+.payeh-consultant__menu svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+}
+
+.payeh-consultant__content {
+    padding: 34px;
+}
+
+.payeh-consultant__welcome {
+    min-height: 190px;
+    padding: 30px;
+    border-radius: 22px;
+    background: #202020;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.payeh-consultant__welcome span {
+    color: #aaa;
+    font-size: 13px;
+}
+
+.payeh-consultant__welcome h2 {
+    margin: 10px 0 8px;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.payeh-consultant__welcome p {
+    margin: 0;
+    color: #bcbcb8;
+    font-size: 13px;
+}
+
+.payeh-consultant__welcome-icon {
+    width: 110px;
+    height: 110px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payeh-consultant__welcome-icon svg {
+    width: 52px;
+    height: 52px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.3;
+}
+
+.payeh-consultant__stats {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.payeh-consultant__stat {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e8e8e5;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.payeh-consultant__stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #f2f2ef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payeh-consultant__stat-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: #444;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-consultant__stat span,
+.payeh-consultant__stat strong {
+    display: block;
+}
+
+.payeh-consultant__stat span {
+    color: #999993;
+    font-size: 11px;
+}
+
+.payeh-consultant__stat strong {
+    margin-top: 3px;
+    font-size: 22px;
+}
+
+.payeh-consultant__section {
+    margin-top: 26px;
+    padding: 24px;
+    border-radius: 20px;
+    background: #fff;
+    border: 1px solid #e8e8e5;
+}
+
+.payeh-consultant__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.payeh-consultant__section-header span {
+    color: #999993;
+    font-size: 11px;
+}
+
+.payeh-consultant__section-header h3 {
+    margin: 4px 0 0;
+    font-size: 18px;
+}
+
+.payeh-consultant__section-header a {
+    color: #444;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.payeh-consultant__student-card {
+    min-height: 74px;
+    padding: 12px 14px;
+    border: 1px solid #eeeeeb;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.payeh-consultant__student-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.payeh-consultant__student-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #f0f0ed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.payeh-consultant__student-main strong,
+.payeh-consultant__student-main span {
+    display: block;
+}
+
+.payeh-consultant__student-main strong {
+    font-size: 13px;
+}
+
+.payeh-consultant__student-main span {
+    margin-top: 3px;
+    color: #999993;
+    font-size: 11px;
+}
+
+.payeh-consultant__student-status {
+    color: #666;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.payeh-consultant__student-status span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #5d8b64;
+}
+
+.payeh-consultant__student-action {
+    height: 34px;
+    padding: 0 15px;
+    border-radius: 9px;
+    background: #f0f0ed;
+    color: #333;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.payeh-consultant__empty {
+    min-height: 180px;
+    border: 1px dashed #deded9;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 25px;
+}
+
+.payeh-consultant__empty-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #f2f2ef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.payeh-consultant__empty-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: #777;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-consultant__empty strong {
+    font-size: 13px;
+}
+
+.payeh-consultant__empty span {
+    max-width: 400px;
+    margin-top: 7px;
+    color: #999993;
+    font-size: 11px;
+    line-height: 1.9;
+}
+
+@media (max-width: 1100px) {
+    .payeh-consultant__stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 800px) {
+    .payeh-consultant__sidebar {
+        transform: translateX(100%);
+    }
+
+    .payeh-consultant__sidebar.open {
+        transform: translateX(0);
+    }
+
+    .payeh-consultant__main {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .payeh-consultant__menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .payeh-consultant__header {
+        padding: 0 18px;
+    }
+
+    .payeh-consultant__header-profile {
+        display: none;
+    }
+
+    .payeh-consultant__content {
+        padding: 18px;
+    }
+
+    .payeh-consultant__welcome {
+        padding: 24px;
+    }
+
+    .payeh-consultant__welcome h2 {
+        font-size: 23px;
+    }
+
+    .payeh-consultant__welcome-icon {
+        width: 75px;
+        height: 75px;
+    }
+
+    .payeh-consultant__welcome-icon svg {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+@media (max-width: 560px) {
+    .payeh-consultant__header {
+        height: 76px;
+    }
+
+    .payeh-consultant__header h1 {
+        font-size: 18px;
+    }
+
+    .payeh-consultant__header-right > div > span {
+        font-size: 10px;
+    }
+
+    .payeh-consultant__welcome {
+        min-height: 160px;
+    }
+
+    .payeh-consultant__welcome p {
+        max-width: 210px;
+        line-height: 1.8;
+    }
+
+    .payeh-consultant__welcome-icon {
+        display: none;
+    }
+
+    .payeh-consultant__stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .payeh-consultant__stat {
+        padding: 16px;
+    }
+
+    .payeh-consultant__section {
+        padding: 16px;
+    }
+
+    .payeh-consultant__student-card {
+        flex-wrap: wrap;
+    }
+
+    .payeh-consultant__student-main {
+        width: 100%;
+        flex: none;
+    }
+
+    .payeh-consultant__student-status {
+        margin-right: 53px;
+    }
+}
