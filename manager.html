@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#FFFCF5">
+    <meta name="description" content="پنل مدیریت آکادمی پایه">
+
+    <title>مدیریت | پایه</title>
+
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/manager.css">
+</head>
+
+<body>
+
+<div class="payeh-manager" id="payeh-manager">
+
+    <aside class="payeh-manager__sidebar" id="manager-sidebar">
+
+        <div class="payeh-manager__brand">
+            <a href="index.html" class="payeh-manager__brand-link">
+                <img src="assets/images/logo.png" alt="پایه">
+            </a>
+        </div>
+
+        <nav class="payeh-manager__nav">
+
+            <a href="#dashboard" class="payeh-manager__nav-item is-active" data-page="dashboard">
+                <span class="payeh-manager__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                        <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                        <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                        <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                    </svg>
+                </span>
+                <span>داشبورد</span>
+            </a>
+
+            <a href="#consultants" class="payeh-manager__nav-item" data-page="consultants">
+                <span class="payeh-manager__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
+                <span>مشاوران</span>
+            </a>
+
+            <a href="#students" class="payeh-manager__nav-item" data-page="students">
+                <span class="payeh-manager__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="m4 10 8-5 8 5-8 5-8-5Z"></path>
+                        <path d="M6 12v5c3 2 9 2 12 0v-5"></path>
+                        <path d="M20 10v6"></path>
+                    </svg>
+                </span>
+                <span>دانش‌آموزان</span>
+            </a>
+
+            <a href="#conversations" class="payeh-manager__nav-item" data-page="conversations">
+                <span class="payeh-manager__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 8.7 8.7 0 0 1-3.8-.9L3 21l1.9-4.8A8.3 8.3 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"></path>
+                    </svg>
+                </span>
+                <span>گفت‌وگوها</span>
+            </a>
+
+            <a href="#articles" class="payeh-manager__nav-item" data-page="articles">
+                <span class="payeh-manager__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path>
+                        <path d="M14 2v6h6"></path>
+                        <path d="M8 13h8"></path>
+                        <path d="M8 17h6"></path>
+                    </svg>
+                </span>
+                <span>مقالات</span>
+            </a>
+
+            <div class="payeh-manager__nav-divider"></div>
+
+            <a href="#settings" class="payeh-manager__nav-item" data-page="settings">
+                <span class="payeh-manager__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06-1.42 1.42-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21h-2v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06-1.42-1.42.06-.06A1.65 1.65 0 0 0 9.6 15a1.65 1.65 0 0 0-1.51-1H8v-2h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06 1.42-1.42.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V6h2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06 1.42 1.42-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21v2h-.09a1.65 1.65 0 0 0-1.51 1Z"></path>
+                    </svg>
+                </span>
+                <span>تنظیمات</span>
+            </a>
+
+        </nav>
+
+        <div class="payeh-manager__sidebar-bottom">
+            <a href="index.html" class="payeh-manager__back-home">
+                <span>بازگشت به سایت</span>
+            </a>
+        </div>
+
+    </aside>
+
+    <main class="payeh-manager__main">
+
+        <header class="payeh-manager__header">
+
+            <button
+                type="button"
+                class="payeh-manager__menu-button"
+                id="manager-menu-button"
+                aria-label="باز کردن منو"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="payeh-manager__header-title">
+                <h1 id="manager-page-title">داشبورد مدیریت</h1>
+            </div>
+
+            <div class="payeh-manager__profile">
+
+                <div class="payeh-manager__profile-text">
+                    <strong>آقای احمدلو</strong>
+                    <span>مدیر آکادمی</span>
+                </div>
+
+                <div class="payeh-manager__avatar">
+                    آ
+                </div>
+
+            </div>
+
+        </header>
+
+        <div class="payeh-manager__content">
+
+            <section class="manager-page is-active" id="page-dashboard">
+
+                <div class="manager-page__intro">
+                    <div>
+                        <span class="manager-page__eyebrow">مدیریت آکادمی</span>
+                        <h2>خوش آمدید، آقای احمدلو</h2>
+
+                    </div>
+                </div>
+
+                <div class="manager-stats">
+
+                    <article class="manager-stat">
+                        <div class="manager-stat__icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <span>مشاوران</span>
+                            <strong>۰</strong>
+                        </div>
+                    </article>
+
+                    <article class="manager-stat">
+                        <div class="manager-stat__icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap preview-icon"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+
+                        </div>
+                        <div>
+                            <span>دانش‌آموزان</span>
+                            <strong>۰</strong>
+                        </div>
+                    </article>
+
+                    <article class="manager-stat">
+                        <div class="manager-stat__icon">
+                        <span class="payeh-manager__nav-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"></path>
+                                <path d="M22 10v6"></path>
+                                <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"></path>
+                            </svg>
+                        </span>
+                        </div>
+                        <div>
+                            <span>مقالات</span>
+                            <strong>۰</strong>
+                        </div>
+                    </article>
+
+                    <article class="manager-stat">
+                        <div class="manager-stat__icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 8.7 8.7 0 0 1-3.8-.9L3 21l1.9-4.8A8.3 8.3 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <span>گفت‌وگوها</span>
+                            <strong>۰</strong>
+                        </div>
+                    </article>
+
+                </div>
+
+                <div class="manager-dashboard-grid">
+
+                    <article class="manager-panel-card">
+
+                        <div class="manager-panel-card__header">
+                            <div>
+                                <span>وضعیت سیستم</span>
+                                <h3>اطلاعات کلی</h3>
+                            </div>
+                        </div>
+
+                        <div class="manager-empty">
+                            <strong>پنل آماده است</strong>
+
+                        </div>
+
+                    </article>
+
+                    <article class="manager-panel-card">
+
+                        <div class="manager-panel-card__header">
+                            <div>
+                                <span>کاربر فعلی</span>
+                            </div>
+                        </div>
+
+                        <div class="manager-user-preview">
+
+                            <div class="manager-user-preview__avatar">
+                                آ                            </div>
+
+                            <div>
+                                <strong>آقای احمدلو</strong>
+                                <span>مدیر آکادمی پایه</span>
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+            <section class="manager-page" id="page-consultants">
+                <div class="manager-placeholder">
+                    <span>مدیریت مشاوران</span>
+                    <h2>مشاوران</h2>
+                </div>
+            </section>
+
+            <section class="manager-page" id="page-students">
+                <div class="manager-placeholder">
+                    <span>مدیریت دانش‌آموزان</span>
+                    <h2>دانش‌آموزان</h2>
+                </div>
+            </section>
+
+            <section class="manager-page" id="page-conversations">
+                <div class="manager-placeholder">
+                    <span>ارتباطات</span>
+                    <h2>گفت‌وگوها</h2>
+                </div>
+            </section>
+
+            <section class="manager-page" id="page-articles">
+                <div class="manager-placeholder">
+                    <span>مدیریت محتوا</span>
+                    <h2>مقالات</h2>
+                </div>
+            </section>
+
+            <section class="manager-page" id="page-settings">
+                <div class="manager-placeholder">
+                    <span>تنظیمات</span>
+                    <h2>تنظیمات پنل</h2>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="js/manager.js"></script>
+
+</body>
+</html>
