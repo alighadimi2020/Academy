@@ -1,0 +1,63 @@
+@font-face {
+    font-family: "Peyda";
+    src: url("../assets/fonts/PEYDA-THIN.TTF") format("truetype");
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Peyda";
+    src: url("../assets/fonts/PEYDA-LIGHT.TTF") format("truetype");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Peyda";
+    src: url("../assets/fonts/PEYDA-REGULAR.TTF") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Peyda";
+    src: url("../assets/fonts/PEYDA-MEDIUM.TTF") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Peyda";
+    src: url("../assets/fonts/PEYDA-SEMIBOLD.TTF") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Peyda";
+    src: url("../assets/fonts/PEYDA-BOLD.TTF") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Peyda";
+    src: url("../assets/fonts/PEYDA-EXTRABOLD.TTF") format("truetype");
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Peyda";
+    src: url("../assets/fonts/PEYDA-BLACK.TTF") format("truetype");
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
