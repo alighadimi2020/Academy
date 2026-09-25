@@ -1,0 +1,716 @@
+.payeh-magazine {
+    width: 100%;
+    min-height: 100vh;
+    background: #f8f5ed;
+    overflow: hidden;
+}
+
+
+.payeh-magazine-hero {
+    position: relative;
+
+    width: 100%;
+    min-height: 430px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 18px;
+
+    background-image: url("../assets/images/magazine-hero.jpg");
+    background-size: cover;
+    background-position: center;
+
+    border-radius: 26px;
+
+    overflow: hidden;
+}
+
+
+.payeh-magazine-hero__overlay {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(9, 31, 53, 0.82) 0%,
+            rgba(9, 31, 53, 0.62) 48%,
+            rgba(9, 31, 53, 0.40) 100%
+        );
+}
+
+
+.payeh-magazine-hero__content {
+    position: relative;
+    z-index: 2;
+
+    width: min(720px, calc(100% - 32px));
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+}
+
+
+.payeh-magazine-hero__content h1 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: clamp(34px, 5vw, 56px);
+    font-weight: 900;
+
+    line-height: 1.4;
+}
+
+
+.payeh-magazine-hero__content p {
+    margin: 13px 0 25px;
+
+    color: rgba(255, 255, 255, 0.9);
+
+    font-size: 15px;
+    font-weight: 500;
+
+    line-height: 2;
+}
+
+
+.payeh-magazine-search {
+    width: min(570px, 100%);
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 5px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.16);
+}
+
+
+.payeh-magazine-search input {
+    flex: 1;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 0 17px;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    color: #173f68;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    text-align: right;
+}
+
+
+.payeh-magazine-search input::placeholder {
+    color: #929ba5;
+}
+
+
+.payeh-magazine-search button {
+    width: 48px;
+    height: 48px;
+
+    flex: 0 0 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 12px;
+
+    background: #173f68;
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    transition:
+        transform 180ms ease,
+        background 180ms ease;
+}
+
+
+.payeh-magazine-search button:hover {
+    background: #123654;
+    transform: translateY(-1px);
+}
+
+
+.payeh-magazine-search svg {
+    width: 20px;
+    height: 20px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+@media (max-width: 700px) {
+
+    .payeh-magazine-hero {
+        min-height: 330px;
+
+        margin-top: 12px;
+
+        border-radius: 20px;
+
+        background-position: center;
+    }
+
+
+    .payeh-magazine-hero__overlay {
+        background:
+            linear-gradient(
+                180deg,
+                rgba(9, 31, 53, 0.55) 0%,
+                rgba(9, 31, 53, 0.84) 100%
+            );
+    }
+
+
+    .payeh-magazine-hero__content {
+        width: calc(100% - 28px);
+    }
+
+
+    .payeh-magazine-hero__content h1 {
+        font-size: 31px;
+    }
+
+
+    .payeh-magazine-hero__content p {
+        margin: 10px 0 20px;
+
+        font-size: 12px;
+    }
+
+
+    .payeh-magazine-search {
+        height: 53px;
+        border-radius: 14px;
+    }
+
+
+    .payeh-magazine-search button {
+        width: 43px;
+        height: 43px;
+
+        flex-basis: 43px;
+
+        border-radius: 10px;
+    }
+
+
+    .payeh-magazine-search input {
+        font-size: 12px;
+    }
+}
+
+
+@media (max-width: 420px) {
+
+    .payeh-magazine-hero {
+        min-height: 300px;
+    }
+
+
+    .payeh-magazine-hero__content h1 {
+        font-size: 27px;
+    }
+
+
+    .payeh-magazine-hero__content p {
+        font-size: 11px;
+    }
+}
+.payeh-magazine-container {
+    width: min(1180px, calc(100% - 32px));
+    margin-inline: auto;
+}
+
+.payeh-magazine-latest {
+    width: 100%;
+    padding: 76px 0 42px;
+    background: #f8f5ed;
+}
+
+.payeh-magazine-section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 28px;
+}
+
+.payeh-magazine-section-title {
+    direction: rtl;
+    text-align: right;
+}
+
+.payeh-magazine-section-title span {
+    display: block;
+    margin-bottom: 6px;
+    color: #e2ad18;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.payeh-magazine-section-title h2 {
+    margin: 0;
+    color: #173f68;
+    font-size: clamp(25px, 3vw, 34px);
+    font-weight: 900;
+    line-height: 1.5;
+}
+
+.payeh-magazine-view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #173f68;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: gap .25s ease, color .25s ease;
+}
+
+.payeh-magazine-view-all:hover {
+    gap: 11px;
+    color: #0d3152;
+}
+
+.payeh-magazine-view-all svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-magazine-articles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.payeh-magazine-article {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid rgba(23, 63, 104, .08);
+    border-radius: 18px;
+    box-shadow: 0 7px 25px rgba(25, 58, 92, .06);
+    text-decoration: none;
+    direction: rtl;
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease,
+        border-color .3s ease;
+}
+
+.payeh-magazine-article:hover {
+    transform: translateY(-6px);
+    border-color: rgba(23, 63, 104, .15);
+    box-shadow: 0 16px 35px rgba(25, 58, 92, .11);
+}
+
+.payeh-magazine-article__image {
+    width: 100%;
+    height: 215px;
+    overflow: hidden;
+    background: #eaf1f7;
+}
+
+.payeh-magazine-article__image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform .55s ease;
+}
+
+.payeh-magazine-article:hover .payeh-magazine-article__image img {
+    transform: scale(1.045);
+}
+
+.payeh-magazine-article__body {
+    min-height: 205px;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 18px 16px;
+}
+
+.payeh-magazine-article__category {
+    margin-bottom: 8px;
+    color: #0b55a9;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.payeh-magazine-article h3 {
+    margin: 0;
+    color: #173f68;
+    font-size: 17px;
+    font-weight: 900;
+    line-height: 1.8;
+}
+
+.payeh-magazine-article p {
+    margin: 9px 0 0;
+    color: #718094;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 2;
+}
+
+.payeh-magazine-article__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 17px;
+    color: #929dac;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.payeh-magazine-article__arrow {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #173f68;
+    background: #f1f6fa;
+    border-radius: 9px;
+    transition:
+        background .25s ease,
+        color .25s ease,
+        transform .25s ease;
+}
+
+.payeh-magazine-article:hover .payeh-magazine-article__arrow {
+    color: #ffffff;
+    background: #173f68;
+    transform: translateX(-2px);
+}
+
+.payeh-magazine-article__arrow svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+@media (max-width: 900px) {
+
+    .payeh-magazine-latest {
+        padding-top: 60px;
+    }
+
+    .payeh-magazine-articles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .payeh-magazine-article:last-child {
+        grid-column: auto;
+        max-width: none;
+        justify-self: stretch;
+    }
+
+}
+
+@media (max-width: 650px) {
+
+    .payeh-magazine-container {
+        width: calc(100% - 24px);
+        margin-inline: auto;
+    }
+
+    .payeh-magazine-latest {
+        padding: 50px 0 30px;
+    }
+
+    .payeh-magazine-section-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .payeh-magazine-section-title h2 {
+        font-size: 25px;
+    }
+
+    .payeh-magazine-articles {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        overflow: visible;
+        padding: 0;
+    }
+
+    .payeh-magazine-article,
+    .payeh-magazine-article:last-child {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+        grid-column: auto;
+        justify-self: stretch;
+    }
+
+    .payeh-magazine-article__image {
+        height: 125px;
+    }
+
+    .payeh-magazine-article__body {
+        min-height: 185px;
+        padding: 13px 12px;
+    }
+
+    .payeh-magazine-article__category {
+        margin-bottom: 5px;
+        font-size: 9px;
+    }
+
+    .payeh-magazine-article h3 {
+        font-size: 13px;
+        line-height: 1.75;
+    }
+
+    .payeh-magazine-article p {
+        margin-top: 7px;
+        font-size: 10px;
+        line-height: 1.9;
+    }
+
+    .payeh-magazine-article__meta {
+        padding-top: 12px;
+        font-size: 9px;
+    }
+
+    .payeh-magazine-article__arrow {
+        width: 27px;
+        height: 27px;
+    }
+
+    .payeh-magazine-article__arrow svg {
+        width: 14px;
+        height: 14px;
+    }
+
+}
+
+@media (max-width: 420px) {
+
+    .payeh-magazine-container {
+        width: calc(100% - 20px);
+    }
+
+    .payeh-magazine-articles {
+        gap: 10px;
+    }
+
+    .payeh-magazine-article__image {
+        height: 110px;
+    }
+
+    .payeh-magazine-article__body {
+        min-height: 175px;
+        padding: 11px 10px;
+    }
+
+    .payeh-magazine-article h3 {
+        font-size: 12px;
+    }
+
+    .payeh-magazine-article p {
+        font-size: 9px;
+    }
+
+}
+
+
+.payeh-magazine-guarantee {
+    width: 100%;
+    padding: 22px 0 70px;
+    background: #f8f5ed;
+}
+
+.payeh-magazine-guarantee__box {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: stretch;
+    background: rgba(255, 255, 255, .62);
+    border: 1px solid rgba(23, 63, 104, .06);
+    border-radius: 22px;
+    overflow: hidden;
+}
+
+.payeh-magazine-guarantee__item {
+    position: relative;
+    min-width: 0;
+    min-height: 105px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    padding: 18px 16px;
+    direction: rtl;
+    text-align: right;
+}
+
+.payeh-magazine-guarantee__item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 24px;
+    width: 1px;
+    height: calc(100% - 48px);
+    background: rgba(23, 63, 104, .09);
+}
+
+.payeh-magazine-guarantee__icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #173f68;
+    background: #eef4f9;
+    border-radius: 13px;
+}
+
+.payeh-magazine-guarantee__icon svg {
+    width: 23px;
+    height: 23px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.payeh-magazine-guarantee__item h3 {
+    margin: 0 0 3px;
+    color: #173f68;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.8;
+}
+
+.payeh-magazine-guarantee__item p {
+    margin: 0;
+    color: #7b8794;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.8;
+}
+
+@media (max-width: 900px) {
+
+    .payeh-magazine-guarantee {
+        padding: 18px 0 55px;
+    }
+
+    .payeh-magazine-guarantee__box {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .payeh-magazine-guarantee__item:nth-child(2)::after {
+        display: none;
+    }
+
+    .payeh-magazine-guarantee__item:nth-child(1),
+    .payeh-magazine-guarantee__item:nth-child(2) {
+        border-bottom: 1px solid rgba(23, 63, 104, .07);
+    }
+
+    .payeh-magazine-guarantee__item {
+        min-height: 95px;
+    }
+
+}
+
+@media (max-width: 550px) {
+
+    .payeh-magazine-guarantee {
+        padding: 12px 0 48px;
+    }
+
+    .payeh-magazine-guarantee__box {
+        grid-template-columns: 1fr;
+        border-radius: 18px;
+    }
+
+    .payeh-magazine-guarantee__item {
+        min-height: 78px;
+        justify-content: flex-start;
+        padding: 13px 16px;
+    }
+
+.payeh-magazine-guarantee__item:not(:last-child)::after {
+    display: block;
+    left: 16px;
+    right: 16px;
+    top: auto;
+    bottom: 0;
+    width: auto;
+    height: 1px;
+    background: rgba(23, 63, 104, .09);
+}
+
+
+
+    .payeh-magazine-guarantee__icon {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+        border-radius: 11px;
+    }
+
+    .payeh-magazine-guarantee__item h3 {
+        font-size: 11px;
+    }
+
+    .payeh-magazine-guarantee__item p {
+        font-size: 9px;
+    }
+
+}
