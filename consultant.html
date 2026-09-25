@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مشاور | آکادمی پایه</title>
+
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/consultant.css">
+</head>
+
+<body>
+
+<div class="payeh-consultant">
+
+    <aside class="payeh-consultant__sidebar" id="consultantSidebar">
+
+        <div class="payeh-consultant__brand">
+            <div class="payeh-consultant__brand-mark">پ</div>
+
+            <div>
+                <strong>آکادمی پایه</strong>
+                <span>پنل مشاور</span>
+            </div>
+        </div>
+
+        <nav class="payeh-consultant__nav">
+
+            <a href="#dashboard" class="payeh-consultant__nav-item active" data-page="dashboard">
+                <span class="payeh-consultant__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                    </svg>
+                </span>
+                <span>داشبورد</span>
+            </a>
+
+            <a href="#students" class="payeh-consultant__nav-item" data-page="students">
+                <span class="payeh-consultant__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"></path>
+                        <path d="M22 10v6"></path>
+                        <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"></path>
+                    </svg>
+                </span>
+                <span>دانش‌آموزان من</span>
+            </a>
+
+            <a href="#activities" class="payeh-consultant__nav-item" data-page="activities">
+                <span class="payeh-consultant__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M8 6h13"></path>
+                        <path d="M8 12h13"></path>
+                        <path d="M8 18h13"></path>
+                        <path d="M3 6h.01"></path>
+                        <path d="M3 12h.01"></path>
+                        <path d="M3 18h.01"></path>
+                    </svg>
+                </span>
+                <span>فعالیت‌ها</span>
+            </a>
+
+            <a href="#conversations" class="payeh-consultant__nav-item" data-page="conversations">
+                <span class="payeh-consultant__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 9.7 9.7 0 0 1-4-.8L3 21l1.8-4.3A8.1 8.1 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"></path>
+                    </svg>
+                </span>
+                <span>گفتگوها</span>
+            </a>
+
+            <a href="#articles" class="payeh-consultant__nav-item" data-page="articles">
+                <span class="payeh-consultant__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 4h16v16H4z"></path>
+                        <path d="M8 8h8"></path>
+                        <path d="M8 12h8"></path>
+                        <path d="M8 16h5"></path>
+                    </svg>
+                </span>
+                <span>مقالات من</span>
+            </a>
+
+            <a href="#profile" class="payeh-consultant__nav-item" data-page="profile">
+                <span class="payeh-consultant__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="4"></circle>
+                        <path d="M4 21c.8-4 3.5-6 8-6s7.2 2 8 6"></path>
+                    </svg>
+                </span>
+                <span>پروفایل</span>
+            </a>
+
+        </nav>
+
+        <div class="payeh-consultant__sidebar-bottom">
+            <div class="payeh-consultant__account">
+                <div class="payeh-consultant__avatar">پ</div>
+
+                <div class="payeh-consultant__account-info">
+                    <strong>آقا پارسا</strong>
+                    <span>مشاور تحصیلی</span>
+                </div>
+            </div>
+
+            <button class="payeh-consultant__logout" type="button">
+                <svg viewBox="0 0 24 24">
+                    <path d="M10 17l5-5-5-5"></path>
+                    <path d="M15 12H3"></path>
+                    <path d="M21 3v18"></path>
+                </svg>
+                <span>خروج</span>
+            </button>
+        </div>
+
+    </aside>
+
+
+    <main class="payeh-consultant__main">
+
+        <header class="payeh-consultant__header">
+
+            <div class="payeh-consultant__header-right">
+
+                <button class="payeh-consultant__menu" id="consultantMenu" type="button">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 6h16"></path>
+                        <path d="M4 12h16"></path>
+                        <path d="M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <div>
+                    <h1 id="consultantPageTitle">داشبورد</h1>
+                    <span>خوش آمدید آقا پارسا</span>
+                </div>
+
+            </div>
+
+            <div class="payeh-consultant__header-profile">
+                <div class="payeh-consultant__header-avatar">پ</div>
+
+                <div>
+                    <strong>آقا پارسا</strong>
+                    <span>مشاور تحصیلی</span>
+                </div>
+            </div>
+
+        </header>
+
+
+        <section class="payeh-consultant__content" id="consultantContent">
+
+            <div class="payeh-consultant__dashboard">
+
+                <div class="payeh-consultant__welcome">
+                    <div>
+                        <span>پنل مشاور</span>
+                        <h2>سلام آقا پارسا</h2>
+
+                    </div>
+
+                    <div class="payeh-consultant__welcome-icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notebook-pen preview-icon"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/></svg>
+                    </div>
+                </div>
+
+
+                <div class="payeh-consultant__stats">
+
+                    <div class="payeh-consultant__stat">
+                        <div class="payeh-consultant__stat-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"></path>
+                                <path d="M22 10v6"></path>
+                                <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"></path>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <span>دانش‌آموزان من</span>
+                            <strong>۱</strong>
+                        </div>
+                    </div>
+
+
+                    <div class="payeh-consultant__stat">
+                        <div class="payeh-consultant__stat-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8 6h13"></path>
+                                <path d="M8 12h13"></path>
+                                <path d="M8 18h13"></path>
+                                <path d="M3 6h.01"></path>
+                                <path d="M3 12h.01"></path>
+                                <path d="M3 18h.01"></path>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <span>فعالیت‌های جدید</span>
+                            <strong>۰</strong>
+                        </div>
+                    </div>
+
+
+                    <div class="payeh-consultant__stat">
+                        <div class="payeh-consultant__stat-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 9.7 9.7 0 0 1-4-.8L3 21l1.8-4.3A8.1 8.1 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"></path>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <span>گفتگوهای جدید</span>
+                            <strong>۰</strong>
+                        </div>
+                    </div>
+
+
+                    <div class="payeh-consultant__stat">
+                        <div class="payeh-consultant__stat-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M4 4h16v16H4z"></path>
+                                <path d="M8 8h8"></path>
+                                <path d="M8 12h8"></path>
+                                <path d="M8 16h5"></path>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <span>مقالات من</span>
+                            <strong>۰</strong>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="payeh-consultant__section">
+
+                    <div class="payeh-consultant__section-header">
+                        <div>
+                            <span>دانش‌آموزان</span>
+                            <h3>دانش‌آموزان من</h3>
+                        </div>
+
+                        <a href="#students" data-page="students">
+                            مشاهده همه
+                        </a>
+                    </div>
+
+
+                    <div class="payeh-consultant__student-card">
+
+                        <div class="payeh-consultant__student-main">
+
+                            <div class="payeh-consultant__student-avatar">
+                                ط
+                            </div>
+
+                            <div>
+                                <strong>طاها موسوی</strong>
+                                <span>دانش‌آموز</span>
+                            </div>
+
+                        </div>
+
+                        <div class="payeh-consultant__student-status">
+                            <span></span>
+                            فعال
+                        </div>
+
+                        <button type="button" class="payeh-consultant__student-action">
+                            مشاهده
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="payeh-consultant__section">
+
+                    <div class="payeh-consultant__section-header">
+                        <div>
+                            <span>آخرین وضعیت</span>
+                            <h3>فعالیت‌های اخیر</h3>
+                        </div>
+                    </div>
+
+                    <div class="payeh-consultant__empty">
+                        <div class="payeh-consultant__empty-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8 6h13"></path>
+                                <path d="M8 12h13"></path>
+                                <path d="M8 18h13"></path>
+                                <path d="M3 6h.01"></path>
+                                <path d="M3 12h.01"></path>
+                                <path d="M3 18h.01"></path>
+                            </svg>
+                        </div>
+
+                        <strong>هنوز فعالیتی ثبت نشده است</strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="js/consultant.js"></script>
+
+</body>
+</html>
