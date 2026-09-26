@@ -886,3 +886,18 @@ a {
     }
 
 }
+.student-consultant-intro { margin:16px 0 8px; color:#777b76; font-size:12px; line-height:1.9; }
+.student-consultants-list { display:grid; gap:10px; margin-top:12px; }
+.student-consultant-item { display:flex; align-items:center; gap:11px; padding:12px; border:1px solid #e9ebe7; border-radius:13px; background:#fff; }
+.student-consultant-item__avatar { width:42px; height:42px; flex:0 0 42px; display:grid; place-items:center; border-radius:12px; background:#edf0ec; color:#292c29; font-weight:800; }
+.student-consultant-item__details { min-width:0; flex:1; }
+.student-consultant-item__details strong,.student-consultant-item__details span { display:block; overflow-wrap:anywhere; }
+.student-consultant-item__details strong { font-size:13px; }
+.student-consultant-item__details span { margin-top:3px; color:#92968f; font-size:10px; }
+.student-consultant-item__call { min-width:66px; padding:8px 12px; border-radius:9px; background:#202321; color:#fff; text-align:center; font-size:11px; font-weight:700; }
+.student-consultant-empty { margin:0; padding:14px; border-radius:10px; background:#f7f8f5; color:#777b76; font-size:12px; line-height:1.8; }
+.student-consultant-empty.is-error { color:#a02e2e; background:#fff3f3; }
+
+.student-consultation-summary { margin-top:12px; color:#263a2f; font-size:12px; line-height:1.9; }
+.student-consultation-summary p { margin:7px 0; }
+.student-assigned-chat { display:inline-flex; margin:7px 0; padding:8px 12px; border-radius:9px; background:#e8f5ed; color:#176543; font-size:11px; font-weight:800; }

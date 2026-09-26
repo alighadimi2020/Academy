@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
+    <meta name="theme-color" content="#FFFCF5">
+    <title>ثبت‌نام | پایه</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <main class="payeh-login">
+        <div class="payeh-login__background">
+            <span class="payeh-login__shape payeh-login__shape--one"></span>
+            <span class="payeh-login__shape payeh-login__shape--two"></span>
+            <span class="payeh-login__shape payeh-login__shape--three"></span>
+        </div>
+        <div class="payeh-login__container payeh-signup__container">
+            <section class="payeh-login__card">
+                <div class="payeh-login__brand"></div>
+                <header class="payeh-login__heading">
+                    <span class="payeh-login__eyebrow" id="signup-step-label">مرحله ۱ از ۲</span>
+                    <h1 class="payeh-login__title" id="signup-title">ساخت حساب کاربری</h1>
+                    <p class="payeh-login__description" id="signup-description">اطلاعات تحصیلی خود را وارد کنید.</p>
+                </header>
+                <div class="payeh-signup__progress" aria-hidden="true"><span id="signup-progress"></span></div>
+                <form class="payeh-login__form" id="signup-form" novalidate>
+                    <section class="payeh-signup__step" data-step="1">
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="signup-full-name">نام و نام خانوادگی</label>
+                            <input class="payeh-login__input payeh-login__input--plain" id="signup-full-name" name="full_name" type="text" maxlength="100" autocomplete="name" required>
+                            <span class="payeh-login__error" data-error="full_name"></span>
+                        </div>
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="signup-grade">پایه تحصیلی</label>
+                            <select class="payeh-login__input payeh-login__input--plain" id="signup-grade" name="grade" required>
+                                <option value="">پایه تحصیلی را انتخاب کنید</option>
+                                <option value="2">دوم</option><option value="3">سوم</option><option value="4">چهارم</option>
+                                <option value="5">پنجم</option><option value="6">ششم</option><option value="7">هفتم</option>
+                                <option value="8">هشتم</option><option value="9">نهم</option><option value="10">دهم</option>
+                                <option value="11">یازدهم</option><option value="12">دوازدهم</option>
+                                <option value="graduate">فارغ‌التحصیل</option>
+                            </select>
+                            <span class="payeh-login__error" data-error="grade"></span>
+                        </div>
+                        <div class="payeh-login__field" id="signup-major-field" hidden>
+                            <label class="payeh-login__label" for="signup-major">رشته تحصیلی</label>
+                            <select class="payeh-login__input payeh-login__input--plain" id="signup-major" name="major">
+                                <option value="">رشته را انتخاب کنید</option>
+                                <option value="math">ریاضی فیزیک</option><option value="experimental">تجربی</option>
+                                <option value="humanities">انسانی</option><option value="technical">فنی</option>
+                            </select>
+                            <span class="payeh-login__error" data-error="major"></span>
+                        </div>
+                        <button class="payeh-login__submit" type="button" id="signup-next">ادامه</button>
+                    </section>
+                    <section class="payeh-signup__step" data-step="2" hidden>
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="signup-national-id">کد ملی <small>(اختیاری)</small></label>
+                            <input class="payeh-login__input payeh-login__input--plain" id="signup-national-id" name="national_id" type="text" maxlength="20" inputmode="numeric">
+                            <span class="payeh-login__error" data-error="national_id"></span>
+                        </div>
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="signup-phone">شماره موبایل خودتان</label>
+                            <input class="payeh-login__input payeh-login__input--plain" id="signup-phone" name="phone" type="tel" maxlength="11" inputmode="numeric" autocomplete="tel" placeholder="مثلاً ۰۹۱۲۱۲۳۴۵۶۷" required>
+                            <span class="payeh-login__error" data-error="phone"></span>
+                        </div>
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="signup-parent-phone">شماره پدر یا مادر <small>(اختیاری)</small></label>
+                            <input class="payeh-login__input payeh-login__input--plain" id="signup-parent-phone" name="parent_phone" type="tel" maxlength="11" inputmode="numeric" autocomplete="tel-national">
+                            <span class="payeh-login__error" data-error="parent_phone"></span>
+                        </div>
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="signup-password">رمز عبور</label>
+                            <input class="payeh-login__input payeh-login__input--plain" id="signup-password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+                            <span class="payeh-login__error" data-error="password"></span>
+                        </div>
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="signup-password-confirmation">تکرار رمز عبور</label>
+                            <input class="payeh-login__input payeh-login__input--plain" id="signup-password-confirmation" name="password_confirmation" type="password" minlength="8" autocomplete="new-password" required>
+                            <span class="payeh-login__error" data-error="password_confirmation"></span>
+                        </div>
+                        <div class="payeh-signup__actions">
+                            <button class="payeh-login__submit payeh-signup__secondary" type="button" id="signup-back">بازگشت</button>
+                            <button class="payeh-login__submit" type="submit" id="signup-submit">تایید و دریافت کد</button>
+                        </div>
+                    </section>
+                    <section class="payeh-signup__step" data-step="3" hidden>
+                        <div class="payeh-signup__notice">کد تایید برای شماره شما آماده شده است. تا زمان اتصال سامانه پیامکی، کد در ترمینالی که بک‌اند را اجرا کرده‌اید نمایش داده می‌شود.</div>
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="signup-code">کد تایید ۶ رقمی</label>
+                            <input class="payeh-login__input payeh-login__input--plain" id="signup-code" type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required>
+                            <span class="payeh-login__error" data-error="code"></span>
+                        </div>
+                        <button class="payeh-login__submit" type="submit" id="signup-verify">تایید کد و ساخت حساب</button>
+                    </section>
+                    <div class="payeh-login__message" id="signup-message" role="status" aria-live="polite"></div>
+                </form>
+                <div class="payeh-login__divider"><span>یا</span></div>
+                <div class="payeh-login__register"><span>حساب کاربری دارید؟</span><a href="login.html">وارد شوید</a></div>
+                <a href="index.html" class="payeh-login__back"><span>بازگشت به صفحه اصلی</span></a>
+            </section>
+            <p class="payeh-login__copyright">© ۱۴۰۵ - آکادمی مشاوره تحصیلی پایه</p>
+        </div>
+    </main>
+    <script src="js/register.js"></script>
+</body>
+</html>

@@ -674,3 +674,19 @@ img {
         transition: none;
     }
 }
+
+/* Registration form */
+.payeh-signup__container { max-width: 520px; }
+.payeh-signup__progress { height: 5px; overflow: hidden; margin: -8px 0 24px; border-radius: 99px; background: #EEF2F6; }
+.payeh-signup__progress span { display: block; width: 50%; height: 100%; border-radius: inherit; background: var(--payeh-login-primary); transition: width var(--payeh-login-transition); }
+.payeh-login__input--plain { display: block; padding: 0 15px; text-align: right; }
+select.payeh-login__input { appearance: none; background-color: #fff; cursor: pointer; }
+.payeh-signup__actions { display: flex; gap: 10px; }
+.payeh-signup__actions .payeh-login__submit { flex: 1; }
+.payeh-signup__secondary { border: 1px solid var(--payeh-login-border); background: #fff; color: var(--payeh-login-text-secondary); box-shadow: none; }
+.payeh-signup__secondary:hover { background: #F8FAFC; color: var(--payeh-login-text); box-shadow: none; }
+.payeh-signup__notice { margin-bottom: 18px; padding: 12px 14px; border: 1px solid #DBEAFE; border-radius: 12px; background: #EFF6FF; color: #1D4ED8; font-size: 11px; line-height: 1.9; }
+.payeh-login__label small { color: var(--payeh-login-text-muted); font-size: 9px; font-weight: 500; }
+.payeh-signup__step[hidden] { display: none; }
+@media (max-width: 600px) { .payeh-signup__container { max-width: 500px; } }
+.payeh-login__field > .payeh-login__input { height: 51px; }

@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
     <title>پنل مشاور | آکادمی پایه</title>
 
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/consultant.css">
+    <link rel="stylesheet" href="css/consultations.css">
 </head>
 
 <body>
@@ -101,7 +103,7 @@
                 <div class="payeh-consultant__avatar">پ</div>
 
                 <div class="payeh-consultant__account-info">
-                    <strong>آقا پارسا</strong>
+                    <strong id="consultant-account-name">مشاور</strong>
                     <span>مشاور تحصیلی</span>
                 </div>
             </div>
@@ -144,7 +146,7 @@
                 <div class="payeh-consultant__header-avatar">پ</div>
 
                 <div>
-                    <strong>آقا پارسا</strong>
+                    <strong id="consultant-header-name">مشاور</strong>
                     <span>مشاور تحصیلی</span>
                 </div>
             </div>
@@ -232,12 +234,46 @@
 
                         <div>
                             <span>مقالات من</span>
-                            <strong>۰</strong>
+                            <strong id="consultant-article-count">۰</strong>
                         </div>
                     </div>
 
                 </div>
 
+
+                <div class="payeh-consultant__section consultant-articles-panel" id="consultant-articles">
+                    <div class="payeh-consultant__section-header">
+                        <div><span>مجله آنلاین</span><h3>مقاله‌های من</h3></div>
+                        <a href="blog-editor.html" class="consultant-write-article">نوشتن مقاله جدید</a>
+                    </div>
+                    <p class="consultant-article-hint">مقاله‌های ارسالی پس از تأیید مدیر مجموعه یا ادمین در مجله منتشر می‌شوند.</p>
+                    <div id="consultant-article-list" aria-live="polite"><p>در حال دریافت مقاله‌ها…</p></div>
+                </div>
+
+                <div class="payeh-consultant__section consultant-profile-panel" id="consultant-profile-settings">
+                    <div class="payeh-consultant__section-header"><div><span>اطلاعات قابل نمایش به دانش‌آموز</span><h3>رزومه و ظرفیت من</h3></div></div>
+                    <p class="consultant-article-hint">رزومه، رشته دانشگاهی، دانشگاه فعلی و ظرفیت آزاد شما در فهرست مشاوران نمایش داده می‌شود. قیمت پلن‌ها را مدیر مجموعه تعیین می‌کند.</p>
+                    <div class="consultant-profile-stats">تعداد دانش‌آموزان تخصیص‌یافته: <strong id="consultant-assigned-count">۰</strong></div>
+                    <form id="consultant-profile-form" class="consultant-profile-form">
+                        <label>نام نمایشی<input name="full_name" maxlength="100" required></label>
+                        <label>رزومه و معرفی<textarea name="bio" maxlength="3000" rows="5" placeholder="سوابق، روش مشاوره و زمینه تخصصی خود را بنویسید"></textarea></label>
+                        <div class="consultant-profile-grid">
+                            <label>سابقه (سال)<input name="experience_years" type="number" min="0" max="60" required></label>
+                            <label>ظرفیت آزاد دانش‌آموز<input name="available_slots" type="number" min="0" max="500" required></label>
+                            <label>رشته دانشگاهی<input name="university_major" maxlength="120"></label>
+                            <label>دانشگاه فعلی<input name="current_university" maxlength="150"></label>
+                        </div>
+                        <p id="consultant-profile-message" class="consultant-article-hint" role="status" aria-live="polite"></p>
+                        <button class="consultant-write-article" type="submit">ذخیره رزومه و ظرفیت</button>
+                    </form>
+                    <div class="consultant-my-prices"><strong>قیمت پلن‌ها</strong><span id="consultant-plan-prices">در حال دریافت…</span></div>
+                </div>
+
+                <div class="payeh-consultant__section" id="consultant-assigned-students">
+                    <div class="payeh-consultant__section-header"><div><span>پس از تأیید مدیر</span><h3>دانش‌آموزان اختصاص‌یافته</h3></div></div>
+                    <p class="consultant-article-hint">فقط اطلاعات دانش‌آموزانی را می‌بینید که مدیر به شما تخصیص داده است.</p>
+                    <div id="consultant-assigned-list" aria-live="polite"><p>در حال دریافت فهرست…</p></div>
+                </div>
 
                 <div class="payeh-consultant__section">
 

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
+  <title>گفت‌وگوی مشاوره | آکادمی پایه</title>
+  <link rel="stylesheet" href="css/fonts.css"><link rel="stylesheet" href="css/blog.css"><link rel="stylesheet" href="css/consultations.css">
+</head>
+<body class="blog-app">
+  <header class="blog-topbar"><a class="blog-brand" href="index.html">آکادمی <strong>پایه</strong></a><nav><a id="chat-back-link" href="student.html">بازگشت به پنل</a></nav></header>
+  <main class="consultation-shell"><section class="consultation-panel chat-panel"><div class="blog-intro"><span class="blog-eyebrow">گفت‌وگوی خصوصی</span><h1 id="chat-title">گفت‌وگوی مشاوره</h1><p>این گفت‌وگو فقط برای دانش‌آموز و مشاور تخصیص‌یافته قابل مشاهده است.</p><p id="chat-limit" class="consultation-message"></p></div>
+    <div id="chat-messages" class="chat-messages" aria-live="polite"><p>در حال دریافت پیام‌ها…</p></div>
+    <form id="chat-form" class="chat-form"><label for="chat-body" class="visually-hidden">متن پیام</label><textarea id="chat-body" maxlength="4000" required placeholder="پیام خود را بنویسید…"></textarea><button id="chat-send" type="submit">ارسال پیام</button><p id="chat-error" class="consultation-message" role="status" aria-live="polite"></p></form>
+  </section></main><script src="js/consultation-chat.js"></script>
+</body>
+</html>
