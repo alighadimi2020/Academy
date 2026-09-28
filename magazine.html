@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
 
     <title>مجله آنلاین پایه</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/magazine.css">
 </head>
 
@@ -34,12 +35,13 @@
                 <div class="payeh-magazine-search">
 
                     <input
-                        type="text"
+                        id="magazine-search"
+                        type="search"
                         placeholder="جستجو در مقالات..."
                         aria-label="جستجو در مقالات"
                     >
 
-                    <button type="button" aria-label="جستجو">
+                    <button id="magazine-search-button" type="button" aria-label="جستجو">
 
                         <svg viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="6"></circle>
@@ -56,174 +58,21 @@
         </section>
 
 <section class="payeh-magazine-latest" id="latest-articles">
-
     <div class="payeh-magazine-container">
-
         <div class="payeh-magazine-section-head">
-
             <div class="payeh-magazine-section-title">
-
-
-
-                <h2>
-                     مقالات
-                </h2>
-
+                <span>مجله پایه</span>
+                <h2>مقاله‌ها</h2>
             </div>
-
-
-
+            <div class="payeh-magazine-actions">
+                <a id="magazine-write-link" class="payeh-magazine-view-all" href="blog-editor.html" hidden>نوشتن مقاله</a>
+                <a id="magazine-review-link" class="payeh-magazine-view-all" href="blog-review.html" hidden>مقاله‌های در انتظار تأیید</a>
+            </div>
         </div>
-
-
-        <div class="payeh-magazine-articles">
-
-
-            <a href="article.html?article=field-selection"
-               class="payeh-magazine-article">
-
-                <div class="payeh-magazine-article__image">
-
-                    <img
-                        src="assets/images/magazine-3.jpg"
-                        alt="چطور رشته مناسب خود را انتخاب کنیم؟"
-                        loading="lazy"
-                    >
-
-                </div>
-
-                <div class="payeh-magazine-article__body">
-
-                    <span class="payeh-magazine-article__category">
-                        تحقیقات تحصیلی
-                    </span>
-
-                    <h3>
-                        چطور رشته مناسب خود را انتخاب کنیم؟
-                    </h3>
-
-                    <p>
-                        راهنمایی برای انتخاب آگاهانه‌تر مسیر تحصیلی و شناخت بهتر رشته‌ها.
-                    </p>
-
-                    <div class="payeh-magazine-article__meta">
-
-                        <span>
-                            ۸ دقیقه مطالعه
-                        </span>
-
-                        <span class="payeh-magazine-article__arrow">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M5 12h14"></path>
-                                <path d="m13 6 6 6-6 6"></path>
-                            </svg>
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-
-            <a href="article.html?article=study-planning"
-               class="payeh-magazine-article">
-
-                <div class="payeh-magazine-article__image">
-
-                    <img
-                        src="assets/images/magazine-3.jpg"
-                        alt="راهنمای کامل درسی برای کنکور"
-                        loading="lazy"
-                    >
-
-                </div>
-
-                <div class="payeh-magazine-article__body">
-
-                    <span class="payeh-magazine-article__category">
-                        برنامه‌ریزی
-                    </span>
-
-                    <h3>
-                        راهنمای کامل درسی برای کنکور
-                    </h3>
-
-                    <p>
-                        نکاتی کاربردی برای ساختن یک برنامه منظم و قابل اجرا در طول مسیر.
-                    </p>
-
-                    <div class="payeh-magazine-article__meta">
-
-                        <span>
-                            ۶ دقیقه مطالعه
-                        </span>
-
-                        <span class="payeh-magazine-article__arrow">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M5 12h14"></path>
-                                <path d="m13 6 6 6-6 6"></path>
-                            </svg>
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-
-            <a href="article.html?article=common-mistakes"
-               class="payeh-magazine-article">
-
-                <div class="payeh-magazine-article__image">
-
-                    <img
-                        src="assets/images/magazine-3.jpg"
-                        alt="اشتباهات رایج در مسیر تحصیلی"
-                        loading="lazy"
-                    >
-
-                </div>
-
-                <div class="payeh-magazine-article__body">
-
-                    <span class="payeh-magazine-article__category">
-                        مشاوره
-                    </span>
-
-                    <h3>
-                        اشتباهات رایج در مسیر تحصیلی
-                    </h3>
-
-                    <p>
-                        بررسی اشتباهاتی که ممکن است مسیر مطالعه و تصمیم‌گیری تحصیلی را دشوار کنند.
-                    </p>
-
-                    <div class="payeh-magazine-article__meta">
-
-                        <span>
-                            ۵ دقیقه مطالعه
-                        </span>
-
-                        <span class="payeh-magazine-article__arrow">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M5 12h14"></path>
-                                <path d="m13 6 6 6-6 6"></path>
-                            </svg>
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-
+        <div class="payeh-magazine-articles" id="magazine-articles" aria-live="polite">
+            <p class="magazine-loading">در حال بارگذاری مقاله‌ها…</p>
         </div>
-
     </div>
-
 </section>
 <section class="payeh-magazine-guarantee">
 
@@ -309,6 +158,7 @@
     </main>
 
     <script src="js/main.js"></script>
+    <script src="js/magazine.js"></script>
 
 </body>
 

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
 
     <meta name="theme-color" content="#FFFCF5">
     <meta name="description" content="پنل مدیریت آکادمی پایه">
@@ -62,6 +63,11 @@
                 <span>دانش‌آموزان</span>
             </a>
 
+            <a href="consultation-management.html" class="payeh-manager__nav-item">
+                <span class="payeh-manager__nav-icon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 9.7 9.7 0 0 1-4-.8L3 21l1.8-4.3A8.1 8.1 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"/><path d="M8 12h8M12 8v8"/></svg></span>
+                <span>درخواست‌ها و قیمت مشاوره</span>
+            </a>
+
             <a href="#conversations" class="payeh-manager__nav-item" data-page="conversations">
                 <span class="payeh-manager__nav-icon">
                     <svg viewBox="0 0 24 24">
@@ -81,6 +87,10 @@
                     </svg>
                 </span>
                 <span>مقالات</span>
+            </a>
+            <a href="blog-review.html" class="payeh-manager__nav-item manager-review-link">
+                <span class="payeh-manager__nav-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+                <span>بررسی و تأیید مقاله‌ها</span>
             </a>
 
             <div class="payeh-manager__nav-divider"></div>
@@ -164,7 +174,7 @@
                         </div>
                         <div>
                             <span>مشاوران</span>
-                            <strong>۰</strong>
+                            <strong id="manager-consultant-count">۰</strong>
                         </div>
                     </article>
 
@@ -175,7 +185,7 @@
                         </div>
                         <div>
                             <span>دانش‌آموزان</span>
-                            <strong>۰</strong>
+                            <strong id="manager-student-count">۰</strong>
                         </div>
                     </article>
 
@@ -254,17 +264,13 @@
             </section>
 
             <section class="manager-page" id="page-consultants">
-                <div class="manager-placeholder">
-                    <span>مدیریت مشاوران</span>
-                    <h2>مشاوران</h2>
-                </div>
+                <div class="manager-page__intro"><div><span class="manager-page__eyebrow">مدیریت کاربران</span><h2>مشاوران</h2><p>فهرست حساب‌های مشاور مجموعه</p></div></div>
+                <div class="manager-user-list-panel"><label class="manager-user-search"><span class="visually-hidden">جست‌وجوی مشاوران</span><input id="consultant-search" type="search" maxlength="100" placeholder="جست‌وجو با نام یا شماره موبایل"></label><p id="consultant-list-message" class="manager-list-message" role="status" aria-live="polite">در حال دریافت مشاوران…</p><div id="consultant-user-list" class="manager-user-list"></div></div>
             </section>
 
             <section class="manager-page" id="page-students">
-                <div class="manager-placeholder">
-                    <span>مدیریت دانش‌آموزان</span>
-                    <h2>دانش‌آموزان</h2>
-                </div>
+                <div class="manager-page__intro"><div><span class="manager-page__eyebrow">مدیریت کاربران</span><h2>دانش‌آموزان</h2><p>فهرست حساب‌های دانش‌آموزی مجموعه</p></div></div>
+                <div class="manager-user-list-panel"><label class="manager-user-search"><span class="visually-hidden">جست‌وجوی دانش‌آموزان</span><input id="student-search" type="search" maxlength="100" placeholder="جست‌وجو با نام یا شماره موبایل"></label><p id="student-list-message" class="manager-list-message" role="status" aria-live="polite">در حال دریافت دانش‌آموزان…</p><div id="student-user-list" class="manager-user-list"></div></div>
             </section>
 
             <section class="manager-page" id="page-conversations">

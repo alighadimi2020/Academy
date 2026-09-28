@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
 
     <title>پنل دانش‌آموز | آکادمی پایه</title>
 
@@ -134,7 +135,7 @@
                 </div>
 
                 <div class="payeh-student__account-info">
-                    <strong>طاها موسوی</strong>
+                    <strong id="student-sidebar-name">دانش‌آموز</strong>
                     <span>دانش‌آموز</span>
                 </div>
 
@@ -184,9 +185,7 @@
                         داشبورد
                     </h1>
 
-                    <span>
-                        پنل شخصی طاها موسوی
-                    </span>
+                    <span id="student-header-subtitle">پنل شخصی دانش‌آموز</span>
 
                 </div>
 
@@ -200,7 +199,7 @@
                 </div>
 
                 <div>
-                    <strong>طاها موسوی</strong>
+                    <strong id="student-account-name">دانش‌آموز</strong>
                     <span>دانش‌آموز</span>
                 </div>
 
@@ -222,9 +221,7 @@
                             پنل شخصی من
                         </span>
 
-                        <h2>
-                            سلام طاها 👋
-                        </h2>
+                        <h2 id="student-greeting">سلام 👋</h2>
 
                         <p>
                             امروز هم یک قدم کوچک برای رسیدن به هدفت بردار.
@@ -405,58 +402,13 @@
                     </div>
 
 
-                    <div class="payeh-student__card payeh-student__consultant-card">
-
+                    <div class="payeh-student__card payeh-student__consultant-card" id="student-consultant-panel">
                         <div class="payeh-student__card-header">
-
-                            <div>
-                                <span>ارتباط مستقیم</span>
-                                <h3>مشاور من</h3>
-                            </div>
-
-                            <div class="payeh-student__online">
-                                <span></span>
-                                آنلاین
-                            </div>
-
+                            <div><span>ارتباط مستقیم</span><h3>مشاوران مجموعه</h3></div>
                         </div>
-
-
-                        <div class="payeh-student__consultant">
-
-                            <div class="payeh-student__consultant-avatar">
-                                پ
-                            </div>
-
-                            <div class="payeh-student__consultant-info">
-
-                                <strong>
-                                    آقا پارسا
-                                </strong>
-
-                                <span>
-                                    مشاور تحصیلی
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <button
-                            class="payeh-student__chat-button"
-                            data-page="consultant"
-                            type="button">
-
-                            گفتگو با مشاور
-
-                            <svg viewBox="0 0 24 24">
-                                <path d="M5 12h14"></path>
-                                <path d="m13 6 6 6-6 6"></path>
-                            </svg>
-
-                        </button>
-
+                        <p class="student-consultant-intro">رزومه و هزینهٔ پلن‌های مشاوران را ببینید و برای حداقل دو مشاورِ دارای ظرفیت درخواست ثبت کنید.</p>
+                        <div id="student-consultation-summary" class="student-consultation-summary" aria-live="polite"></div>
+                        <a id="student-consultation-link" class="student-consultant-item__call student-consultation-link" href="consultations.html">مشاهده مشاوران و درخواست مشاوره</a>
                     </div>
 
                 </section>

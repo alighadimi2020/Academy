@@ -1,0 +1,80 @@
+:root { --consultation-ink:#173f68; --consultation-blue:#0b55a9; --consultation-line:#e5eaf0; --consultation-muted:#718094; }
+.consultation-shell { width:min(1120px,calc(100% - 28px)); margin:28px auto 70px; }
+.consultation-panel { padding:clamp(20px,4vw,38px); border:1px solid rgba(23,63,104,.08); border-radius:22px; background:#fff; box-shadow:0 12px 34px rgba(25,58,92,.07); }
+.consultation-panel h2,.consultation-history h2 { margin:24px 0 12px; font-size:20px; }
+.consultation-plans { margin:20px 0; padding:0; border:0; }
+.consultation-plans legend { margin-bottom:10px; font-size:15px; font-weight:800; }
+.consultation-plan-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.consultation-plan-option { position:relative; display:flex; align-items:center; gap:10px; min-height:62px; padding:14px; border:1px solid var(--consultation-line); border-radius:13px; background:#fbfcfe; cursor:pointer; font-weight:800; }
+.consultation-plan-option:has(input:checked) { border-color:var(--consultation-blue); background:#f1f7ff; box-shadow:0 0 0 2px #0b55a91a; }
+.consultation-plan-option input { accent-color:var(--consultation-blue); }
+.consultation-list-head { margin:24px 0 12px; }
+.consultation-list-head h2 { margin:0 0 5px; }
+.consultation-list-head p { margin:0; color:var(--consultation-muted); font-size:12px; }
+.consultation-consultants { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr)); gap:14px; }
+.consultant-choice { display:flex; flex-direction:column; gap:12px; padding:18px; border:1px solid var(--consultation-line); border-radius:16px; background:#fff; }
+.consultant-choice.is-unavailable { background:#fafafa; opacity:.72; }
+.consultant-choice__top { display:flex; align-items:center; gap:10px; }
+.consultant-choice__top input { width:19px; height:19px; accent-color:var(--consultation-blue); }
+.consultant-choice__top h3 { margin:0; font-size:16px; }
+.consultant-choice__experience { margin-right:auto; padding:5px 9px; border-radius:999px; background:#f1f7ff; color:var(--consultation-blue); font-size:10px; white-space:nowrap; }
+.consultant-choice__bio { max-height:112px; overflow:auto; margin:0; color:#53667a; font-size:12px; line-height:2; white-space:pre-wrap; }
+.consultant-choice__meta { display:grid; gap:6px; color:#566579; font-size:11px; }
+.consultant-choice__availability { color:#19724f; font-weight:700; }
+.consultant-choice__availability.is-full { color:#a02e2e; }
+.consultant-choice__prices { display:grid; gap:5px; padding-top:10px; border-top:1px solid var(--consultation-line); font-size:11px; }
+.consultant-choice__prices strong { font-size:13px; color:var(--consultation-ink); }
+.consultant-submit { width:100%; min-height:48px; margin-top:18px; border:0; border-radius:12px; background:var(--consultation-ink); color:#fff; font:inherit; font-weight:800; cursor:pointer; }
+.consultant-submit:disabled { opacity:.5; cursor:not-allowed; }
+.consultation-message { min-height:22px; color:var(--consultation-muted); font-size:12px; line-height:1.8; }
+.consultation-message.is-error { color:#b42318; }
+.consultation-message.is-success { color:#16734e; }
+.consultation-request-status { margin:16px 0; padding:17px; border:1px solid #f1dfaa; border-radius:14px; background:#fffaf0; }
+.consultation-request-status.is-approved { border-color:#c9ead7; background:#f1fbf5; }
+.consultation-request-status.is-rejected { border-color:#f0cccc; background:#fff5f5; }
+.consultation-request-status h2 { margin:0 0 7px; font-size:17px; }
+.consultation-request-status p { margin:5px 0; color:#5e6b7b; font-size:12px; line-height:1.8; }
+.consultation-request-status__choices { display:grid; gap:4px; margin:10px 0; color:#53667a; font-size:12px; }
+.consultation-request-status a { color:var(--consultation-blue); font-weight:800; }
+.consultation-history { margin-top:20px; }
+.consultation-history-item { padding:12px 0; border-top:1px solid var(--consultation-line); font-size:12px; }
+.consultation-manager-list,.consultation-pending-list { display:grid; gap:14px; }
+.consultation-manager-card { padding:18px; border:1px solid var(--consultation-line); border-radius:15px; background:#fff; }
+.consultation-manager-card h3 { margin:0 0 5px; font-size:16px; }
+.consultation-manager-card__meta { color:var(--consultation-muted); font-size:11px; line-height:1.9; }
+.consultation-prices-form { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:14px; }
+.consultation-prices-form label { display:grid; gap:5px; color:#58677a; font-size:11px; }
+.consultation-prices-form input { width:100%; min-height:42px; padding:8px; border:1px solid var(--consultation-line); border-radius:9px; font:inherit; }
+.consultation-small-button { min-height:40px; margin-top:10px; padding:8px 14px; border:0; border-radius:9px; background:var(--consultation-ink); color:#fff; font:inherit; font-size:12px; font-weight:700; cursor:pointer; }
+.consultation-request-card { margin:12px 0; padding:18px; border:1px solid var(--consultation-line); border-radius:15px; background:#fff; }
+.consultation-request-card h3 { margin:0 0 8px; }
+.consultation-request-card p { color:#5f6e80; font-size:12px; line-height:1.9; }
+.consultation-request-card__actions { display:flex; flex-wrap:wrap; align-items:end; gap:10px; margin-top:15px; }
+.consultation-request-card select,.consultation-request-card textarea { min-height:42px; padding:8px; border:1px solid var(--consultation-line); border-radius:9px; font:inherit; }
+.consultation-request-card textarea { width:100%; min-height:72px; }
+.consultation-request-card button { min-height:42px; padding:8px 13px; border:0; border-radius:9px; background:var(--consultation-ink); color:#fff; font:inherit; font-size:12px; font-weight:700; cursor:pointer; }
+.consultation-request-card button.reject { background:#fff0f0; color:#a02e2e; }
+.chat-panel { max-width:850px; margin:auto; }
+.chat-messages { height:min(58vh,600px); min-height:260px; overflow:auto; display:flex; flex-direction:column; gap:10px; padding:15px; border:1px solid var(--consultation-line); border-radius:15px; background:#f8fafc; }
+.chat-message { max-width:min(82%,600px); align-self:flex-start; padding:10px 13px; border:1px solid #e4e9ef; border-radius:13px 13px 13px 3px; background:#fff; }
+.chat-message.is-mine { align-self:flex-end; border-color:#d7e7f7; border-radius:13px 13px 3px 13px; background:#edf6ff; }
+.chat-message__name { display:block; margin-bottom:4px; color:var(--consultation-blue); font-size:10px; font-weight:800; }
+.chat-message__body { margin:0; color:#31445a; font-size:13px; line-height:1.9; white-space:pre-wrap; overflow-wrap:anywhere; }
+.chat-message__time { display:block; margin-top:4px; color:#8894a3; font-size:9px; }
+.chat-form { display:grid; grid-template-columns:1fr auto; gap:10px; margin-top:12px; }
+.chat-form textarea { min-height:52px; max-height:160px; resize:vertical; padding:12px; border:1px solid var(--consultation-line); border-radius:12px; font:inherit; }
+.chat-form button { min-width:95px; padding:10px; border:0; border-radius:12px; background:var(--consultation-ink); color:#fff; font:inherit; font-weight:800; cursor:pointer; }
+.chat-form button:disabled { opacity:.6; }
+.chat-form .consultation-message { grid-column:1/-1; margin:0; }
+.student-consultation-link { display:flex; width:100%; margin-top:15px; }
+.consultant-profile-panel textarea,.consultant-profile-panel input { width:100%; min-height:42px; padding:9px 11px; border:1px solid #e4e8e2; border-radius:9px; font:inherit; font-size:12px; }
+.consultant-profile-panel textarea { min-height:110px; resize:vertical; line-height:1.9; }
+.consultant-profile-form > label,.consultant-profile-grid label { display:grid; gap:6px; margin:10px 0; color:#555b55; font-size:12px; font-weight:700; }
+.consultant-profile-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 14px; }
+.consultant-profile-stats,.consultant-my-prices { margin:12px 0; padding:12px; border-radius:10px; background:#f5f7f4; color:#555b55; font-size:12px; }
+.consultant-my-prices span { display:block; margin-top:7px; line-height:2; }
+.consultant-assigned-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 0; border-top:1px solid #e9ebe7; }
+.consultant-assigned-row strong,.consultant-assigned-row span { display:block; }
+.consultant-assigned-row span { margin-top:4px; color:#777; font-size:11px; }
+.consultant-assigned-row a { color:#135da3; font-weight:700; font-size:12px; }
+@media(max-width:650px) { .consultation-plan-options,.consultation-prices-form,.consultant-profile-grid { grid-template-columns:1fr; } .consultation-shell { width:calc(100% - 18px); margin-top:14px; } .consultation-panel { padding:19px 14px; border-radius:17px; } .chat-form { grid-template-columns:1fr; } .chat-form button { min-height:44px; } .chat-message { max-width:95%; } }

@@ -1,80 +1,99 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("payeh-login-form");
+    if (!form) return;
+
     const phoneInput = document.getElementById("payeh-login-phone");
     const passwordInput = document.getElementById("payeh-login-password");
     const passwordToggle = document.getElementById("payeh-login-password-toggle");
     const phoneError = document.getElementById("payeh-login-phone-error");
     const passwordError = document.getElementById("payeh-login-password-error");
     const message = document.getElementById("payeh-login-message");
-
-    if (!form) {
-        return;
-    }
+    const apiBase = `${window.location.origin}/api/auth/`;
+    const digits = (value) => value
+        .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+        .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
 
     passwordToggle?.addEventListener("click", () => {
-        const isPassword = passwordInput.type === "password";
-
-        passwordInput.type = isPassword ? "text" : "password";
-        passwordToggle.classList.toggle("is-visible", isPassword);
-
-        passwordToggle.setAttribute(
-            "aria-label",
-            isPassword ? "مخفی کردن رمز عبور" : "نمایش رمز عبور"
-        );
+        const visible = passwordInput.type === "password";
+        passwordInput.type = visible ? "text" : "password";
+        passwordToggle.classList.toggle("is-visible", visible);
+        passwordToggle.setAttribute("aria-label", visible ? "مخفی کردن رمز عبور" : "نمایش رمز عبور");
     });
 
     phoneInput?.addEventListener("input", () => {
-        phoneInput.value = phoneInput.value.replace(/[^0-9۰-۹]/g, "");
+        phoneInput.value = phoneInput.value.replace(/[^0-9۰-۹٠-٩]/g, "");
     });
 
     const clearErrors = () => {
         phoneError.textContent = "";
         passwordError.textContent = "";
-
         phoneInput.closest(".payeh-login__field")?.classList.remove("is-error");
         passwordInput.closest(".payeh-login__field")?.classList.remove("is-error");
-
         message.textContent = "";
         message.className = "payeh-login__message";
     };
 
-    const normalizeDigits = (value) => {
-        return value
-            .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
-            .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
-    };
-
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
         event.preventDefault();
-
         clearErrors();
+        const phone = digits(phoneInput.value.trim());
+        const password = passwordInput.value;
+        let valid = true;
 
-        const phone = normalizeDigits(phoneInput.value.trim());
-        const password = passwordInput.value.trim();
-
-        let isValid = true;
-
-        if (!phone) {
-            phoneError.textContent = "شماره موبایل را وارد کنید.";
+        if (!/^09\d{9}$/.test(phone)) {
+            phoneError.textContent = "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود.";
             phoneInput.closest(".payeh-login__field")?.classList.add("is-error");
-            isValid = false;
-        } else if (!/^09\d{9}$/.test(phone)) {
-            phoneError.textContent = "شماره موبایل واردشده صحیح نیست.";
-            phoneInput.closest(".payeh-login__field")?.classList.add("is-error");
-            isValid = false;
+            valid = false;
         }
-
         if (!password) {
             passwordError.textContent = "رمز عبور را وارد کنید.";
             passwordInput.closest(".payeh-login__field")?.classList.add("is-error");
-            isValid = false;
+            valid = false;
         }
+        if (!valid) return;
 
-        if (!isValid) {
-            return;
+        const button = form.querySelector('[type="submit"]');
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.classList.add("is-loading");
+        button.textContent = "در حال ورود...";
+
+        try {
+            const csrfResponse = await fetch(`${apiBase}csrf/`, { credentials: "include" });
+            const csrfData = await csrfResponse.json();
+            const response = await fetch(`${apiBase}login/`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfData.csrfToken,
+                },
+                body: JSON.stringify({
+                    phone,
+                    password,
+                    remember: document.getElementById("payeh-login-remember")?.checked || false,
+                }),
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.detail || "ورود انجام نشد.");
+
+            message.textContent = result.detail;
+            message.classList.add("is-success");
+            const destinations = {
+                student: "student.html",
+                consultant: "consultant.html",
+                instructor: "student.html",
+                admin: "manager.html",
+                manager: "manager.html",
+            };
+            window.location.assign(destinations[result.role] || "index.html");
+        } catch (requestError) {
+            message.textContent = requestError.message || "ارتباط با سرور برقرار نشد.";
+            message.classList.add("is-error");
+        } finally {
+            button.disabled = false;
+            button.classList.remove("is-loading");
+            button.textContent = originalText;
         }
-
-        message.textContent = "اطلاعات برای ارسال به سامانه آماده است.";
-        message.classList.add("is-success");
     });
-}); 
+});

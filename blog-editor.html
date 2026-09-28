@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
+    <title>نوشتن مقاله | مجله پایه</title>
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/magazine.css">
+    <link rel="stylesheet" href="css/blog.css">
+</head>
+<body class="blog-app">
+    <header class="blog-topbar">
+        <a class="blog-brand" href="magazine.html">مجله آنلاین <strong>پایه</strong></a>
+        <nav><a href="magazine.html">مشاهده مجله</a><a href="blog-review.html" id="review-link" hidden>بررسی نوشته‌ها</a></nav>
+    </header>
+    <main class="blog-shell">
+        <a class="blog-back" href="magazine.html">← بازگشت به مجله</a>
+        <section class="blog-panel">
+            <div class="blog-intro">
+                <span class="blog-eyebrow">انتشار دانش و تجربه</span>
+                <h1>نوشتن مقاله</h1>
+                <p>مقاله مشاور پس از تأیید مدیر مجموعه یا ادمین سایت در مجله نمایش داده می‌شود.</p>
+            </div>
+            <div class="blog-reading-badge">زمان مطالعه تقریبی: <strong id="reading-time">۱ دقیقه</strong></div>
+            <form id="blog-form" novalidate>
+                <label class="blog-field"><span>عنوان مقاله</span><input name="title" maxlength="180" required placeholder="عنوان روشن و کوتاه بنویسید"></label>
+                <label class="blog-field"><span>خلاصه مقاله</span><textarea name="summary" maxlength="500" rows="3" required placeholder="خلاصه‌ای که در کارت مجله دیده می‌شود"></textarea><small>حداکثر ۵۰۰ کاراکتر</small></label>
+                <label class="blog-field"><span>دسته‌بندی</span><select name="category"><option value="">بدون دسته‌بندی</option><option>برنامه‌ریزی</option><option>انتخاب رشته</option><option>مشاوره تحصیلی</option><option>آزمون و مطالعه</option><option>سایر</option></select></label>
+                <label class="blog-field"><span>لینک ویدیوی آپارات <small>(اختیاری)</small></span><input name="video_url" type="url" maxlength="500" placeholder="https://www.aparat.com/v/شناسه"><small>لینک عمومی ویدیو را وارد کنید؛ فایل ویدیو بارگذاری نمی‌شود.</small></label>
+                <div class="blog-field">
+                    <span>تصاویر مقاله <small>(حداکثر ۱۰ تصویر، هر تصویر تا ۴ مگابایت؛ جایگاه هر تصویر را جداگانه انتخاب کنید)</small></span>
+                    <label class="blog-file-picker">انتخاب تصویرها<input id="blog-images" name="images" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
+                    <div id="image-preview" class="blog-image-preview" aria-live="polite"></div>
+                </div>
+                <div class="blog-sections-head"><div><h2>بخش‌های مقاله</h2><p>برای هر بخش یک تیتر و متن بنویسید؛ فهرست لینک‌دار به‌صورت خودکار ساخته می‌شود.</p></div><button id="add-section" type="button" class="blog-button blog-button--light">افزودن بخش</button></div>
+                <div id="blog-sections" class="blog-sections"></div>
+                <div id="blog-message" class="blog-message" role="status" aria-live="polite"></div>
+                <button id="submit-blog" class="blog-button blog-button--primary" type="submit">ثبت مقاله</button>
+            </form>
+        </section>
+        <section class="blog-panel blog-my-posts"><h2>نوشته‌های من</h2><div id="my-posts"><p class="blog-muted">در حال دریافت نوشته‌ها…</p></div></section>
+    </main>
+    <script src="js/blog-editor.js"></script>
+</body>
+</html>
