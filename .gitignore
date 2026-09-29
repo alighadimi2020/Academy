@@ -1,0 +1,38 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environments and generated files
+venv/
+.venv/
+backend/venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django runtime and generated files
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+*.log
+
+# Database files and exports
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql
+*.sql.gz
+*.bak
+
+# Private keys, certificates, and credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+credentials.json
+secrets.json
