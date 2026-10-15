@@ -43,7 +43,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             addField("شماره موبایل", user.phone, true);
             if (isStudent) { addField("پایه تحصیلی", user.grade_label); addField("رشته", user.major_label); addField("شماره والد", user.parent_phone, true); }
             else if (user.date_joined) addField("تاریخ عضویت", new Date(user.date_joined).toLocaleDateString("fa-IR"));
-            card.append(fields); target.append(card);
+            card.append(fields);
+            if (!isStudent) {
+                const actionRow = document.createElement("div");
+                actionRow.style.cssText = "margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: flex-end;";
+                const resetBtn = document.createElement("button");
+                resetBtn.type = "button";
+                resetBtn.style.cssText = "background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px;";
+                resetBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>تنظیم مجدد رمز عبور</span>
+                `;
+                resetBtn.onclick = () => openResetPasswordModal(user);
+                actionRow.append(resetBtn);
+                card.append(actionRow);
+            }
+            target.append(card);
         });
     };
 
@@ -222,27 +237,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </svg>
                     <span>تأیید و ارتقا به مشاور</span>
                 `;
-                approveBtn.onclick = async () => {
-                    if (!confirm(`آیا از تأیید مشاور «${app.full_name}» و ارتقای نقش او به مشاور اطمینان دارید؟`)) return;
-                    approveBtn.disabled = true;
-                    try {
-                        const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
-                        const res = await fetch(`/api/consultations/manager/applications/${app.id}/decision/`, {
-                            method: "POST",
-                            credentials: "same-origin",
-                            headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
-                            body: JSON.stringify({ action: "approve", decision_note: noteInput.value.trim() })
-                        });
-                        const rData = await res.json();
-                        if (!res.ok) throw new Error(rData.detail || "تأیید انجام نشد.");
-                        alert(rData.detail || "مشاور تأیید شد.");
-                        await loadConsultantApplications();
-                        await loadUsers("consultant");
-                    } catch (e) {
-                        alert(e.message);
-                    } finally {
-                        approveBtn.disabled = false;
-                    }
+                approveBtn.onclick = () => {
+                    openApproveModal(app);
                 };
 
                 const rejectBtn = document.createElement("button");
@@ -404,12 +400,244 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (window.innerWidth <= 800 && managerSidebar?.classList.contains("is-open") && !managerSidebar.contains(event.target) && !managerMenuButton?.contains(event.target)) managerSidebar.classList.remove("is-open");
     });
 
+    const openModal = (id) => {
+        const m = document.getElementById(id);
+        if (m) m.style.display = "flex";
+    };
+    const closeModal = (id) => {
+        const m = document.getElementById(id);
+        if (m) m.style.display = "none";
+    };
+    document.querySelectorAll(".modal-close-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const modalId = btn.dataset.modal;
+            if (modalId) closeModal(modalId);
+        });
+    });
+
+    const generateRandomPassword = () => {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+        let pass = "Paye@";
+        for (let i = 0; i < 5; i++) {
+            pass += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return pass;
+    };
+
+    let latestCredentials = null;
+    const showCredentialsModal = (creds) => {
+        latestCredentials = creds;
+        document.getElementById("show-creds-fullname").textContent = creds.full_name || "مشاور";
+        document.getElementById("show-creds-phone").textContent = creds.phone;
+        document.getElementById("show-creds-password").textContent = creds.password;
+        const copyBtnText = document.getElementById("btn-copy-creds-text");
+        if (copyBtnText) copyBtnText.textContent = "کپی متن کامل پیام برای مشاور";
+        openModal("modal-show-creds");
+    };
+
+    document.getElementById("btn-copy-creds")?.addEventListener("click", () => {
+        if (!latestCredentials) return;
+        const text = `سلام ${latestCredentials.full_name} گرامی،\nحساب کاربری شما در سامانه پایه آکادمی فعال شد.\n\nاطلاعات ورود به پنل مشاور:\nنام کاربری (موبایل): ${latestCredentials.phone}\nرمز عبور: ${latestCredentials.password}\nآدرس ورود: https://paye.academy/login.html\n\n(پس از ورود می‌توانید در صورت تمایل رمز عبور خود را تغییر دهید.)`;
+        navigator.clipboard.writeText(text).then(() => {
+            const copyBtnText = document.getElementById("btn-copy-creds-text");
+            if (copyBtnText) copyBtnText.textContent = "✓ اطلاعات با موفقیت کپی شد!";
+            setTimeout(() => {
+                if (copyBtnText) copyBtnText.textContent = "کپی متن کامل پیام برای مشاور";
+            }, 3000);
+        }).catch(() => {
+            prompt("متن مشخصات را دستی کپی کنید:", text);
+        });
+    });
+
+    const openApproveModal = (app) => {
+        document.getElementById("approve-app-id").value = app.id;
+        document.getElementById("approve-full-name").value = app.full_name;
+        document.getElementById("approve-phone").value = app.phone;
+        document.getElementById("approve-password").value = generateRandomPassword();
+        document.getElementById("approve-note").value = "";
+        const errEl = document.getElementById("approve-modal-error");
+        if (errEl) errEl.style.display = "none";
+        openModal("modal-approve-app");
+    };
+
+    document.getElementById("btn-gen-pwd-approve")?.addEventListener("click", () => {
+        document.getElementById("approve-password").value = generateRandomPassword();
+    });
+
+    document.getElementById("form-approve-consultant")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const appId = document.getElementById("approve-app-id").value;
+        const phone = document.getElementById("approve-phone").value.trim();
+        const password = document.getElementById("approve-password").value.trim();
+        const note = document.getElementById("approve-note").value.trim();
+        const submitBtn = document.getElementById("btn-submit-approve");
+        const errEl = document.getElementById("approve-modal-error");
+
+        submitBtn.disabled = true;
+        if (errEl) errEl.style.display = "none";
+
+        try {
+            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const res = await fetch(`/api/consultations/manager/applications/${appId}/decision/`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
+                body: JSON.stringify({ action: "approve", phone, password, decision_note: note })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || "تأیید درخواست انجام نشد.");
+            closeModal("modal-approve-app");
+            showCredentialsModal(data.credentials || { full_name: document.getElementById("approve-full-name").value, phone, password });
+            await loadConsultantApplications();
+            await loadUsers("consultant");
+        } catch (err) {
+            if (errEl) {
+                errEl.style.display = "block";
+                errEl.textContent = err.message;
+            } else {
+                alert(err.message);
+            }
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    const openResetPasswordModal = (user) => {
+        document.getElementById("reset-user-id").value = user.id;
+        document.getElementById("reset-consultant-name").value = user.full_name || user.phone;
+        document.getElementById("reset-password-input").value = generateRandomPassword();
+        const errEl = document.getElementById("reset-modal-error");
+        if (errEl) errEl.style.display = "none";
+        openModal("modal-reset-pwd");
+    };
+
+    document.getElementById("btn-gen-pwd-reset")?.addEventListener("click", () => {
+        document.getElementById("reset-password-input").value = generateRandomPassword();
+    });
+
+    document.getElementById("form-reset-consultant-pwd")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const userId = document.getElementById("reset-user-id").value;
+        const password = document.getElementById("reset-password-input").value.trim();
+        const submitBtn = document.getElementById("btn-submit-reset-pwd");
+        const errEl = document.getElementById("reset-modal-error");
+
+        submitBtn.disabled = true;
+        if (errEl) errEl.style.display = "none";
+
+        try {
+            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const res = await fetch(`/api/manager/users/${userId}/password/`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
+                body: JSON.stringify({ password })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || "تنظیم رمز جدید انجام نشد.");
+            closeModal("modal-reset-pwd");
+            showCredentialsModal(data.credentials || { full_name: document.getElementById("reset-consultant-name").value, phone: "---", password });
+        } catch (err) {
+            if (errEl) {
+                errEl.style.display = "block";
+                errEl.textContent = err.message;
+            } else {
+                alert(err.message);
+            }
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Manager Self Change Password Form Handler
+    const pwdForm = document.getElementById("manager-change-password-form");
+    const pwdMsg = document.getElementById("manager-pwd-message");
+    const pwdBtn = document.getElementById("manager-pwd-submit-btn");
+    pwdForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const oldPwd = document.getElementById("mgr-old-pwd")?.value || "";
+        const newPwd = document.getElementById("mgr-new-pwd")?.value || "";
+        const confirmPwd = document.getElementById("mgr-confirm-pwd")?.value || "";
+
+        if (newPwd !== confirmPwd) {
+            pwdMsg.style.display = "block";
+            pwdMsg.style.background = "#fef2f2";
+            pwdMsg.style.color = "#dc2626";
+            pwdMsg.textContent = "تکرار رمز عبور جدید یکسان نیست.";
+            return;
+        }
+        if (newPwd.length < 8) {
+            pwdMsg.style.display = "block";
+            pwdMsg.style.background = "#fef2f2";
+            pwdMsg.style.color = "#dc2626";
+            pwdMsg.textContent = "رمز عبور جدید باید حداقل ۸ کاراکتر باشد.";
+            return;
+        }
+
+        pwdBtn.disabled = true;
+        pwdMsg.style.display = "block";
+        pwdMsg.style.background = "#eff6ff";
+        pwdMsg.style.color = "#2563eb";
+        pwdMsg.textContent = "در حال تغییر رمز عبور…";
+
+        try {
+            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const res = await fetch("/api/auth/password/change/", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
+                body: JSON.stringify({
+                    old_password: oldPwd,
+                    new_password: newPwd,
+                    new_password_confirm: confirmPwd
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || "تغییر رمز عبور انجام نشد.");
+            pwdMsg.style.background = "#f0fdf4";
+            pwdMsg.style.color = "#16a34a";
+            pwdMsg.textContent = data.detail || "رمز عبور مدیر با موفقیت تغییر کرد.";
+            pwdForm.reset();
+        } catch (err) {
+            pwdMsg.style.background = "#fef2f2";
+            pwdMsg.style.color = "#dc2626";
+            pwdMsg.textContent = err.message;
+        } finally {
+            pwdBtn.disabled = false;
+        }
+    });
+
+    document.getElementById("manager-logout-btn")?.addEventListener("click", async () => {
+        try {
+            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then((r) => r.json());
+            await fetch("/api/auth/logout/", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "X-CSRFToken": csrf.csrfToken }
+            });
+        } finally {
+            location.assign("login.html");
+        }
+    });
+
     const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin" });
     if (!meResponse.ok) { location.assign("login.html"); return; }
     const me = await meResponse.json();
     if (!["manager", "admin"].includes(me.role)) { location.assign(me.role === "student" ? "student.html" : "consultant.html"); return; }
+
+    const mgrHeaderName = document.getElementById("manager-header-name");
+    const mgrProfileName = document.getElementById("manager-profile-name");
+    const mgrProfilePhone = document.getElementById("manager-profile-phone");
+    const mgrHeaderAvatar = document.getElementById("manager-header-avatar");
+    const managerName = me.full_name || "مدیر مجموعه";
+    if (mgrHeaderName) mgrHeaderName.textContent = managerName;
+    if (mgrProfileName) mgrProfileName.textContent = managerName;
+    if (mgrProfilePhone) mgrProfilePhone.textContent = me.phone || "---";
+    if (mgrHeaderAvatar) mgrHeaderAvatar.textContent = managerName.trim().charAt(0) || "م";
+
     loadPageFromHash();
     loadUsers("student");
     loadUsers("consultant");
     loadConsultantApplications();
 });
+

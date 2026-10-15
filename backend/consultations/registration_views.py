@@ -359,15 +359,33 @@ def manager_decide_consultant_application(request, application_id):
 
     with transaction.atomic():
         if action == "approve":
+            chosen_password = str(data.get("password", "")).strip()
+            if not chosen_password:
+                chosen_password = f"Paye@{secrets.randbelow(900000) + 100000}"
+            elif len(chosen_password) < 6:
+                return JsonResponse({"detail": "رمز عبور مشاور باید حداقل ۶ کاراکتر باشد."}, status=400)
+
+            user = app.user
+            custom_phone = str(data.get("phone", "")).strip()
+            if custom_phone and custom_phone != user.phone:
+                try:
+                    validated_phone = valid_phone(custom_phone)
+                except ValueError as err:
+                    return JsonResponse({"detail": str(err)}, status=400)
+                if User.objects.filter(phone=validated_phone).exclude(pk=user.pk).exists():
+                    return JsonResponse({"detail": "کاربر دیگری با این شماره موبایل در سیستم وجود دارد."}, status=409)
+                user.phone = validated_phone
+                app.phone = validated_phone
+
+            user.set_password(chosen_password)
+            user.role = "consultant"
+            user.is_active = True
+            user.save()
+
             app.status = ConsultantApplication.Status.APPROVED
             app.decided_at = timezone.now()
             app.decision_note = decision_note
             app.save()
-
-            user = app.user
-            user.role = "consultant"
-            user.is_active = True
-            user.save(update_fields=["role", "is_active"])
 
             profile, _ = ConsultantProfile.objects.get_or_create(user=user)
             profile.application_status = "approved"
@@ -383,8 +401,17 @@ def manager_decide_consultant_application(request, application_id):
                 profile.resume_file = app.resume_file
             profile.save()
 
-            record_event(request, "consultant.application.approved", "consultation", "success", subject=f"user:{user.pk}")
-            return JsonResponse({"ok": True, "detail": f"مشاور {app.full_name} تأیید شد و حساب مشاور او فعال گردید."})
+            record_event(request, "consultant.application.approved", "consultation", "success", subject=f"user:{user.pk}", details={"phone": user.phone})
+            return JsonResponse({
+                "ok": True,
+                "detail": f"مشاور {app.full_name} تأیید شد و حساب کاربری او فعال گردید.",
+                "credentials": {
+                    "full_name": app.full_name,
+                    "phone": user.phone,
+                    "password": chosen_password,
+                    "login_url": "/login.html"
+                }
+            })
 
         elif action == "reject":
             app.status = ConsultantApplication.Status.REJECTED

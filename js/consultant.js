@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const consultantName = user.full_name || "مشاور";
         ["consultant-account-name", "consultant-header-name"].forEach((id) => { const node = document.getElementById(id); if (node) node.textContent = consultantName; });
         loadConsultantProfile();
+        initConsultantChangePassword();
         loadAssignedStudents();
         loadDailyStudyReports();
         loadTelegramStatus();
@@ -82,6 +83,62 @@ document.addEventListener("DOMContentLoaded", async () => {
             } catch (error) { message.textContent = error.message || "ذخیره رزومه انجام نشد."; }
             finally { button.disabled = false; }
         }, { once: true });
+    }
+
+    function initConsultantChangePassword() {
+        const form = document.getElementById("consultant-change-password-form");
+        const msg = document.getElementById("consultant-pwd-message");
+        const btn = document.getElementById("consultant-pwd-btn");
+        if (!form) return;
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const oldPassword = document.getElementById("c-old-pwd")?.value || "";
+            const newPassword = document.getElementById("c-new-pwd")?.value || "";
+            const confirmPassword = document.getElementById("c-confirm-pwd")?.value || "";
+
+            if (newPassword !== confirmPassword) {
+                msg.style.display = "block";
+                msg.style.color = "#dc2626";
+                msg.textContent = "تکرار رمز عبور جدید یکسان نیست.";
+                return;
+            }
+            if (newPassword.length < 8) {
+                msg.style.display = "block";
+                msg.style.color = "#dc2626";
+                msg.textContent = "رمز عبور جدید باید حداقل ۸ کاراکتر باشد.";
+                return;
+            }
+
+            btn.disabled = true;
+            msg.style.display = "block";
+            msg.style.color = "#2563eb";
+            msg.textContent = "در حال تغییر رمز عبور…";
+
+            try {
+                const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+                const res = await fetch("/api/auth/password/change/", {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
+                    body: JSON.stringify({
+                        old_password: oldPassword,
+                        new_password: newPassword,
+                        new_password_confirm: confirmPassword
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "تغییر رمز عبور انجام نشد.");
+                msg.style.color = "#16a34a";
+                msg.textContent = data.detail || "رمز عبور با موفقیت تغییر کرد.";
+                form.reset();
+            } catch (err) {
+                msg.style.color = "#dc2626";
+                msg.textContent = err.message;
+            } finally {
+                btn.disabled = false;
+            }
+        });
     }
 
     async function loadManagerSupportRoom() {

@@ -271,6 +271,31 @@
                     <div class="consultant-my-prices"><strong>قیمت پلن‌ها</strong><span id="consultant-plan-prices">در حال دریافت…</span></div>
                 </div>
 
+                <div class="payeh-consultant__section" id="consultant-security-settings" style="margin-top: 24px;">
+                    <div class="payeh-consultant__section-header">
+                        <div>
+                            <span>امنیت حساب کاربری</span>
+                            <h3>تغییر رمز عبور</h3>
+                        </div>
+                    </div>
+                    <p class="consultant-article-hint">می‌توانید رمز عبور اولیه‌ای که مدیر مجموعه به شما داده است را در هر زمان تغییر دهید.</p>
+                    <form id="consultant-change-password-form" class="consultant-profile-form" style="max-width: 520px;">
+                        <label>رمز عبور فعلی
+                            <input type="password" id="c-old-pwd" name="old_password" required placeholder="رمز فعلی دریافت شده از مدیر">
+                        </label>
+                        <div class="consultant-profile-grid">
+                            <label>رمز عبور جدید (حداقل ۸ کاراکتر)
+                                <input type="password" id="c-new-pwd" name="new_password" required minlength="8" placeholder="رمز جدید">
+                            </label>
+                            <label>تکرار رمز عبور جدید
+                                <input type="password" id="c-confirm-pwd" name="new_password_confirm" required minlength="8" placeholder="تکرار رمز جدید">
+                            </label>
+                        </div>
+                        <p id="consultant-pwd-message" class="consultant-article-hint" role="status" aria-live="polite" style="display:none;"></p>
+                        <button class="consultant-write-article" type="submit" id="consultant-pwd-btn">ذخیره رمز عبور جدید</button>
+                    </form>
+                </div>
+
                 <section class="payeh-consultant__section consultant-planner" id="consultant-study-planner">
                     <div class="payeh-consultant__section-header"><div><span>برنامهٔ تکرارشوندهٔ هفتگی</span><h3>برنامه‌ریزی درسی دانش‌آموز</h3></div></div>
                     <p class="consultant-article-hint">روز و مدت مطالعهٔ هر درس را مشخص کنید. دانش‌آموز زمان مطالعه را خودش انتخاب می‌کند و با کرنومتر گزارش می‌دهد.</p>

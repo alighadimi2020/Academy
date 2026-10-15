@@ -279,3 +279,76 @@ def logout_user(request):
         record_event(request, "auth.logout", "auth", "success", subject=request.user.phone)
     auth_logout(request)
     return JsonResponse({"detail": "خروج انجام شد."})
+
+
+@require_POST
+@csrf_protect
+def change_password(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+
+    try:
+        data = json.loads(request.body or b"{}")
+        old_password = str(data.get("old_password", ""))
+        new_password = str(data.get("new_password", ""))
+        new_password_confirm = str(data.get("new_password_confirm", ""))
+    except (ValueError, json.JSONDecodeError):
+        return JsonResponse({"detail": "اطلاعات ارسالی نامعتبر است."}, status=400)
+
+    if not old_password:
+        return JsonResponse({"detail": "رمز عبور فعلی الزامی است."}, status=400)
+
+    if not request.user.check_password(old_password):
+        record_event(request, "auth.password.change_failed", "auth", "denied", subject=request.user.phone, details={"reason": "wrong_old_password"})
+        return JsonResponse({"detail": "رمز عبور فعلی اشتباه است."}, status=400)
+
+    if len(new_password) < 8:
+        return JsonResponse({"detail": "رمز عبور جدید باید حداقل ۸ کاراکتر باشد."}, status=400)
+
+    if new_password != new_password_confirm:
+        return JsonResponse({"detail": "تکرار رمز عبور جدید یکسان نیست."}, status=400)
+
+    request.user.set_password(new_password)
+    request.user.save(update_fields=["password"])
+    auth_login(request, request.user)
+    record_event(request, "auth.password.changed", "auth", "success", subject=request.user.phone)
+    return JsonResponse({"ok": True, "detail": "رمز عبور با موفقیت تغییر یافت."})
+
+
+@require_POST
+@csrf_protect
+def manager_set_user_password(request, user_id):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+    if request.user.role not in {"manager", "admin"}:
+        return JsonResponse({"detail": "دسترسی فقط مخصوص مدیر مجموعه است."}, status=403)
+
+    try:
+        target_user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({"detail": "کاربر مورد نظر پیدا نشد."}, status=404)
+
+    try:
+        data = json.loads(request.body or b"{}")
+        password = str(data.get("password", "")).strip()
+    except (ValueError, json.JSONDecodeError):
+        return JsonResponse({"detail": "اطلاعات ارسالی نامعتبر است."}, status=400)
+
+    if not password:
+        password = f"Paye@{secrets.randbelow(900000) + 100000}"
+    elif len(password) < 6:
+        return JsonResponse({"detail": "رمز عبور باید حداقل ۶ کاراکتر باشد."}, status=400)
+
+    target_user.set_password(password)
+    target_user.save(update_fields=["password"])
+    record_event(request, "manager.user.password_reset", "users", "success", subject=f"user:{target_user.pk}", details={"phone": target_user.phone})
+    return JsonResponse({
+        "ok": True,
+        "detail": f"رمز عبور جدید برای {target_user.full_name or target_user.phone} با موفقیت تنظیم شد.",
+        "credentials": {
+            "full_name": target_user.full_name or "کاربر",
+            "phone": target_user.phone,
+            "password": password
+        }
+    })
+
