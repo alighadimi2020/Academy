@@ -4,10 +4,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     const managerPageTitle = document.getElementById("manager-page-title");
     const managerSidebar = document.getElementById("manager-sidebar");
     const managerMenuButton = document.getElementById("manager-menu-button");
-    const pageTitles = { dashboard: "داشبورد", consultants: "مشاوران", students: "دانش‌آموزان", conversations: "گفت‌وگوها", articles: "مقالات", settings: "تنظیمات" };
+    const pageTitles = {
+        dashboard: "داشبورد",
+        consultants: "مشاوران فعال",
+        "consultant-applications": "درخواست‌های همکاری و رزومه‌ها",
+        students: "دانش‌آموزان",
+        conversations: "گفت‌وگو با مشاوران",
+        articles: "مقالات",
+        settings: "تنظیمات"
+    };
     const make = (tag, className, text) => { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; };
     const numberFa = (value) => new Intl.NumberFormat("fa-IR").format(value);
-    const state = { students: [], consultants: [] };
+    const state = { students: [], consultants: [], applications: [], activeAppStatusFilter: "all" };
 
     const renderUsers = (role) => {
         const isStudent = role === "student";
@@ -56,6 +64,316 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("student-search")?.addEventListener("input", () => renderUsers("student"));
     document.getElementById("consultant-search")?.addEventListener("input", () => renderUsers("consultant"));
 
+    const loadManagerChatRooms = async () => {
+        const target=document.getElementById("manager-chat-rooms");const message=document.getElementById("manager-chat-rooms-message");if(!target)return;
+        message.textContent="در حال دریافت اتاق‌ها…";target.replaceChildren();
+        try{const response=await fetch("/api/consultations/staff-conversations/",{credentials:"same-origin"});const data=await response.json();if(!response.ok)throw new Error(data.detail||"اتاق‌های گفتگو دریافت نشدند.");
+            const rooms=data.results||[];message.textContent=rooms.length?`${numberFa(rooms.length)} اتاق گفتگو`:"هنوز مشاوری اتاق گفتگو با مدیر ایجاد نکرده است.";
+            rooms.forEach(room=>{const card=make("article","manager-chat-room");const avatar=make("span","manager-chat-room__avatar",(room.consultant_name||"م").trim().slice(0,1));const info=make("div","manager-chat-room__info");info.append(make("strong","",room.consultant_name),make("span","",room.last_message||"هنوز پیامی در این اتاق نیست."));const date=room.last_message_at?new Date(room.last_message_at).toLocaleString("fa-IR",{dateStyle:"short",timeStyle:"short"}):"گفتگوی جدید";info.append(make("small","",date));const link=document.createElement("a");link.href=`consultation-chat.html?staff=${encodeURIComponent(room.id)}`;link.textContent="بازکردن اتاق";card.append(avatar,info,link);target.append(card);});
+        }catch(error){message.textContent=error.message||"دریافت اتاق‌ها انجام نشد.";}
+    };
+
+    const renderConsultantApplications = () => {
+        const target = document.getElementById("manager-consultant-apps-list");
+        const message = document.getElementById("manager-apps-message");
+        const searchInput = document.getElementById("manager-apps-search");
+        if (!target) return;
+
+        const query = (searchInput?.value || "").trim().toLocaleLowerCase();
+        const filterStatus = state.activeAppStatusFilter;
+
+        let filtered = state.applications.slice();
+        if (filterStatus !== "all") {
+            filtered = filtered.filter(app => app.status === filterStatus);
+        }
+        if (query) {
+            filtered = filtered.filter(app => 
+                `${app.full_name} ${app.phone} ${app.konkur_quota || ""} ${app.quota_rank || ""} ${app.university_major || ""}`.toLocaleLowerCase().includes(query)
+            );
+        }
+
+        target.replaceChildren();
+
+        if (!filtered.length) {
+            if (message) {
+                message.style.display = "block";
+                message.textContent = query 
+                    ? "موردی با این عبارت در متقاضیان پیدا نشد." 
+                    : (filterStatus === "pending" ? "هیچ درخواست در انتظار بررسی وجود ندارد." : "درخواستی در این دسته‌بندی یافت نشد.");
+            }
+            return;
+        }
+
+        if (message) message.style.display = "none";
+
+        filtered.forEach((app) => {
+            const card = make("article", "manager-user-card");
+            card.style.cssText = "background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: transform 0.2s ease;";
+            
+            const borderColors = { pending: "#f59e0b", approved: "#16a34a", rejected: "#ef4444" };
+            card.style.borderTop = `4px solid ${borderColors[app.status] || '#cbd5e1'}`;
+
+            // Header
+            const header = make("div", "manager-user-card__header");
+            header.style.cssText = "display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px;";
+            
+            const userBox = make("div", "");
+            userBox.style.cssText = "display: flex; align-items: center; gap: 10px;";
+            
+            const avatar = make("span", "manager-user-card__avatar", (app.full_name || "م").trim().charAt(0));
+            avatar.style.cssText = "width: 42px; height: 42px; border-radius: 12px; background: #eff6ff; color: #1d4ed8; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;";
+            
+            const identity = make("div", "");
+            const titleH3 = make("h3", "", app.full_name);
+            titleH3.style.cssText = "margin: 0 0 4px; font-size: 15px; font-weight: 800; color: #0f172a;";
+            const phoneLink = make("a", "", app.phone);
+            phoneLink.href = `tel:${app.phone}`;
+            phoneLink.style.cssText = "font-size: 12px; color: #64748b; text-decoration: none; font-weight: 600;";
+            identity.append(titleH3, phoneLink);
+            userBox.append(avatar, identity);
+
+            const statusConfig = {
+                pending: { bg: "#fffbeb", text: "#b45309", border: "#fde68a", dot: "#d97706", label: "در انتظار بررسی" },
+                approved: { bg: "#f0fdf4", text: "#15803d", border: "#bbf7d0", dot: "#16a34a", label: "تأیید شده" },
+                rejected: { bg: "#fef2f2", text: "#b91c1c", border: "#fecaca", dot: "#dc2626", label: "رد شده" }
+            };
+            const sConf = statusConfig[app.status] || { bg: "#f1f5f9", text: "#475569", border: "#e2e8f0", dot: "#64748b", label: app.status_label };
+            const statusTag = make("span", "");
+            statusTag.style.cssText = `background: ${sConf.bg}; color: ${sConf.text}; border: 1px solid ${sConf.border}; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;`;
+            statusTag.innerHTML = `<span style="width: 6px; height: 6px; border-radius: 50%; background: ${sConf.dot};"></span><span>${sConf.label}</span>`;
+
+            header.append(userBox, statusTag);
+            card.append(header);
+
+            // Fields Grid
+            const fields = make("div", "");
+            fields.style.cssText = "display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin: 12px 0; background: #f8fafc; padding: 12px; border-radius: 12px; font-size: 12px;";
+
+            const addField = (label, value) => {
+                if (!value) return;
+                const wrapper = document.createElement("div");
+                const dt = make("div", "", label);
+                dt.style.cssText = "color: #64748b; font-size: 11px; font-weight: 600; margin-bottom: 2px;";
+                const dd = make("div", "", value);
+                dd.style.cssText = "color: #1e293b; font-weight: 700;";
+                wrapper.append(dt, dd);
+                fields.append(wrapper);
+            };
+
+            addField("تاریخ تولد شمسی", app.birth_date);
+            addField("سال کنکور", app.konkur_year ? String(app.konkur_year) : "");
+            addField("سهمیه کنکور", app.konkur_quota);
+            addField("رتبه در سهمیه", app.quota_rank ? `رتبه ${numberFa(app.quota_rank)}` : "");
+            addField("رشته و دانشگاه", [app.university_major, app.current_university].filter(Boolean).join(" - ") || "ثبت نشده");
+            addField("سابقه مشاوره", app.experience_years ? `${numberFa(app.experience_years)} سال` : "بدون سابقه قبلی");
+            addField("تاریخ درخواست", app.created_at);
+
+            card.append(fields);
+
+            // Bio / Description
+            if (app.bio) {
+                const bioP = make("p", "", `توضیحات: ${app.bio}`);
+                bioP.style.cssText = "margin: 6px 0 12px; font-size: 12px; line-height: 1.7; color: #475569; background: #f1f5f9; padding: 8px 12px; border-radius: 8px;";
+                card.append(bioP);
+            }
+
+            // Bottom Actions & Resume Section
+            const bottomSec = document.createElement("div");
+            bottomSec.style.cssText = "margin-top: auto; padding-top: 10px; border-top: 1px solid #f1f5f9;";
+
+            // Resume Download Button
+            if (app.resume_url) {
+                const isPdf = (app.resume_filename || "").toLowerCase().endsWith(".pdf");
+                const dlBtn = document.createElement("a");
+                dlBtn.href = app.resume_url;
+                dlBtn.target = "_blank";
+                dlBtn.style.cssText = "display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 9px 12px; background: #eff6ff; color: #1d4ed8; text-decoration: none; border-radius: 10px; font-size: 12px; font-weight: 800; border: 1px solid #bfdbfe; margin-bottom: 10px; transition: background 0.15s ease;";
+                dlBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>دانلود و بررسی رزومه</span>
+                    <span style="background:#dbeafe; color:#1e40af; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800;">${isPdf ? 'PDF' : 'DOCX'}</span>
+                `;
+                bottomSec.append(dlBtn);
+            }
+
+            // Decision actions
+            if (app.status === "pending") {
+                const decisionBox = document.createElement("div");
+                decisionBox.style.cssText = "background: #fafafa; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 10px;";
+
+                const noteInput = document.createElement("input");
+                noteInput.type = "text";
+                noteInput.placeholder = "توضیحات یا پیام مدیر (اختیاری)...";
+                noteInput.style.cssText = "width: 100%; padding: 6px 10px; font-size: 12px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; outline: none; background: #ffffff;";
+
+                const btnRow = document.createElement("div");
+                btnRow.style.cssText = "display: flex; gap: 8px;";
+
+                const approveBtn = document.createElement("button");
+                approveBtn.className = "payeh-manager__button";
+                approveBtn.style.cssText = "flex: 1; background: #16a34a; color: #fff; border: none; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;";
+                approveBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>تأیید و ارتقا به مشاور</span>
+                `;
+                approveBtn.onclick = async () => {
+                    if (!confirm(`آیا از تأیید مشاور «${app.full_name}» و ارتقای نقش او به مشاور اطمینان دارید؟`)) return;
+                    approveBtn.disabled = true;
+                    try {
+                        const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+                        const res = await fetch(`/api/consultations/manager/applications/${app.id}/decision/`, {
+                            method: "POST",
+                            credentials: "same-origin",
+                            headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
+                            body: JSON.stringify({ action: "approve", decision_note: noteInput.value.trim() })
+                        });
+                        const rData = await res.json();
+                        if (!res.ok) throw new Error(rData.detail || "تأیید انجام نشد.");
+                        alert(rData.detail || "مشاور تأیید شد.");
+                        await loadConsultantApplications();
+                        await loadUsers("consultant");
+                    } catch (e) {
+                        alert(e.message);
+                    } finally {
+                        approveBtn.disabled = false;
+                    }
+                };
+
+                const rejectBtn = document.createElement("button");
+                rejectBtn.className = "payeh-manager__button";
+                rejectBtn.style.cssText = "flex: 1; background: #dc2626; color: #fff; border: none; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;";
+                rejectBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    <span>رد درخواست</span>
+                `;
+                rejectBtn.onclick = async () => {
+                    const note = noteInput.value.trim() || prompt(`دلیل رد درخواست مشاور ${app.full_name} (اختیاری):`);
+                    if (note === null) return;
+                    rejectBtn.disabled = true;
+                    try {
+                        const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+                        const res = await fetch(`/api/consultations/manager/applications/${app.id}/decision/`, {
+                            method: "POST",
+                            credentials: "same-origin",
+                            headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
+                            body: JSON.stringify({ action: "reject", decision_note: note })
+                        });
+                        const rData = await res.json();
+                        if (!res.ok) throw new Error(rData.detail || "رد درخواست انجام نشد.");
+                        alert(rData.detail || "درخواست رد شد.");
+                        await loadConsultantApplications();
+                    } catch (e) {
+                        alert(e.message);
+                    } finally {
+                        rejectBtn.disabled = false;
+                    }
+                };
+
+                btnRow.append(approveBtn, rejectBtn);
+                decisionBox.append(noteInput, btnRow);
+                bottomSec.append(decisionBox);
+            } else if (app.decision_note) {
+                const noteBox = make("div", "");
+                noteBox.style.cssText = "background: #f8fafc; border-radius: 8px; padding: 8px 10px; font-size: 11px; color: #475569; border-right: 3px solid #cbd5e1;";
+                noteBox.textContent = `یادداشت مدیر: ${app.decision_note}`;
+                bottomSec.append(noteBox);
+            }
+
+            card.append(bottomSec);
+            target.append(card);
+        });
+    };
+
+    const loadConsultantApplications = async () => {
+        const message = document.getElementById("manager-apps-message");
+        if (message) message.textContent = "در حال دریافت درخواست‌ها…";
+
+        try {
+            const response = await fetch("/api/consultations/manager/applications/", { credentials: "same-origin" });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || "دریافت درخواست‌ها انجام نشد.");
+
+            state.applications = data.results || [];
+            
+            // Calculate status counts
+            const total = state.applications.length;
+            const pendingCount = state.applications.filter(a => a.status === "pending").length;
+            const approvedCount = state.applications.filter(a => a.status === "approved").length;
+            const rejectedCount = state.applications.filter(a => a.status === "rejected").length;
+
+            // Update DOM badges & stats
+            const statTotal = document.getElementById("manager-apps-stat-total");
+            const statPending = document.getElementById("manager-apps-stat-pending");
+            const statApproved = document.getElementById("manager-apps-stat-approved");
+            const statRejected = document.getElementById("manager-apps-stat-rejected");
+            const dashBadge = document.getElementById("manager-apps-stat-dashboard");
+            const navBadge = document.getElementById("manager-nav-badge-apps");
+
+            if (statTotal) statTotal.textContent = numberFa(total);
+            if (statPending) statPending.textContent = numberFa(pendingCount);
+            if (statApproved) statApproved.textContent = numberFa(approvedCount);
+            if (statRejected) statRejected.textContent = numberFa(rejectedCount);
+            if (dashBadge) dashBadge.textContent = numberFa(pendingCount);
+
+            if (navBadge) {
+                if (pendingCount > 0) {
+                    navBadge.style.display = "inline-block";
+                    navBadge.textContent = numberFa(pendingCount);
+                } else {
+                    navBadge.style.display = "none";
+                }
+            }
+
+            renderConsultantApplications();
+        } catch (err) {
+            if (message) message.textContent = err.message || "خطا در دریافت درخواست‌های مشاوران.";
+        }
+    };
+
+    // Filter tab button bindings
+    document.querySelectorAll(".manager-apps-tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".manager-apps-tab-btn").forEach(b => {
+                b.classList.remove("is-active");
+                b.style.background = "transparent";
+                b.style.color = "#64748b";
+                b.style.boxShadow = "none";
+            });
+            btn.classList.add("is-active");
+            btn.style.background = "#fff";
+            btn.style.color = "#0f172a";
+            btn.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+
+            state.activeAppStatusFilter = btn.dataset.status || "all";
+            renderConsultantApplications();
+        });
+    });
+
+    // Stat card click to filter
+    const bindStatClick = (id, status) => {
+        document.getElementById(id)?.addEventListener("click", () => {
+            const targetBtn = document.querySelector(`.manager-apps-tab-btn[data-status="${status}"]`);
+            if (targetBtn) targetBtn.click();
+        });
+    };
+    bindStatClick("stat-filter-all", "all");
+    bindStatClick("stat-filter-pending", "pending");
+    bindStatClick("stat-filter-approved", "approved");
+    bindStatClick("stat-filter-rejected", "rejected");
+
+    document.getElementById("manager-apps-search")?.addEventListener("input", () => {
+        renderConsultantApplications();
+    });
+
     const showPage = (pageName) => {
         const targetPage = document.getElementById(`page-${pageName}`);
         if (!targetPage) return;
@@ -64,9 +382,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         targetPage.classList.add("is-active");
         if (managerPageTitle) managerPageTitle.textContent = pageTitles[pageName] || "پنل مدیریت";
         managerSidebar?.classList.remove("is-open");
-        if (pageName === "students" || pageName === "consultants") loadUsers(pageName === "students" ? "student" : "consultant");
+        if (pageName === "students" || pageName === "consultants") {
+            loadUsers(pageName === "students" ? "student" : "consultant");
+        }
+        if (pageName === "consultant-applications" || pageName === "dashboard") {
+            loadConsultantApplications();
+        }
+        if (pageName === "conversations") loadManagerChatRooms();
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
+
     managerNavItems.forEach((item) => item.addEventListener("click", (event) => {
         const pageName = item.dataset.page;
         if (!pageName) return;
@@ -86,4 +411,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadPageFromHash();
     loadUsers("student");
     loadUsers("consultant");
+    loadConsultantApplications();
 });

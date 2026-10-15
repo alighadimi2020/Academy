@@ -15,6 +15,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from .models import PendingRegistration, User
+from .audit import record_event
 from .sms import send_verification_code
 
 
@@ -60,6 +61,10 @@ def start_registration(request):
         if grade not in MAJOR_GRADES:
             major = ""
 
+        gender = str(data.get("gender", "")).strip()
+        if gender not in {"", "female", "male"}:
+            raise ValueError("جنسیت انتخاب‌شده معتبر نیست.")
+
         national_id = normalize_digits(data.get("national_id", ""))
         if len(national_id) > 20:
             raise ValueError("کد ملی حداکثر ۲۰ کاراکتر است.")
@@ -89,6 +94,7 @@ def start_registration(request):
             "parent_phone": parent_phone,
             "grade": grade,
             "major": major,
+            "gender": gender,
             "password_hash": make_password(password),
             "verification_code_hash": make_password(code),
             "expires_at": timezone.now() + timedelta(minutes=5),
@@ -143,12 +149,14 @@ def verify_registration(request):
                 parent_phone=pending.parent_phone,
                 grade=pending.grade,
                 major=pending.major,
+                gender=pending.gender,
                 role="student",
                 is_active=True,
                 password=pending.password_hash,
             )
             user.save()
             pending.delete()
+            record_event(request, "auth.registration.succeeded", "users", "success", subject=f"user:{user.pk}", details={"target_user_id": user.pk, "role": user.role})
     except IntegrityError:
         return Response({"detail": "با این شماره موبایل قبلاً حساب ساخته شده است."}, status=status.HTTP_409_CONFLICT)
 
@@ -174,13 +182,16 @@ def login_user(request):
         if not password:
             raise ValueError("شماره موبایل یا رمز عبور نادرست است.")
     except (ValueError, json.JSONDecodeError, UnicodeDecodeError):
+        record_event(request, "auth.login.invalid_request", "auth", "denied", details={"reason": "invalid_login_payload"})
         return JsonResponse({"detail": "شماره موبایل یا رمز عبور نادرست است."}, status=400)
 
     user = authenticate(request, phone=phone, password=password)
     if user is None or not user.is_active:
+        record_event(request, "auth.login.failed", "auth", "denied", subject=f"phone-ends-{phone[-4:]}", details={"reason": "invalid_credentials"})
         return JsonResponse({"detail": "شماره موبایل یا رمز عبور نادرست است."}, status=401)
 
     auth_login(request, user)
+    record_event(request, "auth.login.succeeded", "auth", "success", subject=user.phone, details={"role": user.role})
     request.session.set_expiry(1209600 if data.get("remember") else 0)
     return JsonResponse({"detail": "ورود موفق بود.", "role": user.role})
 
@@ -201,7 +212,27 @@ def current_user(request):
         "grade_label": grade_labels.get(user.grade, ""),
         "major": user.major,
         "major_label": major_labels.get(user.major, ""),
+        "gender": user.gender,
+        "gender_label": dict(User.GENDER_CHOICES).get(user.gender, "ثبت نشده"),
     })
+
+
+@require_POST
+@csrf_protect
+def update_student_gender(request):
+    if not request.user.is_authenticated or not request.user.is_active or request.user.role != "student":
+        return JsonResponse({"detail": "فقط دانش‌آموز می‌تواند اطلاعات خودش را ویرایش کند."}, status=403 if request.user.is_authenticated else 401)
+    try:
+        data = json.loads(request.body or b"{}")
+        gender = str(data.get("gender", "")).strip()
+    except (ValueError, TypeError, AttributeError):
+        return JsonResponse({"detail": "اطلاعات ارسالی معتبر نیست."}, status=400)
+    if gender not in {"", "female", "male"}:
+        return JsonResponse({"detail": "جنسیت انتخاب‌شده معتبر نیست."}, status=400)
+    request.user.gender = gender
+    request.user.save(update_fields=["gender"])
+    record_event(request, "student.gender.updated", "users", "success", subject=f"user:{request.user.pk}")
+    return JsonResponse({"gender": gender, "gender_label": dict(User.GENDER_CHOICES).get(gender, "ثبت نشده")})
 
 
 @require_GET
@@ -244,5 +275,7 @@ def manager_user_list(request):
 @require_POST
 @csrf_protect
 def logout_user(request):
+    if request.user.is_authenticated:
+        record_event(request, "auth.logout", "auth", "success", subject=request.user.phone)
     auth_logout(request)
     return JsonResponse({"detail": "خروج انجام شد."})

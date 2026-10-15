@@ -52,6 +52,20 @@
                 <span>مشاوران</span>
             </a>
 
+            <a href="#consultant-applications" class="payeh-manager__nav-item" data-page="consultant-applications">
+                <span class="payeh-manager__nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path>
+                        <path d="M14 2v6h6"></path>
+                        <path d="M16 13H8"></path>
+                        <path d="M16 17H8"></path>
+                        <path d="M10 9H8"></path>
+                    </svg>
+                </span>
+                <span>درخواست‌های همکاری و رزومه‌ها</span>
+                <span id="manager-nav-badge-apps" style="display:none; margin-right:auto; background:#2563eb; color:#fff; font-size:11px; font-weight:800; padding:1px 8px; border-radius:99px;">۰</span>
+            </a>
+
             <a href="#students" class="payeh-manager__nav-item" data-page="students">
                 <span class="payeh-manager__nav-icon">
                     <svg viewBox="0 0 24 24">
@@ -90,7 +104,7 @@
             </a>
             <a href="blog-review.html" class="payeh-manager__nav-item manager-review-link">
                 <span class="payeh-manager__nav-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-                <span>بررسی و تأیید مقاله‌ها</span>
+                <span>درخواست‌های وبلاگ</span>
             </a>
 
             <div class="payeh-manager__nav-divider"></div>
@@ -217,6 +231,21 @@
                         </div>
                     </article>
 
+                    <article class="manager-stat" style="cursor: pointer;" onclick="location.hash='consultant-applications'">
+                        <div class="manager-stat__icon" style="color: #2563eb; background: #eff6ff;">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path>
+                                <path d="M14 2v6h6"></path>
+                                <path d="M16 13H8"></path>
+                                <path d="M16 17H8"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <span>درخواست‌های همکاری</span>
+                            <strong id="manager-apps-stat-dashboard" style="color: #2563eb;">۰</strong>
+                        </div>
+                    </article>
+
                 </div>
 
                 <div class="manager-dashboard-grid">
@@ -264,8 +293,83 @@
             </section>
 
             <section class="manager-page" id="page-consultants">
-                <div class="manager-page__intro"><div><span class="manager-page__eyebrow">مدیریت کاربران</span><h2>مشاوران</h2><p>فهرست حساب‌های مشاور مجموعه</p></div></div>
-                <div class="manager-user-list-panel"><label class="manager-user-search"><span class="visually-hidden">جست‌وجوی مشاوران</span><input id="consultant-search" type="search" maxlength="100" placeholder="جست‌وجو با نام یا شماره موبایل"></label><p id="consultant-list-message" class="manager-list-message" role="status" aria-live="polite">در حال دریافت مشاوران…</p><div id="consultant-user-list" class="manager-user-list"></div></div>
+                <div class="manager-page__intro"><div><span class="manager-page__eyebrow">مدیریت کاربران</span><h2>مشاوران فعال</h2><p>فهرست و مشخصات حساب‌های مشاوران فعال آکادمی پایه</p></div></div>
+                <div class="manager-user-list-panel"><label class="manager-user-search"><span class="visually-hidden">جست‌وجوی مشاوران</span><input id="consultant-search" type="search" maxlength="100" placeholder="جست‌وجو در مشاوران فعال با نام یا شماره موبایل"></label><p id="consultant-list-message" class="manager-list-message" role="status" aria-live="polite">در حال دریافت مشاوران…</p><div id="consultant-user-list" class="manager-user-list"></div></div>
+            </section>
+
+            <!-- DEDICATED CONSULTANT APPLICATIONS & RESUME REVIEW SECTION -->
+            <section class="manager-page" id="page-consultant-applications">
+                <div class="manager-page__intro">
+                    <div>
+                        <span class="manager-page__eyebrow">جذب و استخدام مشاوران</span>
+                        <h2>درخواست‌های همکاری و بررسی رزومه‌ها</h2>
+                        <p>بررسی سوابق، رتبه کنکور، سهمیه و فایل‌های ارسالی رزومه متقاضیان و تأیید یا رد درخواست‌ها</p>
+                    </div>
+                </div>
+
+                <!-- Stats summary row -->
+                <div class="manager-stats" style="margin-bottom: 24px;">
+                    <article class="manager-stat" style="cursor: pointer;" id="stat-filter-all">
+                        <div class="manager-stat__icon" style="background:#eff6ff; color:#2563eb;">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                        </div>
+                        <div>
+                            <span>کل درخواست‌ها</span>
+                            <strong id="manager-apps-stat-total">۰</strong>
+                        </div>
+                    </article>
+
+                    <article class="manager-stat" style="cursor: pointer;" id="stat-filter-pending">
+                        <div class="manager-stat__icon" style="background:#fffbeb; color:#d97706;">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div>
+                            <span>در انتظار بررسی</span>
+                            <strong id="manager-apps-stat-pending" style="color: #d97706;">۰</strong>
+                        </div>
+                    </article>
+
+                    <article class="manager-stat" style="cursor: pointer;" id="stat-filter-approved">
+                        <div class="manager-stat__icon" style="background:#f0fdf4; color:#16a34a;">
+                            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <div>
+                            <span>تأییدشده (مشاور)</span>
+                            <strong id="manager-apps-stat-approved" style="color: #16a34a;">۰</strong>
+                        </div>
+                    </article>
+
+                    <article class="manager-stat" style="cursor: pointer;" id="stat-filter-rejected">
+                        <div class="manager-stat__icon" style="background:#fef2f2; color:#dc2626;">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        </div>
+                        <div>
+                            <span>رد شده</span>
+                            <strong id="manager-apps-stat-rejected" style="color: #dc2626;">۰</strong>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Controls & List panel -->
+                <div class="manager-consultant-apps-panel" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 18px; padding: 22px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); margin-bottom: 28px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; margin-bottom: 20px;">
+                        <!-- Filter Tabs -->
+                        <div class="manager-apps-filter-tabs" style="display:flex; gap:6px; background:#f1f5f9; padding:4px; border-radius:12px;">
+                            <button type="button" class="manager-apps-tab-btn is-active" data-status="all" style="padding:7px 16px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; background:#fff; border:none; color:#0f172a; box-shadow:0 1px 3px rgba(0,0,0,0.1);">همه</button>
+                            <button type="button" class="manager-apps-tab-btn" data-status="pending" style="padding:7px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; background:transparent; border:none; color:#64748b;">در انتظار بررسی</button>
+                            <button type="button" class="manager-apps-tab-btn" data-status="approved" style="padding:7px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; background:transparent; border:none; color:#64748b;">تأییدشده</button>
+                            <button type="button" class="manager-apps-tab-btn" data-status="rejected" style="padding:7px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; background:transparent; border:none; color:#64748b;">رد شده</button>
+                        </div>
+
+                        <!-- Search Box -->
+                        <div style="flex:1; max-width:340px; min-width:220px; position:relative;">
+                            <input id="manager-apps-search" type="search" placeholder="جستجو در متقاضیان با نام، موبایل، سهمیه..." style="width:100%; padding:9px 14px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; outline:none; background:#f8fafc; transition: all 0.2s ease;">
+                        </div>
+                    </div>
+
+                    <p id="manager-apps-message" class="manager-list-message" role="status" aria-live="polite">در حال دریافت درخواست‌ها…</p>
+                    <div id="manager-consultant-apps-list" class="manager-user-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 18px;"></div>
+                </div>
             </section>
 
             <section class="manager-page" id="page-students">
@@ -274,17 +378,14 @@
             </section>
 
             <section class="manager-page" id="page-conversations">
-                <div class="manager-placeholder">
-                    <span>ارتباطات</span>
-                    <h2>گفت‌وگوها</h2>
-                </div>
+                <div class="manager-page__intro"><div><span class="manager-page__eyebrow">ارتباط با مشاوران</span><h2>اتاق‌های گفت‌وگوی مشاوران</h2><p>پیام‌های مستقیم مشاوران را از اتاق مربوط به هر مشاور پاسخ دهید.</p></div></div>
+                <p id="manager-chat-rooms-message" class="manager-list-message" role="status" aria-live="polite">در حال دریافت اتاق‌ها…</p>
+                <div id="manager-chat-rooms" class="manager-chat-rooms"></div>
             </section>
 
             <section class="manager-page" id="page-articles">
-                <div class="manager-placeholder">
-                    <span>مدیریت محتوا</span>
-                    <h2>مقالات</h2>
-                </div>
+                <div class="manager-page__intro"><div><span class="manager-page__eyebrow">مدیریت محتوا</span><h2>درخواست‌های وبلاگ</h2><p>مقاله‌های مشاوران را همین‌جا بررسی، تأیید و منتشر کنید یا با توضیح اختیاری برای اصلاح برگردانید.</p></div></div>
+                <iframe class="manager-blog-review-frame" src="blog-review.html?embedded=manager" title="درخواست‌های وبلاگ برای بررسی مدیر" loading="lazy"></iframe>
             </section>
 
             <section class="manager-page" id="page-settings">

@@ -22,12 +22,15 @@ load_dotenv(BASE_DIR / ".env")
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qy_uc(-i)@qj3xgd5p$6xqd=amob=*$^dh+wzh_98w&4z-b4y%'
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-qy_uc(-i)@qj3xgd5p$6xqd=amob=*$^dh+wzh_98w&4z-b4y%")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
 
-ALLOWED_HOSTS = []
+_allowed_hosts = os.getenv("ALLOWED_HOSTS", "paye.academy,www.paye.academy,127.0.0.1,localhost,testserver")
+ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts.split(",") if h.strip()]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Application definition
@@ -53,6 +56,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    "accounts.middleware.SecurityAuditMiddleware",
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -153,16 +157,30 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
-]
+_cors_env = os.getenv("CORS_ALLOWED_ORIGINS", "")
+if _cors_env:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_env.split(",") if o.strip()]
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "https://paye.academy",
+        "http://paye.academy",
+        "https://www.paye.academy",
+        "http://www.paye.academy",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+    ]
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+
+_csrf_env = os.getenv("CSRF_TRUSTED_ORIGINS", "")
+if _csrf_env:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_env.split(",") if o.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SAMESITE = "Lax"
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -174,3 +192,15 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 45 * 1024 * 1024
+
+# Audit retention is bounded by age and total event count.
+AUDIT_RETENTION_DAYS = 90
+AUDIT_MAX_EVENTS = 50_000
+AUDIT_PRUNE_EVERY = 250
+
+# Telegram Bot Integration
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+TELEGRAM_BOT_USERNAME = os.getenv("TELEGRAM_BOT_USERNAME", "").strip()
+TELEGRAM_WEBHOOK_SECRET = os.getenv("TELEGRAM_WEBHOOK_SECRET", "").strip()
+TELEGRAM_PROXY = os.getenv("TELEGRAM_PROXY", "").strip()
+

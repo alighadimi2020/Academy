@@ -23,6 +23,7 @@ FRONTEND_PAGES = {
     "consultations.html",
     "consultation-management.html",
     "consultation-chat.html",
+    "consultant-register.html",
 }
 FRONTEND_ASSET_DIRS = {"assets", "css", "js"}
 
@@ -56,6 +57,7 @@ urlpatterns = [
     path("api/auth/csrf/", account_views.csrf_token, name="csrf-token"),
     path("api/auth/login/", account_views.login_user, name="login"),
     path("api/auth/me/", account_views.current_user, name="current-user"),
+    path("api/auth/profile/gender/", account_views.update_student_gender, name="student-gender-update"),
     path("api/auth/logout/", account_views.logout_user, name="logout"),
     path("api/manager/users/", account_views.manager_user_list, name="manager-user-list"),
     path("api/auth/register/", account_views.start_registration, name="register"),
@@ -63,6 +65,7 @@ urlpatterns = [
     path("api/blog/posts/", blog_views.published_posts, name="blog-posts"),
     path("api/blog/posts/<int:post_id>/", blog_views.published_post_detail, name="blog-post-detail"),
     path("api/blog/posts/<int:post_id>/moderate/", blog_views.moderate_post, name="blog-post-moderate"),
+    path("api/blog/posts/<int:post_id>/revise/", blog_views.revise_rejected_post, name="blog-post-revise"),
     path("api/blog/mine/", blog_views.my_posts, name="blog-my-posts"),
     path("api/blog/pending/", blog_views.pending_posts, name="blog-pending-posts"),
     path("api/blog/create/", blog_views.create_post, name="blog-create"),

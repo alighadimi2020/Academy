@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class BlogPost(models.Model):
@@ -46,3 +47,16 @@ class BlogImage(models.Model):
 
     def __str__(self):
         return f"تصویر {self.order + 1} برای {self.post.title}"
+
+
+class BlogSubmission(models.Model):
+    post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name="submissions")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="blog_submissions")
+    submitted_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ("-submitted_at",)
+        indexes = [models.Index(fields=("author", "submitted_at"), name="blogsub_author_date_idx")]
+
+    def __str__(self):
+        return f"ارسال {self.post_id} توسط {self.author_id}"

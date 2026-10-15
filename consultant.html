@@ -51,18 +51,20 @@
                 <span>دانش‌آموزان من</span>
             </a>
 
+            <a href="#planner" class="payeh-consultant__nav-item" data-page="planner">
+                <span class="payeh-consultant__nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M8 14h3M8 17h7"></path></svg></span>
+                <span>برنامه‌ریزی درسی</span>
+            </a>
+
             <a href="#activities" class="payeh-consultant__nav-item" data-page="activities">
                 <span class="payeh-consultant__nav-icon">
                     <svg viewBox="0 0 24 24">
-                        <path d="M8 6h13"></path>
-                        <path d="M8 12h13"></path>
-                        <path d="M8 18h13"></path>
-                        <path d="M3 6h.01"></path>
-                        <path d="M3 12h.01"></path>
-                        <path d="M3 18h.01"></path>
+                        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path>
+                        <rect x="9" y="3" width="6" height="4" rx="2"></rect>
+                        <path d="M9 14l2 2 4-4"></path>
                     </svg>
                 </span>
-                <span>فعالیت‌ها</span>
+                <span>گزارش‌های مطالعه</span>
             </a>
 
             <a href="#conversations" class="payeh-consultant__nav-item" data-page="conversations">
@@ -269,80 +271,132 @@
                     <div class="consultant-my-prices"><strong>قیمت پلن‌ها</strong><span id="consultant-plan-prices">در حال دریافت…</span></div>
                 </div>
 
+                <section class="payeh-consultant__section consultant-planner" id="consultant-study-planner">
+                    <div class="payeh-consultant__section-header"><div><span>برنامهٔ تکرارشوندهٔ هفتگی</span><h3>برنامه‌ریزی درسی دانش‌آموز</h3></div></div>
+                    <p class="consultant-article-hint">روز و مدت مطالعهٔ هر درس را مشخص کنید. دانش‌آموز زمان مطالعه را خودش انتخاب می‌کند و با کرنومتر گزارش می‌دهد.</p>
+                    <label class="planner-student-picker">دانش‌آموز
+                        <select id="planner-student"><option value="">در حال دریافت دانش‌آموزان…</option></select>
+                    </label>
+                    <form id="planner-session-form" class="consultant-plan-form planner-session-form">
+                        <label>روز هفته<select name="weekday"><option value="0">شنبه</option><option value="1">یکشنبه</option><option value="2">دوشنبه</option><option value="3">سه‌شنبه</option><option value="4">چهارشنبه</option><option value="5">پنجشنبه</option><option value="6">جمعه</option></select></label>
+                        <label>نام درس<input name="subject" maxlength="80" required placeholder="مثلاً ریاضی"></label>
+                        <label>مدت مطالعه (دقیقه)<input name="planned_minutes" type="number" min="1" max="1440" value="120" required></label>
+                        <label>نوع فعالیت<select name="mode"><option value="test">حل تست</option><option value="written">حل تشریحی</option><option value="study">مطالعهٔ درس‌نامه</option></select></label>
+                        <label>تعداد تست<input name="test_count" type="number" min="0" max="500" value="0"></label>
+                        <label>رنگ باکس<select name="color"><option value="mint">سبز</option><option value="blue">آبی</option><option value="peach">هلویی</option><option value="lavender">یاسی</option><option value="rose">صورتی</option><option value="yellow">زرد</option></select></label>
+                        <label class="plan-instructions">توضیحات<input name="instructions" maxlength="300" placeholder="فصل، صفحات یا نکتهٔ مهم"></label>
+                        <button type="submit">ثبت سهمیهٔ روزانه</button><span id="planner-form-message" role="status"></span>
+                    </form>
+                    <div class="planner-week-heading"><strong>پیش‌نمایش برنامهٔ دانش‌آموز</strong><span>ساعت ایران · تقویم شمسی</span></div>
+                    <div id="consultant-study-week" class="study-week"><p class="consultant-article-hint">برای مشاهدهٔ برنامه، یک دانش‌آموز انتخاب کنید.</p></div>
+                    <div class="planner-week-heading"><strong>گزارش‌های مطالعهٔ دانش‌آموز</strong></div>
+                    <div id="consultant-study-reports" class="consultant-article-hint" aria-live="polite">برای مشاهدهٔ گزارش‌ها یک دانش‌آموز انتخاب کنید.</div>
+                </section>
+
+                <section class="payeh-consultant__section consultant-inbox" id="consultant-conversation-rooms">
+                    <div class="payeh-consultant__section-header"><div><span>پیام‌های مشاوره</span><h3>اتاق‌های گفت‌وگو</h3></div><span id="consultant-chat-room-count" class="chat-room-count">۰ اتاق</span></div>
+                    <p class="consultant-article-hint">گفت‌وگوی هر دانش‌آموز اتاق جداگانه دارد. همچنین می‌توانی مستقیم با مدیر مجموعه گفتگو کنی.</p>
+                    <article class="consultant-manager-chat-room">
+                        <span class="consultant-manager-chat-room__avatar">م</span>
+                        <div><strong>اتاق مدیر مجموعه</strong><small id="consultant-manager-chat-status">در حال بررسی اتاق گفتگو…</small></div>
+                        <button id="consultant-manager-chat-create" type="button" hidden>شروع گفتگو</button>
+                        <a id="consultant-manager-chat-open" href="#" hidden>ورود به اتاق</a>
+                    </article>
+                    <div id="consultant-chat-rooms" class="consultant-chat-rooms" aria-live="polite"><p>در حال دریافت اتاق‌ها…</p></div>
+                </section>
+
                 <div class="payeh-consultant__section" id="consultant-assigned-students">
                     <div class="payeh-consultant__section-header"><div><span>پس از تأیید مدیر</span><h3>دانش‌آموزان اختصاص‌یافته</h3></div></div>
                     <p class="consultant-article-hint">فقط اطلاعات دانش‌آموزانی را می‌بینید که مدیر به شما تخصیص داده است.</p>
+                    <div class="consultant-student-filters" aria-label="فیلتر دانش‌آموزان">
+                        <label>نام یا شماره موبایل<input id="consultant-student-search" type="search" placeholder="جستجو بین دانش‌آموزان من"></label>
+                        <label>پایه<select id="consultant-student-grade"><option value="">همه پایه‌ها</option><option value="2">دوم</option><option value="3">سوم</option><option value="4">چهارم</option><option value="5">پنجم</option><option value="6">ششم</option><option value="7">هفتم</option><option value="8">هشتم</option><option value="9">نهم</option><option value="10">دهم</option><option value="11">یازدهم</option><option value="12">دوازدهم</option><option value="graduate">فارغ‌التحصیل</option></select></label>
+                        <label>رشته<select id="consultant-student-major"><option value="">همه رشته‌ها</option><option value="math">ریاضی فیزیک</option><option value="experimental">تجربی</option><option value="humanities">انسانی</option><option value="technical">فنی</option></select></label>
+                        <label>جنسیت<select id="consultant-student-gender"><option value="">همه</option><option value="female">دختر</option><option value="male">پسر</option><option value="unspecified">ثبت نشده</option></select></label>
+                        <span id="consultant-student-filter-count" role="status"></span>
+                    </div>
                     <div id="consultant-assigned-list" aria-live="polite"><p>در حال دریافت فهرست…</p></div>
                 </div>
 
-                <div class="payeh-consultant__section">
-
+                <section class="payeh-consultant__section" id="consultant-study-reports-section">
                     <div class="payeh-consultant__section-header">
                         <div>
-                            <span>دانش‌آموزان</span>
+                            <span>ارسال خودکار در ساعت ۱۲ شب</span>
+                            <h3>گزارش‌های روزانه مطالعه دانش‌آموزان</h3>
+                        </div>
+                    </div>
+                    <p class="consultant-article-hint">گزارش‌های مطالعهٔ هر دانش‌آموز پس از پایان روز و در ساعت ۱۲ شب به‌صورت خودکار تفکیک و در این بخش ثبت می‌شوند.</p>
+                    
+                    <div class="consultant-telegram-card" id="consultant-telegram-card">
+                        <div class="consultant-telegram-info">
+                            <span class="consultant-telegram-icon">✈️</span>
+                            <div>
+                                <h4>دریافت خودکار گزارش‌ها در تلگرام</h4>
+                                <p id="consultant-telegram-status-text">در حال بررسی اتصال به تلگرام…</p>
+                            </div>
+                        </div>
+                        <div class="consultant-telegram-actions">
+                            <a id="consultant-telegram-connect-btn" class="consultant-telegram-btn consultant-telegram-btn--connect" href="#" target="_blank" rel="noopener">
+                                اتصال به ربات تلگرام
+                            </a>
+                            <button id="consultant-telegram-test-btn" type="button" class="consultant-telegram-btn consultant-telegram-btn--test" style="display:none;">
+                                ارسال پیام تستی
+                            </button>
+                            <button id="consultant-telegram-disconnect-btn" type="button" class="consultant-telegram-btn consultant-telegram-btn--disconnect" style="display:none;">
+                                قطع اتصال
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="consultant-student-filters" aria-label="فیلتر گزارش‌ها">
+                        <label>جستجوی نام یا موبایل
+                            <input id="consultant-report-search" type="search" placeholder="نام یا شماره موبایل دانش‌آموز...">
+                        </label>
+                        <label>پایه
+                            <select id="consultant-report-grade">
+                                <option value="">همه پایه‌ها</option>
+                                <option value="2">دوم</option>
+                                <option value="3">سوم</option>
+                                <option value="4">چهارم</option>
+                                <option value="5">پنجم</option>
+                                <option value="6">ششم</option>
+                                <option value="7">هفتم</option>
+                                <option value="8">هشتم</option>
+                                <option value="9">نهم</option>
+                                <option value="10">دهم</option>
+                                <option value="11">یازدهم</option>
+                                <option value="12">دوازدهم</option>
+                                <option value="graduate">فارغ‌التحصیل</option>
+                            </select>
+                        </label>
+                        <label>رشته
+                            <select id="consultant-report-major">
+                                <option value="">همه رشته‌ها</option>
+                                <option value="math">ریاضی فیزیک</option>
+                                <option value="experimental">تجربی</option>
+                                <option value="humanities">انسانی</option>
+                                <option value="technical">فنی</option>
+                            </select>
+                        </label>
+                        <span id="consultant-report-filter-count" role="status"></span>
+                    </div>
+
+                    <div id="consultant-grouped-reports" class="consultant-grouped-reports" aria-live="polite">
+                        <p class="consultant-article-hint">در حال دریافت گزارش‌ها…</p>
+                    </div>
+                </section>
+
+                <div class="payeh-consultant__section" id="consultant-dashboard-students-panel">
+                    <div class="payeh-consultant__section-header">
+                        <div>
+                            <span>دانش‌آموزان اختصاص‌یافته</span>
                             <h3>دانش‌آموزان من</h3>
                         </div>
-
-                        <a href="#students" data-page="students">
-                            مشاهده همه
-                        </a>
+                        <a href="#students" data-page="students">مشاهده همه</a>
                     </div>
-
-
-                    <div class="payeh-consultant__student-card">
-
-                        <div class="payeh-consultant__student-main">
-
-                            <div class="payeh-consultant__student-avatar">
-                                ط
-                            </div>
-
-                            <div>
-                                <strong>طاها موسوی</strong>
-                                <span>دانش‌آموز</span>
-                            </div>
-
-                        </div>
-
-                        <div class="payeh-consultant__student-status">
-                            <span></span>
-                            فعال
-                        </div>
-
-                        <button type="button" class="payeh-consultant__student-action">
-                            مشاهده
-                        </button>
-
+                    <div id="consultant-dashboard-students-list" class="consultant-dashboard-students" aria-live="polite">
+                        <p class="consultant-article-hint">در حال بارگذاری دانش‌آموزان…</p>
                     </div>
-
-                </div>
-
-
-                <div class="payeh-consultant__section">
-
-                    <div class="payeh-consultant__section-header">
-                        <div>
-                            <span>آخرین وضعیت</span>
-                            <h3>فعالیت‌های اخیر</h3>
-                        </div>
-                    </div>
-
-                    <div class="payeh-consultant__empty">
-                        <div class="payeh-consultant__empty-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M8 6h13"></path>
-                                <path d="M8 12h13"></path>
-                                <path d="M8 18h13"></path>
-                                <path d="M3 6h.01"></path>
-                                <path d="M3 12h.01"></path>
-                                <path d="M3 18h.01"></path>
-                            </svg>
-                        </div>
-
-                        <strong>هنوز فعالیتی ثبت نشده است</strong>
-
-                    </div>
-
                 </div>
 
             </div>

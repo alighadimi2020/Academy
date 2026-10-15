@@ -1,10 +1,13 @@
 import json
 import math
 import re
+from datetime import datetime, time, timedelta, timezone as datetime_timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from urllib.parse import urlsplit
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.http import FileResponse, Http404, JsonResponse
 from django.utils import timezone
@@ -12,12 +15,13 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_GET, require_POST
 from PIL import Image, UnidentifiedImageError
 
-from .models import BlogImage, BlogPost
+from .models import BlogImage, BlogPost, BlogSubmission
 
 
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
 MAX_IMAGE_PIXELS = 25_000_000
 MAX_IMAGES = 10
+MAX_DAILY_CONSULTANT_SUBMISSIONS = 5
 IMAGE_FORMATS = {"JPEG", "PNG", "WEBP"}
 AUTHOR_ROLES = {"consultant", "manager", "admin"}
 MODERATOR_ROLES = {"manager", "admin"}
@@ -29,6 +33,32 @@ def json_error(message, code):
 
 def user_has_role(user, roles):
     return user.is_authenticated and user.is_active and user.role in roles
+
+
+def tehran_day_bounds():
+    tehran = ZoneInfo("Asia/Tehran")
+    today = timezone.localtime(timezone.now(), tehran).date()
+    start = datetime.combine(today, time.min, tzinfo=tehran).astimezone(datetime_timezone.utc)
+    end = datetime.combine(today + timedelta(days=1), time.min, tzinfo=tehran).astimezone(datetime_timezone.utc)
+    return start, end
+
+
+def consultant_submission_count(user):
+    if user.role != "consultant":
+        return 0
+    start, end = tehran_day_bounds()
+    return BlogSubmission.objects.filter(author_id=user.pk, submitted_at__gte=start, submitted_at__lt=end).count()
+
+
+def consultant_submission_limit_reached(user):
+    if user.role != "consultant":
+        return False
+    get_user_model().objects.select_for_update().only("id").get(pk=user.pk)
+    return consultant_submission_count(user) >= MAX_DAILY_CONSULTANT_SUBMISSIONS
+
+
+def daily_limit_error():
+    return json_error("سقف ارسال مقالهٔ امروز تکمیل شده است؛ هر مشاور حداکثر ۵ مقاله در روز می‌تواند ارسال کند.", 429)
 
 
 def read_aparat_hash(url):
@@ -149,7 +179,7 @@ def my_posts(request):
     if not user_has_role(request.user, AUTHOR_ROLES):
         return json_error("برای دیدن نوشته‌ها وارد حساب مشاور یا مدیر شوید.", 403 if request.user.is_authenticated else 401)
     posts = BlogPost.objects.filter(author=request.user).select_related("author").prefetch_related("images")
-    return JsonResponse({"results": [serialize_post(post, include_review_note=True) for post in posts[:100]]})
+    return JsonResponse({"results": [serialize_post(post, include_sections=post.status == BlogPost.Status.REJECTED, include_review_note=True) for post in posts[:100]]})
 
 
 @require_GET
@@ -165,6 +195,8 @@ def pending_posts(request):
 def create_post(request):
     if not user_has_role(request.user, AUTHOR_ROLES):
         return json_error("فقط مشاوران و مدیران می‌توانند مقاله ثبت کنند.", 403 if request.user.is_authenticated else 401)
+    if consultant_submission_count(request.user) >= MAX_DAILY_CONSULTANT_SUBMISSIONS:
+        return daily_limit_error()
     try:
         title = request.POST.get("title", "").strip()
         summary = request.POST.get("summary", "").strip()
@@ -203,6 +235,8 @@ def create_post(request):
     status_value = BlogPost.Status.PUBLISHED if is_moderator else BlogPost.Status.PENDING
 
     with transaction.atomic():
+        if consultant_submission_limit_reached(request.user):
+            return daily_limit_error()
         post = BlogPost.objects.create(
             title=title,
             summary=summary,
@@ -215,6 +249,8 @@ def create_post(request):
             approved_by=request.user if is_moderator else None,
             published_at=timezone.now() if is_moderator else None,
         )
+        if request.user.role == "consultant":
+            BlogSubmission.objects.create(post=post, author=request.user)
         for index, image_file in enumerate(images):
             picture = BlogImage(
                 post=post, order=index, after_section=image_positions[index],
@@ -228,6 +264,80 @@ def create_post(request):
             picture.save()
 
     return JsonResponse(serialize_post(post, include_sections=True), status=201)
+
+
+@require_POST
+@csrf_protect
+def revise_rejected_post(request, post_id):
+    if not user_has_role(request.user, AUTHOR_ROLES):
+        return json_error("برای ویرایش مقاله وارد حساب مشاور یا مدیر شوید.", 403 if request.user.is_authenticated else 401)
+    try:
+        post = BlogPost.objects.get(pk=post_id, author=request.user, status=BlogPost.Status.REJECTED)
+    except BlogPost.DoesNotExist:
+        raise Http404
+    if consultant_submission_count(request.user) >= MAX_DAILY_CONSULTANT_SUBMISSIONS:
+        return daily_limit_error()
+
+    try:
+        title = request.POST.get("title", "").strip()
+        summary = request.POST.get("summary", "").strip()
+        category = request.POST.get("category", "").strip()
+        if not title or len(title) > 180:
+            raise ValueError("عنوان مقاله الزامی است و حداکثر ۱۸۰ کاراکتر دارد.")
+        if not summary or len(summary) > 500:
+            raise ValueError("خلاصه مقاله الزامی است و حداکثر ۵۰۰ کاراکتر دارد.")
+        if len(category) > 80:
+            raise ValueError("دسته‌بندی حداکثر ۸۰ کاراکتر دارد.")
+        sections = validate_sections(request.POST.get("sections", "[]"))
+        video_url = request.POST.get("video_url", "").strip()
+        if len(video_url) > 500:
+            raise ValueError("لینک آپارات حداکثر ۵۰۰ کاراکتر دارد.")
+        if video_url:
+            read_aparat_hash(video_url)
+        images = validate_images(request.FILES.getlist("images"))
+        raw_positions = request.POST.getlist("image_positions")
+        if raw_positions and len(raw_positions) != len(images):
+            raise ValueError("برای هر تصویر باید جایگاه آن را انتخاب کنید.")
+        try:
+            image_positions = [int(value) for value in raw_positions] if raw_positions else [0] * len(images)
+        except (TypeError, ValueError):
+            raise ValueError("جایگاه یکی از تصاویر معتبر نیست.")
+        if any(position < 0 or position > len(sections) for position in image_positions):
+            raise ValueError("جایگاه تصویر باید بعد از خلاصه یا یکی از بخش‌های مقاله باشد.")
+    except ValueError as error:
+        return json_error(str(error), 400)
+
+    words = len(re.findall(r"\S+", f"{title} {summary} " + " ".join(section["body"] for section in sections)))
+    post.title = title
+    post.summary = summary
+    post.category = category
+    post.sections = sections
+    post.video_url = video_url
+    post.reading_minutes = max(1, math.ceil(words / 200))
+    post.status = BlogPost.Status.PENDING
+    post.approved_by = None
+    post.published_at = None
+    post.review_note = ""
+    with transaction.atomic():
+        if consultant_submission_limit_reached(request.user):
+            return daily_limit_error()
+        post.save(update_fields=["title", "summary", "category", "sections", "video_url", "reading_minutes", "status", "approved_by", "published_at", "review_note"])
+        if request.user.role == "consultant":
+            BlogSubmission.objects.create(post=post, author=request.user)
+        if images:
+            old_images = list(post.images.all())
+            for index, image_file in enumerate(images):
+                image_file.seek(0)
+                with Image.open(image_file) as checked_image:
+                    image_format = checked_image.format.lower()
+                image_file.seek(0)
+                picture = BlogImage(post=post, order=index, after_section=image_positions[index], alt_text=f"تصویر {index + 1} برای {title}"[:160])
+                picture.image.save(f"image-{index + 1}.{image_format}", image_file, save=False)
+                picture.save()
+            for picture in old_images:
+                picture.image.delete(save=False)
+            post.images.filter(pk__in=[picture.pk for picture in old_images]).delete()
+    return JsonResponse(serialize_post(post, include_sections=True, include_review_note=True))
 
 
 @require_POST

@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    if (new URLSearchParams(location.search).get("embedded") === "manager") {
+        document.body.classList.add("blog-review-embedded");
+        document.getElementById("review-back-link")?.remove();
+        document.querySelector(".blog-topbar")?.remove();
+    }
     const list = document.getElementById("pending-posts");
     const message = document.getElementById("review-message");
     const make = (tag, className, text) => { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; };
@@ -45,11 +50,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (post.video_embed_url) { const player = make("div", "blog-video"); const frame = document.createElement("iframe"); frame.src = post.video_embed_url; frame.title = `پیش‌نمایش آپارات: ${post.title}`; frame.loading = "lazy"; frame.referrerPolicy = "strict-origin-when-cross-origin"; frame.allow = "fullscreen; picture-in-picture"; frame.allowFullscreen = true; frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-presentation"); player.append(frame); card.append(player); }
                 const videoLink = make("a", "blog-back", "باز کردن ویدیو در آپارات"); videoLink.href = post.video_url; videoLink.target = "_blank"; videoLink.rel = "noopener noreferrer"; card.append(videoLink);
             }
-            const noteLabel = make("label", "blog-field"); noteLabel.append(make("span", "", "توضیح برای نویسنده (در صورت رد مقاله)"));
+            const noteLabel = make("label", "blog-field"); noteLabel.append(make("span", "", "توضیح برای نویسنده (اختیاری؛ برای رد مقاله)"));
             const note = document.createElement("textarea"); note.maxLength = 500; note.rows = 2; note.placeholder = "موارد لازم برای اصلاح را بنویسید…"; noteLabel.append(note); card.append(noteLabel);
             const actions = make("div", "blog-review-card__actions");
             const approve = make("button", "blog-button blog-button--primary", "تأیید و انتشار"); approve.type = "button";
-            const reject = make("button", "blog-button blog-button--light", "رد مقاله و ارسال توضیح"); reject.type = "button";
+            const reject = make("button", "blog-button blog-button--light", "رد مقاله"); reject.type = "button";
             const moderate = async (action) => {
                 approve.disabled = reject.disabled = true;
                 try {

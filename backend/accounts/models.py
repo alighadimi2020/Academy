@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.conf import settings
 from django.db import models
 
 
@@ -42,6 +43,7 @@ class User(AbstractUser):
         ("humanities", "انسانی"),
         ("technical", "فنی"),
     )
+    GENDER_CHOICES = (("female", "دختر"), ("male", "پسر"))
 
     phone = models.CharField(max_length=11, unique=True, verbose_name="شماره موبایل")
     full_name = models.CharField(max_length=100, verbose_name="نام و نام خانوادگی")
@@ -49,11 +51,13 @@ class User(AbstractUser):
     parent_phone = models.CharField(max_length=11, blank=True, verbose_name="شماره والد")
     grade = models.CharField(max_length=10, choices=GRADE_CHOICES, verbose_name="پایه تحصیلی")
     major = models.CharField(max_length=20, choices=MAJOR_CHOICES, blank=True, verbose_name="رشته تحصیلی")
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, verbose_name="جنسیت")
 
     ROLE_CHOICES = (
         ("student", "دانش‌آموز"),
         ("instructor", "مدرس"),
         ("consultant", "مشاور"),
+        ("applicant", "متقاضی مشاوره"),
         ("manager", "مدیر مجموعه"),
         ("admin", "ادمین سایت"),
     )
@@ -74,6 +78,7 @@ class PendingRegistration(models.Model):
     parent_phone = models.CharField(max_length=11, blank=True)
     grade = models.CharField(max_length=10)
     major = models.CharField(max_length=20, blank=True)
+    gender = models.CharField(max_length=10, blank=True)
     password_hash = models.CharField(max_length=128)
     verification_code_hash = models.CharField(max_length=128)
     expires_at = models.DateTimeField()
@@ -82,3 +87,24 @@ class PendingRegistration(models.Model):
 
     def __str__(self):
         return self.phone
+
+
+class AuditEvent(models.Model):
+    CATEGORY_CHOICES = (("auth", "ورود و حساب"), ("users", "کاربران"), ("consultation", "مشاوره"), ("schedule", "برنامه درسی"), ("content", "محتوا"), ("security", "امنیت"), ("system", "سیستم"))
+    OUTCOME_CHOICES = (("success", "موفق"), ("denied", "ردشده"), ("error", "خطا"))
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="audit_events")
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, db_index=True)
+    action = models.CharField(max_length=80, db_index=True)
+    outcome = models.CharField(max_length=12, choices=OUTCOME_CHOICES, db_index=True)
+    subject = models.CharField(max_length=100, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=400, blank=True)
+    details = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering = ("-created_at", "-id")
+        indexes = [models.Index(fields=("category", "created_at"), name="audit_category_date_idx"), models.Index(fields=("actor", "created_at"), name="audit_actor_date_idx")]
+
+    def __str__(self):
+        return f"{self.action} · {self.created_at:%Y-%m-%d %H:%M:%S}"

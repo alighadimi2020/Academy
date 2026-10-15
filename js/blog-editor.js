@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const submitButton = document.getElementById("submit-blog");
     const api = "/api/blog/";
     const statusLabels = { pending: "در انتظار تأیید", published: "منتشرشده", rejected: "ردشده" };
+    let editingPostId = new URLSearchParams(window.location.search).get("edit");
     const numberFa = (value) => new Intl.NumberFormat("fa-IR").format(value);
 
     const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin" });
@@ -160,7 +161,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         submitButton.disabled = true;
         submitButton.textContent = "در حال ثبت…";
         try {
-            const response = await fetch(`${api}create/`, {
+            const submitUrl = editingPostId ? `${api}posts/${encodeURIComponent(editingPostId)}/revise/` : `${api}create/`;
+            const response = await fetch(submitUrl, {
                 method: "POST",
                 credentials: "same-origin",
                 headers: { "X-CSRFToken": csrf.csrfToken },
@@ -168,7 +170,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             const result = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(result.detail || "ثبت مقاله انجام نشد.");
-            setMessage(result.status === "published" ? "مقاله منتشر شد و در مجله نمایش داده می‌شود." : "مقاله ثبت شد و پس از تأیید مدیر منتشر می‌شود.");
+            setMessage(result.status === "published" ? "مقاله منتشر شد و در مجله نمایش داده می‌شود." : editingPostId ? "مقاله اصلاح شد و دوباره برای تأیید مدیر ارسال شد." : "مقاله ثبت شد و پس از تأیید مدیر منتشر می‌شود.");
+            editingPostId = null;
+            window.history.replaceState(null, "", window.location.pathname);
             form.reset();
             previewObjectUrls.forEach((url) => URL.revokeObjectURL(url));
             previewObjectUrls = [];
@@ -182,7 +186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             setMessage(error.message, true);
         } finally {
             submitButton.disabled = false;
-            submitButton.textContent = "ثبت مقاله";
+            submitButton.textContent = editingPostId ? "ثبت اصلاحات و ارسال برای بررسی" : "ثبت مقاله";
         }
     });
 
@@ -198,7 +202,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 empty.className = "blog-muted";
                 empty.textContent = "هنوز نوشته‌ای ثبت نکرده‌اید.";
                 target.append(empty);
-                return;
+                return [];
             }
             data.results.forEach((post) => {
                 const row = document.createElement("div");
@@ -209,6 +213,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 state.className = `blog-status blog-status--${post.status}`;
                 state.textContent = statusLabels[post.status] || post.status;
                 row.append(title, state);
+                if (post.status === "rejected") {
+                    const feedback = document.createElement("p");
+                    feedback.className = "blog-review-note";
+                    feedback.textContent = post.review_note || "مدیر توضیحی ثبت نکرده است؛ می‌توانید مقاله را اصلاح و دوباره ارسال کنید.";
+                    const revise = document.createElement("a");
+                    revise.href = `blog-editor.html?edit=${encodeURIComponent(post.id)}`;
+                    revise.className = "blog-button blog-button--light";
+                    revise.textContent = "ویرایش و ارسال دوباره";
+                    row.append(feedback, revise);
+                }
                 if (post.status === "published") {
                     const link = document.createElement("a");
                     link.href = `blog-detail.html?id=${encodeURIComponent(post.id)}`;
@@ -217,10 +231,36 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
                 target.append(row);
             });
+            return data.results;
         } catch {
             target.textContent = "فهرست نوشته‌ها بارگذاری نشد.";
+            return [];
         }
     }
 
-    await loadMyPosts();
+    const myPosts = await loadMyPosts();
+    if (editingPostId) {
+        const post = myPosts.find((item) => String(item.id) === String(editingPostId) && item.status === "rejected");
+        if (!post) {
+            setMessage("این مقاله برای ویرایش پیدا نشد یا در وضعیت قابل اصلاح نیست.", true);
+            editingPostId = null;
+        } else {
+            form.elements.namedItem("title").value = post.title || "";
+            form.elements.namedItem("summary").value = post.summary || "";
+            form.elements.namedItem("category").value = post.category || "";
+            form.elements.namedItem("video_url").value = post.video_url || "";
+            sectionsRoot.replaceChildren();
+            (post.sections || []).forEach((item) => {
+                addSection();
+                const section = sectionsRoot.lastElementChild;
+                section.querySelector("[name=heading]").value = item.heading || "";
+                section.querySelector("[name=body]").value = item.body || "";
+            });
+            if (!sectionsRoot.children.length) addSection();
+            document.querySelector(".blog-intro h1").textContent = "ویرایش و ارسال دوباره مقاله";
+            submitButton.textContent = "ثبت اصلاحات و ارسال برای بررسی";
+            setMessage(post.review_note ? `توضیح مدیر: ${post.review_note} · تصویرهای فعلی حفظ می‌شوند مگر اینکه تصویر تازه‌ای انتخاب کنید.` : "مدیر توضیحی ثبت نکرده است؛ تصویرهای فعلی حفظ می‌شوند مگر اینکه تصویر تازه‌ای انتخاب کنید.");
+            updateReadingTime();
+        }
+    }
 });

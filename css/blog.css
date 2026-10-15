@@ -95,3 +95,27 @@
 .blog-image-thumb select { width:100%; min-height:38px; padding:6px 8px; border:1px solid var(--blog-line); border-radius:9px; background:#fff; color:var(--blog-ink); font:inherit; font-size:11px; }
 .blog-image-remove { width:100%; min-height:36px; padding:6px 9px; border:1px solid #f1d2d2; border-radius:9px; background:#fff6f6; color:#a02e2e; font:inherit; font-size:11px; font-weight:700; cursor:pointer; }
 .blog-image-remove:hover { background:#ffeded; }
+
+.blog-review-note {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: #8a4b08;
+    background: #fff8e7;
+    line-height: 1.9;
+}
+
+.blog-review-embedded {
+    background: transparent;
+}
+
+.blog-review-embedded .blog-shell {
+    width: 100%;
+    margin: 0;
+    padding: 12px 0;
+}
+
+.blog-review-embedded .blog-panel {
+    box-shadow: none;
+}

@@ -89,3 +89,33 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
+
+from .models import AuditEvent
+
+
+@admin.register(AuditEvent)
+class AuditEventAdmin(admin.ModelAdmin):
+    list_display = ("created_at", "actor", "category", "action", "outcome", "ip_address")
+    list_filter = ("category", "outcome", "created_at")
+    search_fields = ("actor__full_name", "actor__phone", "subject", "action", "ip_address")
+    date_hierarchy = "created_at"
+    ordering = ("-created_at", "-id")
+    list_select_related = ("actor",)
+    readonly_fields = ("created_at", "actor", "category", "action", "outcome", "subject", "ip_address", "user_agent", "details")
+    fields = readonly_fields
+    actions = None
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

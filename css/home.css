@@ -3170,3 +3170,18 @@ p {
         transition: none;
     }
 }
+
+.payeh-magazine__image--empty {
+    display: grid;
+    place-items: center;
+    color: #0b55a9;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e8f3ff, #f6f9fd);
+}
+
+.payeh-magazine__empty {
+    grid-column: 1 / -1;
+    padding: 24px;
+    text-align: center;
+    color: #68778b;
+}

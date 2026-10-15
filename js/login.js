@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 instructor: "student.html",
                 admin: "manager.html",
                 manager: "manager.html",
+                applicant: "consultant-register.html#status",
             };
             window.location.assign(destinations[result.role] || "index.html");
         } catch (requestError) {

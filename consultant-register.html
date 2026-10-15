@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
+    <meta name="theme-color" content="#FFFCF5">
+    <title>ثبت‌نام و ارسال رزومه مشاور | آکادمی پایه</title>
+    <link rel="stylesheet" href="css/login.css">
+    <style>
+        .payeh-consultant-reg__container { max-width: 680px; width: 100%; margin: 30px auto; }
+        .payeh-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        @media (max-width: 620px) { .payeh-form-row { grid-template-columns: 1fr; } }
+        
+        /* Dropzone styling */
+        .payeh-dropzone {
+            border: 2px dashed #93c5fd;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            background: #f0f7ff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .payeh-dropzone:hover, .payeh-dropzone.is-dragover {
+            border-color: #2563eb;
+            background: #e0f0fe;
+        }
+        .payeh-dropzone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        .payeh-dropzone__icon { font-size: 32px; display: block; margin-bottom: 6px; }
+        .payeh-dropzone__text { font-size: 13px; font-weight: 700; color: #1e40af; margin: 0 0 4px; }
+        .payeh-dropzone__hint { font-size: 11px; color: #64748b; margin: 0; }
+        .payeh-file-badge {
+            display: none;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #dbeafe;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #1e3a8a;
+            font-weight: 700;
+            word-break: break-all;
+        }
+
+        /* Persian Jalali Datepicker */
+        .payeh-datepicker-wrap { position: relative; }
+        .payeh-datepicker-popover {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            z-index: 1000;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            padding: 14px;
+            width: 300px;
+            user-select: none;
+        }
+        .payeh-datepicker-popover.is-open { display: block; }
+        .payeh-dp-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+        .payeh-dp-selects { display: flex; gap: 6px; flex: 1; }
+        .payeh-dp-selects select {
+            flex: 1;
+            padding: 6px 4px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font: inherit;
+            font-size: 12px;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+        .payeh-dp-nav {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 800;
+        }
+        .payeh-dp-nav:hover { background: #e2e8f0; }
+        .payeh-dp-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+        .payeh-dp-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .payeh-dp-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .payeh-dp-day:hover:not(.is-empty) { background: #dbeafe; color: #1d4ed8; }
+        .payeh-dp-day.is-selected { background: #2563eb; color: #ffffff; }
+        .payeh-dp-day.is-empty { cursor: default; }
+
+        /* Status view */
+        .payeh-status-card {
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            margin: 16px 0;
+        }
+        .payeh-status-card.is-pending { background: #eff6ff; border-color: #bfdbfe; }
+        .payeh-status-card.is-rejected { background: #fef2f2; border-color: #fecaca; }
+        .payeh-status-card.is-approved { background: #f0fdf4; border-color: #bbf7d0; }
+        .payeh-status-icon { font-size: 44px; margin-bottom: 12px; display: block; }
+        .payeh-status-card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 800; }
+        .payeh-status-card p { margin: 0 0 14px; font-size: 13px; line-height: 1.9; color: #475569; }
+        .payeh-status-meta { font-size: 11px; color: #64748b; margin-top: 10px; }
+
+        .payeh-lockout-banner {
+            display: none;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #fee2e2;
+            border: 1px solid #f87171;
+            color: #991b1b;
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.9;
+            margin-bottom: 14px;
+        }
+    </style>
+</head>
+<body>
+    <main class="payeh-login">
+        <div class="payeh-login__background">
+            <span class="payeh-login__shape payeh-login__shape--one"></span>
+            <span class="payeh-login__shape payeh-login__shape--two"></span>
+            <span class="payeh-login__shape payeh-login__shape--three"></span>
+        </div>
+        <div class="payeh-login__container payeh-consultant-reg__container">
+            <section class="payeh-login__card">
+                <header class="payeh-login__heading">
+                    <span class="payeh-login__eyebrow" id="reg-step-label">همکاری با آکادمی پایه</span>
+                    <h1 class="payeh-login__title" id="reg-title">ثبت‌نام و ارسال رزومه مشاور</h1>
+                    <p class="payeh-login__description" id="reg-description">مشخصات هویتی، سوابق کنکوری و فایل رزومه خود را وارد کنید.</p>
+                </header>
+
+                <div class="payeh-reg-mode-tabs" style="display: flex; gap: 8px; background: #f1f5f9; padding: 4px; border-radius: 12px; margin-bottom: 20px;">
+                    <button type="button" id="tab-btn-register" class="is-active" style="flex: 1; padding: 11px 14px; border-radius: 10px; font-size: 13px; font-weight: 800; border: none; cursor: pointer; background: #ffffff; color: #0b3dff; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        <span>فرم ثبت‌نام و ارسال رزومه</span>
+                    </button>
+                    <button type="button" id="tab-btn-status" style="flex: 1; padding: 11px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; background: transparent; color: #64748b; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span>پیگیری وضعیت درخواست قبلی</span>
+                    </button>
+                </div>
+
+                <div class="payeh-signup__progress" aria-hidden="true">
+                    <span id="reg-progress" style="width: 50%;"></span>
+                </div>
+
+                <!-- Status View (shown if user already applied or navigated to #status) -->
+                <section id="reg-status-section" hidden>
+                    <div id="reg-status-box" class="payeh-status-card is-pending">
+                        <div id="reg-status-icon" class="payeh-status-icon"></div>
+                        <h3 id="reg-status-title">در حال بررسی درخواست</h3>
+                        <p id="reg-status-message">درخواست همکاری شما با موفقیت ثبت شده و در صف بررسی مدیران آکادمی است.</p>
+                        <div id="reg-status-note" style="display:none; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;"></div>
+                        <div class="payeh-status-meta" id="reg-status-meta"></div>
+                    </div>
+                    <div class="payeh-signup__actions" style="margin-top: 16px;">
+                        <button type="button" id="reg-reapply-btn" class="payeh-login__submit" style="display: none;">ثبت درخواست جدید</button>
+                        <a href="login.html" class="payeh-login__submit payeh-signup__secondary" style="text-align: center; text-decoration: none;">ورود به حساب</a>
+                    </div>
+                </section>
+
+                <!-- Form Section -->
+                <form class="payeh-login__form" id="consultant-reg-form" novalidate>
+                    <!-- STEP 1: Details & Resume Upload -->
+                    <section class="payeh-signup__step" id="reg-step-1">
+                        <div class="payeh-form-row">
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-full-name">نام و نام خانوادگی *</label>
+                                <input class="payeh-login__input payeh-login__input--plain" id="reg-full-name" name="full_name" type="text" maxlength="100" autocomplete="name" required placeholder="مثلاً: محمد رضایی">
+                                <span class="payeh-login__error" data-error="full_name"></span>
+                            </div>
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-phone">شماره موبایل *</label>
+                                <input class="payeh-login__input payeh-login__input--plain" id="reg-phone" name="phone" type="tel" maxlength="11" inputmode="numeric" autocomplete="tel" placeholder="۰۹۱۲۱۲۳۴۵۶۷" required>
+                                <span class="payeh-login__error" data-error="phone"></span>
+                            </div>
+                        </div>
+
+                        <div class="payeh-form-row">
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-national-id">کد ملی <small>(اختیاری)</small></label>
+                                <input class="payeh-login__input payeh-login__input--plain" id="reg-national-id" name="national_id" type="text" maxlength="20" inputmode="numeric" placeholder="۱۰ رقم کد ملی">
+                                <span class="payeh-login__error" data-error="national_id"></span>
+                            </div>
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-gender">جنسیت</label>
+                                <select class="payeh-login__input payeh-login__input--plain" id="reg-gender" name="gender">
+                                    <option value="">انتخاب نشده</option>
+                                    <option value="male">پسر / آقا</option>
+                                    <option value="female">دختر / خانم</option>
+                                </select>
+                                <span class="payeh-login__error" data-error="gender"></span>
+                            </div>
+                        </div>
+
+                        <!-- Date of Birth with Interactive Persian Calendar -->
+                        <div class="payeh-form-row">
+                            <div class="payeh-login__field payeh-datepicker-wrap">
+                                <label class="payeh-login__label" for="reg-birth-date">تاریخ تولد (شمسی) *</label>
+                                <input class="payeh-login__input payeh-login__input--plain" id="reg-birth-date" name="birth_date" type="text" readonly required placeholder="انتخاب تاریخ از تقویم..." style="cursor: pointer; background: #fff;">
+                                <span class="payeh-login__error" data-error="birth_date"></span>
+                                
+                                <!-- Jalali Popover -->
+                                <div id="reg-datepicker-popover" class="payeh-datepicker-popover" role="dialog" aria-modal="false">
+                                    <div class="payeh-dp-header">
+                                        <button type="button" class="payeh-dp-nav" id="dp-prev-month" title="ماه قبل">›</button>
+                                        <div class="payeh-dp-selects">
+                                            <select id="dp-year-select" aria-label="انتخاب سال"></select>
+                                            <select id="dp-month-select" aria-label="انتخاب ماه"></select>
+                                        </div>
+                                        <button type="button" class="payeh-dp-nav" id="dp-next-month" title="ماه بعد">‹</button>
+                                    </div>
+                                    <div class="payeh-dp-weekdays">
+                                        <span>ش</span><span>ی</span><span>د</span><span>س</span><span>چ</span><span>پ</span><span>ج</span>
+                                    </div>
+                                    <div class="payeh-dp-days" id="dp-days-grid"></div>
+                                </div>
+                            </div>
+
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-konkur-year">سال کنکور *</label>
+                                <select class="payeh-login__input payeh-login__input--plain" id="reg-konkur-year" name="konkur_year" required>
+                                    <option value="">انتخاب سال کنکور</option>
+                                    <option value="1403">۱۴۰۳</option>
+                                    <option value="1402">۱۴۰۲</option>
+                                    <option value="1401">۱۴۰۱</option>
+                                    <option value="1400">۱۴۰۰</option>
+                                    <option value="1399">۱۳۹۹</option>
+                                    <option value="1398">۱۳۹۸</option>
+                                    <option value="1397">۱۳۹۷</option>
+                                    <option value="1396">۱۳۹۶</option>
+                                    <option value="1395">۱۳۹۵</option>
+                                    <option value="1394">۱۳۹۴</option>
+                                </select>
+                                <span class="payeh-login__error" data-error="konkur_year"></span>
+                            </div>
+                        </div>
+
+                        <!-- Konkur Quota and Rank -->
+                        <div class="payeh-form-row">
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-konkur-quota">سهمیه در کنکور *</label>
+                                <select class="payeh-login__input payeh-login__input--plain" id="reg-konkur-quota" name="konkur_quota" required>
+                                    <option value="">انتخاب سهمیه</option>
+                                    <option value="منطقه ۱">منطقه ۱</option>
+                                    <option value="منطقه ۲">منطقه ۲</option>
+                                    <option value="منطقه ۳">منطقه ۳</option>
+                                    <option value="۵ درصد">سهمیه ۵ درصد (ایثارگران)</option>
+                                    <option value="۲۵ درصد">سهمیه ۲۵ درصد (ایثارگران)</option>
+                                    <option value="سایر / آزاد">سایر / آزاد</option>
+                                </select>
+                                <span class="payeh-login__error" data-error="konkur_quota"></span>
+                            </div>
+
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-quota-rank">رتبه در سهمیه *</label>
+                                <input class="payeh-login__input payeh-login__input--plain" id="reg-quota-rank" name="quota_rank" type="number" min="1" max="999999" placeholder="مثلاً: ۷۴" required>
+                                <span class="payeh-login__error" data-error="quota_rank"></span>
+                            </div>
+                        </div>
+
+                        <!-- Academic Background -->
+                        <div class="payeh-form-row">
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-major">رشته دانشگاهی قبولی / تحصیلی</label>
+                                <input class="payeh-login__input payeh-login__input--plain" id="reg-major" name="university_major" type="text" maxlength="120" placeholder="مثلاً: پزشکی، مهندسی کامپیوتر">
+                                <span class="payeh-login__error" data-error="university_major"></span>
+                            </div>
+
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-university">دانشگاه محل تحصیل</label>
+                                <input class="payeh-login__input payeh-login__input--plain" id="reg-university" name="current_university" type="text" maxlength="150" placeholder="مثلاً: دانشگاه علوم پزشکی تهران">
+                                <span class="payeh-login__error" data-error="current_university"></span>
+                            </div>
+                        </div>
+
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="reg-experience">سابقه فعالیت مشاوره (به سال)</label>
+                            <input class="payeh-login__input payeh-login__input--plain" id="reg-experience" name="experience_years" type="number" min="0" max="40" value="0" placeholder="۰">
+                            <span class="payeh-login__error" data-error="experience_years"></span>
+                        </div>
+
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="reg-bio">توضیحات و سوابق مشاوره <small>(اختیاری)</small></label>
+                            <textarea class="payeh-login__input payeh-login__input--plain" id="reg-bio" name="bio" rows="3" maxlength="3000" placeholder="توضیحاتی درباره شیوه برنامه‌ریزی یا افتخارات آموزشی خود بنویسید..."></textarea>
+                            <span class="payeh-login__error" data-error="bio"></span>
+                        </div>
+
+                        <!-- Secure Resume Upload Box -->
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label">فایل رزومه تحصیلی / مشاوره‌ای *</label>
+                            <div class="payeh-dropzone" id="reg-dropzone">
+                                <div class="payeh-dropzone__icon" style="width: 46px; height: 46px; border-radius: 12px; background: #dbeafe; color: #1d4ed8; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+                                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                </div>
+                                <p class="payeh-dropzone__text">کلیک کنید یا فایل رزومه را اینجا بکشید و رها کنید</p>
+                                <p class="payeh-dropzone__hint">فرمت‌های مجاز: فقط PDF و DOCX · حداکثر حجم مجاز: ۱۰ مگابایت</p>
+                                <div id="reg-file-badge" class="payeh-file-badge"></div>
+                            </div>
+                            <span class="payeh-login__error" data-error="resume_file"></span>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="payeh-form-row">
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-password">رمز عبور حساب کاربری *</label>
+                                <input class="payeh-login__input payeh-login__input--plain" id="reg-password" name="password" type="password" minlength="8" autocomplete="new-password" required placeholder="حداقل ۸ کاراکتر">
+                                <span class="payeh-login__error" data-error="password"></span>
+                            </div>
+                            <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-password-confirm">تکرار رمز عبور *</label>
+                                <input class="payeh-login__input payeh-login__input--plain" id="reg-password-confirm" name="password_confirmation" type="password" minlength="8" autocomplete="new-password" required placeholder="تکرار رمز عبور">
+                                <span class="payeh-login__error" data-error="password_confirmation"></span>
+                            </div>
+                        </div>
+
+                        <div id="reg-step-1-message" class="payeh-login__message" role="status" aria-live="polite"></div>
+
+                        <button class="payeh-login__submit" type="submit" id="reg-step-1-submit" style="margin-top: 14px;">
+                            ثبت مشخصات و دریافت کد تأیید
+                        </button>
+                    </section>
+
+                    <!-- STEP 2: Phone Verification (OTP) -->
+                    <section class="payeh-signup__step" id="reg-step-2" hidden>
+                        <div id="reg-lockout-banner" class="payeh-lockout-banner" role="alert"></div>
+
+                        <div class="payeh-signup__notice">
+                            کد تأیید ۶ رقمی به شماره <strong id="reg-target-phone"></strong> پیامک شد. لطفاً آن را وارد فرمایید.
+                        </div>
+
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="reg-code">کد تأیید ۶ رقمی</label>
+                            <input class="payeh-login__input payeh-login__input--plain" id="reg-code" type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required placeholder="مثلاً: ۱۲۳۴۵۶">
+                            <span class="payeh-login__error" data-error="code"></span>
+                        </div>
+
+                        <div id="reg-step-2-message" class="payeh-login__message" role="status" aria-live="polite"></div>
+
+                        <div class="payeh-signup__actions">
+                            <button class="payeh-login__submit payeh-signup__secondary" type="button" id="reg-back-to-1">ویرایش اطلاعات</button>
+                            <button class="payeh-login__submit" type="button" id="reg-verify-submit">تأیید نهایی و ارسال برای بررسی</button>
+                        </div>
+
+                        <div style="margin-top: 14px; text-align: center;">
+                            <button type="button" id="reg-resend-btn" style="background:none; border:none; color:#2563eb; font:inherit; font-size:12px; cursor:pointer; font-weight:700;">
+                                ارسال مجدد کد پیامکی
+                            </button>
+                        </div>
+                    </section>
+                </form>
+
+                <div class="payeh-login__divider">
+                    <span>یا</span>
+                </div>
+
+                <div class="payeh-login__register">
+                    <span>دانش‌آموز هستید و می‌خواهید ثبت‌نام کنید؟</span>
+                    <a href="signup.html">ثبت‌نام دانش‌آموزان</a>
+                </div>
+
+                <a href="index.html" class="payeh-login__back">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6 8 12l6 6"></path></svg>
+                    <span>بازگشت به صفحه اصلی</span>
+                </a>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/consultant-register.js"></script>
+</body>
+</html>

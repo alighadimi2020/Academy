@@ -36,3 +36,6 @@ media/
 *.cer
 credentials.json
 secrets.json
+
+# Flutter client (parked for later)
+/flutter_app/

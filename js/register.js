@@ -121,6 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     full_name: document.getElementById("signup-full-name").value.trim(),
                     grade: grade.value,
                     major: major.value,
+                    gender: document.getElementById("signup-gender")?.value || "",
                     national_id: nationalId,
                     phone,
                     parent_phone: parentPhone,
