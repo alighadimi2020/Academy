@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY backend/requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --index-url https://mirror-pypi.runflare.com/simple --trusted-host mirror-pypi.runflare.com -r requirements.txt
 
 COPY backend/ /app/backend/
 COPY css/ /app/css/
