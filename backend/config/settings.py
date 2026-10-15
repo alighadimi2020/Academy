@@ -204,3 +204,13 @@ TELEGRAM_BOT_USERNAME = os.getenv("TELEGRAM_BOT_USERNAME", "").strip()
 TELEGRAM_WEBHOOK_SECRET = os.getenv("TELEGRAM_WEBHOOK_SECRET", "").strip()
 TELEGRAM_PROXY = os.getenv("TELEGRAM_PROXY", "").strip()
 
+# Redis Cache & Fast Cached Sessions
+REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1").strip()
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": REDIS_URL,
+    }
+}
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+

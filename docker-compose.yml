@@ -17,6 +17,20 @@ services:
       timeout: 5s
       retries: 10
 
+  redis:
+    image: redis:7-alpine
+    container_name: paye_academy_redis
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - paye_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   web:
     build:
       context: .
@@ -27,11 +41,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - .env
     environment:
       - DB_HOST=127.0.0.1
       - DB_PORT=5433
+      - REDIS_URL=redis://127.0.0.1:6379/1
     volumes:
       - ./backend/media:/app/backend/media
       - ./backend/staticfiles:/app/backend/staticfiles
@@ -52,9 +69,11 @@ services:
     environment:
       - DB_HOST=127.0.0.1
       - DB_PORT=5433
+      - REDIS_URL=redis://127.0.0.1:6379/1
     volumes:
       - ./backend/media:/app/backend/media
     command: ["python", "manage.py", "run_telegram_bot"]
 
 volumes:
   paye_postgres_data:
+  paye_redis_data:
