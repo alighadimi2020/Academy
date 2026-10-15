@@ -37,6 +37,10 @@ def start_consultant_registration(request):
 
         phone = valid_phone(request.POST.get("phone"))
 
+        email = str(request.POST.get("email", "")).strip().lower()[:100]
+        if not email or "@" not in email or "." not in email:
+            raise ValueError("آدرس ایمیل معتبر الزامی است.")
+
         # Check if already an approved active consultant
         if User.objects.filter(phone=phone, role="consultant", is_active=True).exists():
             return JsonResponse({"detail": "با این شماره موبایل قبلاً حساب مشاور فعال ثبت شده است. لطفاً وارد شوید."}, status=409)
@@ -105,50 +109,72 @@ def start_consultant_registration(request):
     except Exception as exc:
         return JsonResponse({"detail": f"خطا در پردازش اطلاعات: {exc}"}, status=400)
 
-    # Check if a pending registration is currently locked out by rate limiting
-    existing_pending = PendingConsultantRegistration.objects.filter(phone=phone).first()
-    if existing_pending and existing_pending.attempts >= 4 and existing_pending.last_attempt_at:
-        lock_until = existing_pending.last_attempt_at + timedelta(minutes=2)
-        now = timezone.now()
-        if now < lock_until:
-            remaining_seconds = int((lock_until - now).total_seconds())
-            return JsonResponse({
-                "detail": f"به دلیل بیش از ۴ بار ورود کد اشتباه، تا {remaining_seconds} ثانیه دیگر امکان درخواست جدید ندارید.",
-                "locked": True,
-                "remaining_seconds": remaining_seconds
-            }, status=429)
+    # Directly create user, application, and profile without SMS OTP
+    with transaction.atomic():
+        user = User.objects.filter(phone=phone).first()
+        if user:
+            user.full_name = full_name
+            user.email = email
+            user.national_id = national_id
+            user.gender = gender
+            user.role = "applicant"
+            user.is_active = True
+            user.password = make_password(password)
+            user.save()
+        else:
+            user = User.objects.create(
+                phone=phone,
+                email=email,
+                full_name=full_name,
+                national_id=national_id,
+                gender=gender,
+                role="applicant",
+                is_active=True,
+                password=make_password(password),
+            )
 
-    code = f"{secrets.randbelow(1_000_000):06d}"
-    pending, _ = PendingConsultantRegistration.objects.update_or_create(
-        phone=phone,
-        defaults={
-            "full_name": full_name,
-            "national_id": national_id,
-            "gender": gender,
-            "birth_date": birth_date,
-            "konkur_year": konkur_year,
-            "konkur_quota": konkur_quota,
-            "quota_rank": quota_rank,
-            "university_major": university_major,
-            "current_university": current_university,
-            "experience_years": experience_years,
-            "bio": bio,
-            "resume_file_path": saved_resume_path,
-            "password_hash": make_password(password),
-            "verification_code_hash": make_password(code),
-            "expires_at": timezone.now() + timedelta(minutes=5),
-            "attempts": 0,
-            "last_attempt_at": None,
-        }
-    )
+        application = ConsultantApplication.objects.create(
+            user=user,
+            phone=phone,
+            email=email,
+            full_name=full_name,
+            national_id=national_id,
+            gender=gender,
+            birth_date=birth_date,
+            konkur_year=konkur_year,
+            konkur_quota=konkur_quota,
+            quota_rank=quota_rank,
+            university_major=university_major,
+            current_university=current_university,
+            experience_years=experience_years,
+            bio=bio,
+            resume_file=saved_resume_path,
+            status=ConsultantApplication.Status.PENDING,
+        )
 
-    try:
-        send_verification_code(phone, code)
-    except Exception:
-        pending.delete()
-        return JsonResponse({"detail": "ارسال کد تأیید انجام نشد. سرویس پیامک را بررسی کنید."}, status=503)
+        profile, _ = ConsultantProfile.objects.get_or_create(user=user)
+        profile.birth_date = birth_date
+        profile.konkur_year = konkur_year
+        profile.konkur_quota = konkur_quota
+        profile.quota_rank = quota_rank
+        profile.university_major = university_major
+        profile.current_university = current_university
+        profile.experience_years = experience_years
+        profile.bio = bio
+        profile.resume_file = saved_resume_path
+        profile.application_status = "pending"
+        profile.save()
 
-    return JsonResponse({"ok": True, "detail": "کد تأیید برای شماره شما ارسال شد."})
+        auth_login(request, user)
+        record_event(request, "consultant.registration.submitted", "consultation", "success", subject=user.phone, details={"email": email})
+
+    return JsonResponse({
+        "ok": True,
+        "detail": "درخواست همکاری و پرونده شما با موفقیت ثبت شد و برای بررسی در اختیار مدیر مجموعه قرار گرفت.",
+        "status": "pending",
+        "role": user.role,
+        "direct_submitted": True
+    }, status=201)
 
 
 @require_POST
@@ -316,6 +342,7 @@ def manager_consultant_applications(request):
             "user_id": app.user_id,
             "full_name": app.full_name,
             "phone": app.phone,
+            "email": getattr(app, "email", "") or (app.user.email if app.user else ""),
             "national_id": app.national_id,
             "gender": app.gender,
             "birth_date": app.birth_date,
@@ -408,6 +435,7 @@ def manager_decide_consultant_application(request, application_id):
                 "credentials": {
                     "full_name": app.full_name,
                     "phone": user.phone,
+                    "email": getattr(app, "email", "") or user.email,
                     "password": chosen_password,
                     "login_url": "/login.html"
                 }

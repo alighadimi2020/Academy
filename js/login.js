@@ -20,10 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
         passwordToggle.setAttribute("aria-label", visible ? "مخفی کردن رمز عبور" : "نمایش رمز عبور");
     });
 
-    phoneInput?.addEventListener("input", () => {
-        phoneInput.value = phoneInput.value.replace(/[^0-9۰-۹٠-٩]/g, "");
-    });
-
     const clearErrors = () => {
         phoneError.textContent = "";
         passwordError.textContent = "";
@@ -36,14 +32,24 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         clearErrors();
-        const phone = digits(phoneInput.value.trim());
+        const rawIdentifier = phoneInput.value.trim();
+        const isEmail = rawIdentifier.includes("@");
+        const identifier = isEmail ? rawIdentifier.toLowerCase() : digits(rawIdentifier);
         const password = passwordInput.value;
         let valid = true;
 
-        if (!/^09\d{9}$/.test(phone)) {
-            phoneError.textContent = "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود.";
-            phoneInput.closest(".payeh-login__field")?.classList.add("is-error");
-            valid = false;
+        if (isEmail) {
+            if (!identifier.includes(".") || identifier.length < 5) {
+                phoneError.textContent = "آدرس ایمیل معتبر وارد کنید.";
+                phoneInput.closest(".payeh-login__field")?.classList.add("is-error");
+                valid = false;
+            }
+        } else {
+            if (!/^09\d{9}$/.test(identifier)) {
+                phoneError.textContent = "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود یا ایمیل وارد کنید.";
+                phoneInput.closest(".payeh-login__field")?.classList.add("is-error");
+                valid = false;
+            }
         }
         if (!password) {
             passwordError.textContent = "رمز عبور را وارد کنید.";
@@ -69,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "X-CSRFToken": csrfData.csrfToken,
                 },
                 body: JSON.stringify({
-                    phone,
+                    phone: identifier,
                     password,
                     remember: document.getElementById("payeh-login-remember")?.checked || false,
                 }),

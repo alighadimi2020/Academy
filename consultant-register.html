@@ -226,10 +226,18 @@
 
                         <div class="payeh-form-row">
                             <div class="payeh-login__field">
+                                <label class="payeh-login__label" for="reg-email">آدرس ایمیل *</label>
+                                <input class="payeh-login__input payeh-login__input--plain" id="reg-email" name="email" type="email" autocomplete="email" required placeholder="name@example.com" style="direction: ltr; text-align: right;">
+                                <span class="payeh-login__error" data-error="email"></span>
+                            </div>
+                            <div class="payeh-login__field">
                                 <label class="payeh-login__label" for="reg-national-id">کد ملی <small>(اختیاری)</small></label>
                                 <input class="payeh-login__input payeh-login__input--plain" id="reg-national-id" name="national_id" type="text" maxlength="20" inputmode="numeric" placeholder="۱۰ رقم کد ملی">
                                 <span class="payeh-login__error" data-error="national_id"></span>
                             </div>
+                        </div>
+
+                        <div class="payeh-form-row">
                             <div class="payeh-login__field">
                                 <label class="payeh-login__label" for="reg-gender">جنسیت</label>
                                 <select class="payeh-login__input payeh-login__input--plain" id="reg-gender" name="gender">
@@ -369,7 +377,7 @@
                         <div id="reg-step-1-message" class="payeh-login__message" role="status" aria-live="polite"></div>
 
                         <button class="payeh-login__submit" type="submit" id="reg-step-1-submit" style="margin-top: 14px;">
-                            ثبت مشخصات و دریافت کد تأیید
+                            ثبت نهایی مشخصات و ارسال رزومه به مدیریت
                         </button>
                     </section>
 

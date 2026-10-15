@@ -281,6 +281,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const fullName = document.getElementById("reg-full-name")?.value.trim();
         const phone = normalizeDigits(document.getElementById("reg-phone")?.value);
+        const email = document.getElementById("reg-email")?.value.trim().toLowerCase();
         const birthDate = document.getElementById("reg-birth-date")?.value.trim();
         const konkurYear = document.getElementById("reg-konkur-year")?.value;
         const konkurQuota = document.getElementById("reg-konkur-quota")?.value;
@@ -292,6 +293,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         let hasError = false;
         if (!fullName) { showFieldError("full_name", "نام و نام خانوادگی الزامی است."); hasError = true; }
         if (!phone || phone.length !== 11 || !phone.startsWith("09")) { showFieldError("phone", "شماره موبایل ۱۱ رقمی معتبر با ۰۹ وارد کنید."); hasError = true; }
+        if (!email || !email.includes("@") || !email.includes(".")) { showFieldError("email", "آدرس ایمیل معتبر وارد کنید."); hasError = true; }
         if (!birthDate) { showFieldError("birth_date", "تاریخ تولد الزامی است."); hasError = true; }
         if (!konkurYear) { showFieldError("konkur_year", "سال کنکور را انتخاب کنید."); hasError = true; }
         if (!konkurQuota) { showFieldError("konkur_quota", "سهمیه کنکور را انتخاب کنید."); hasError = true; }
@@ -304,12 +306,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const submitBtn = document.getElementById("reg-step-1-submit");
         submitBtn.disabled = true;
-        submitBtn.textContent = "در حال ارسال و اعتبارسنجی رزومه…";
+        submitBtn.textContent = "در حال ارسال و ثبت مشخصات…";
 
         try {
             const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
             const formData = new FormData(form);
             formData.set("phone", phone);
+            formData.set("email", email);
             formData.set("quota_rank", quotaRank);
 
             const response = await fetch("/api/consultations/register/start/", {
@@ -339,21 +342,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 throw new Error(data.detail || "ثبت اطلاعات انجام نشد.");
             }
 
-            // Move to Step 2
-            step1.hidden = true;
-            step2.hidden = false;
-            progress.style.width = "100%";
-            stepLabel.textContent = "مرحله ۲ از ۲";
-            targetPhoneSpan.textContent = phone;
-            startResendCooldown(60);
-            document.getElementById("reg-code")?.focus();
+            // Direct submission success without OTP!
+            showStatusView("pending", phone, data.detail || "درخواست همکاری و پرونده شما با موفقیت ثبت شد و در انتظار بررسی مدیریت قرار گرفت.");
 
         } catch (err) {
             step1Message.textContent = err.message || "خطا در ارتباط با سرور.";
             step1Message.classList.add("is-error");
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = "ثبت مشخصات و دریافت کد تأیید";
+            submitBtn.textContent = "ثبت نهایی مشخصات و ارسال رزومه به مدیریت";
         }
     });
 

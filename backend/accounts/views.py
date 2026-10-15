@@ -69,6 +69,10 @@ def start_registration(request):
         if len(national_id) > 20:
             raise ValueError("کد ملی حداکثر ۲۰ کاراکتر است.")
 
+        email = str(data.get("email", "")).strip().lower()[:100]
+        if email and ("@" not in email or "." not in email):
+            raise ValueError("فرمت ایمیل نامعتبر است.")
+
         phone = valid_phone(data.get("phone"))
         parent_phone = valid_phone(data.get("parent_phone"), required=False)
         if phone == parent_phone and parent_phone:
@@ -85,32 +89,35 @@ def start_registration(request):
     if User.objects.filter(phone=phone).exists():
         return Response({"detail": "با این شماره موبایل قبلاً حساب ساخته شده است."}, status=status.HTTP_409_CONFLICT)
 
-    code = f"{secrets.randbelow(1_000_000):06d}"
-    pending, _ = PendingRegistration.objects.update_or_create(
-        phone=phone,
-        defaults={
-            "full_name": full_name,
-            "national_id": national_id,
-            "parent_phone": parent_phone,
-            "grade": grade,
-            "major": major,
-            "gender": gender,
-            "password_hash": make_password(password),
-            "verification_code_hash": make_password(code),
-            "expires_at": timezone.now() + timedelta(minutes=5),
-            "attempts": 0,
-        },
-    )
-
     try:
-        send_verification_code(phone, code)
-    except Exception:
-        pending.delete()
-        return Response({"detail": "ارسال کد تایید انجام نشد. تنظیمات سرویس پیامک را بررسی کنید."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        with transaction.atomic():
+            user = User(
+                phone=phone,
+                email=email,
+                full_name=full_name,
+                national_id=national_id,
+                parent_phone=parent_phone,
+                grade=grade,
+                major=major,
+                gender=gender,
+                role="student",
+                is_active=True,
+                password=make_password(password),
+            )
+            user.save()
+            auth_login(request, user)
+            record_event(request, "auth.registration.succeeded", "users", "success", subject=f"user:{user.pk}", details={"target_user_id": user.pk, "role": user.role})
+    except IntegrityError:
+        return Response({"detail": "با این شماره موبایل قبلاً حساب ساخته شده است."}, status=status.HTTP_409_CONFLICT)
 
     return Response(
-        {"detail": "کد تایید آماده ارسال است. در حالت توسعه، ترمینال بک‌اند را بررسی کنید."},
-        status=status.HTTP_200_OK,
+        {
+            "ok": True,
+            "detail": "حساب کاربری با موفقیت ساخته شد و وارد شدید.",
+            "direct_login": True,
+            "redirect_url": "student.html",
+        },
+        status=status.HTTP_201_CREATED,
     )
 
 
@@ -177,18 +184,28 @@ def login_user(request):
         data = json.loads(request.body or b"{}")
         if not isinstance(data, dict):
             raise ValueError("invalid payload")
-        phone = valid_phone(data.get("phone"))
+        identifier = str(data.get("phone", "")).strip()
         password = str(data.get("password", ""))
-        if not password:
-            raise ValueError("شماره موبایل یا رمز عبور نادرست است.")
+        if not identifier or not password:
+            raise ValueError("شماره موبایل، ایمیل یا رمز عبور الزامی است.")
+
+        if "@" in identifier:
+            matched_user = User.objects.filter(email__iexact=identifier).first()
+            if matched_user:
+                phone = matched_user.phone
+            else:
+                phone = identifier
+        else:
+            phone = valid_phone(identifier)
     except (ValueError, json.JSONDecodeError, UnicodeDecodeError):
         record_event(request, "auth.login.invalid_request", "auth", "denied", details={"reason": "invalid_login_payload"})
-        return JsonResponse({"detail": "شماره موبایل یا رمز عبور نادرست است."}, status=400)
+        return JsonResponse({"detail": "شماره موبایل، ایمیل یا رمز عبور نادرست است."}, status=400)
 
     user = authenticate(request, phone=phone, password=password)
     if user is None or not user.is_active:
-        record_event(request, "auth.login.failed", "auth", "denied", subject=f"phone-ends-{phone[-4:]}", details={"reason": "invalid_credentials"})
-        return JsonResponse({"detail": "شماره موبایل یا رمز عبور نادرست است."}, status=401)
+        masked = phone[-4:] if len(phone) >= 4 else phone
+        record_event(request, "auth.login.failed", "auth", "denied", subject=f"id-ends-{masked}", details={"reason": "invalid_credentials"})
+        return JsonResponse({"detail": "شماره موبایل/ایمیل یا رمز عبور نادرست است."}, status=401)
 
     auth_login(request, user)
     record_event(request, "auth.login.succeeded", "auth", "success", subject=user.phone, details={"role": user.role})

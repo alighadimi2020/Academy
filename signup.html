@@ -68,9 +68,14 @@
                             <span class="payeh-login__error" data-error="national_id"></span>
                         </div>
                         <div class="payeh-login__field">
-                            <label class="payeh-login__label" for="signup-phone">شماره موبایل خودتان</label>
+                            <label class="payeh-login__label" for="signup-phone">شماره موبایل خودتان *</label>
                             <input class="payeh-login__input payeh-login__input--plain" id="signup-phone" name="phone" type="tel" maxlength="11" inputmode="numeric" autocomplete="tel" placeholder="مثلاً ۰۹۱۲۱۲۳۴۵۶۷" required>
                             <span class="payeh-login__error" data-error="phone"></span>
+                        </div>
+                        <div class="payeh-login__field">
+                            <label class="payeh-login__label" for="signup-email">آدرس ایمیل <small>(اختیاری)</small></label>
+                            <input class="payeh-login__input payeh-login__input--plain" id="signup-email" name="email" type="email" autocomplete="email" placeholder="name@example.com" style="direction: ltr; text-align: right;">
+                            <span class="payeh-login__error" data-error="email"></span>
                         </div>
                         <div class="payeh-login__field">
                             <label class="payeh-login__label" for="signup-parent-phone">شماره پدر یا مادر <small>(اختیاری)</small></label>
@@ -89,7 +94,7 @@
                         </div>
                         <div class="payeh-signup__actions">
                             <button class="payeh-login__submit payeh-signup__secondary" type="button" id="signup-back">بازگشت</button>
-                            <button class="payeh-login__submit" type="submit" id="signup-submit">تایید و دریافت کد</button>
+                            <button class="payeh-login__submit" type="submit" id="signup-submit">تکمیل ثبت‌نام و ساخت حساب</button>
                         </div>
                     </section>
                     <section class="payeh-signup__step" data-step="3" hidden>

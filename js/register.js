@@ -100,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (currentStep === 2) {
             const phone = digits(document.getElementById("signup-phone").value.trim());
+            const email = (document.getElementById("signup-email")?.value || "").trim().toLowerCase();
             const parentPhone = digits(document.getElementById("signup-parent-phone").value.trim());
             const nationalId = digits(document.getElementById("signup-national-id").value.trim());
             const password = document.getElementById("signup-password").value;
@@ -107,6 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let valid = true;
 
             if (!/^09\d{9}$/.test(phone)) { error("phone", "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود."); valid = false; }
+            if (email && (!email.includes("@") || !email.includes("."))) { error("email", "فرمت آدرس ایمیل معتبر نیست."); valid = false; }
             if (parentPhone && !/^09\d{9}$/.test(parentPhone)) { error("parent_phone", "شماره والد باید ۱۱ رقم و با ۰۹ شروع شود."); valid = false; }
             if (parentPhone && phone === parentPhone) { error("parent_phone", "شماره دانش‌آموز و والد نباید یکسان باشد."); valid = false; }
             if (nationalId.length > 20) { error("national_id", "کد ملی حداکثر ۲۰ کاراکتر است."); valid = false; }
@@ -115,26 +117,37 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!valid) return;
 
             const button = document.getElementById("signup-submit");
-            setLoading(button, true, "در حال ارسال...");
+            setLoading(button, true, "در حال ثبت‌نام و ورود...");
             try {
-                await post(API, {
+                const resData = await post(API, {
                     full_name: document.getElementById("signup-full-name").value.trim(),
                     grade: grade.value,
                     major: major.value,
                     gender: document.getElementById("signup-gender")?.value || "",
                     national_id: nationalId,
+                    email,
                     phone,
                     parent_phone: parentPhone,
                     password,
                     password_confirmation: confirmation,
                 });
+
+                if (resData.direct_login) {
+                    setMessage("حساب کاربری با موفقیت ساخته شد. در حال انتقال به پنل کاربری...", "success");
+                    button.disabled = true;
+                    setTimeout(() => {
+                        window.location.href = resData.redirect_url || "student.html";
+                    }, 1000);
+                    return;
+                }
+
                 registeredPhone = phone;
                 showStep(3);
-                setMessage("کد در ترمینال بک‌اند چاپ شد.", "success");
+                setMessage("کد تایید ارسال شد.", "success");
             } catch (requestError) {
                 setMessage(requestError.message, "error");
             } finally {
-                setLoading(button, false, "تایید و دریافت کد");
+                setLoading(button, false, "تکمیل ثبت‌نام و ساخت حساب");
             }
             return;
         }

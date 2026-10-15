@@ -145,6 +145,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             phoneLink.href = `tel:${app.phone}`;
             phoneLink.style.cssText = "font-size: 12px; color: #64748b; text-decoration: none; font-weight: 600;";
             identity.append(titleH3, phoneLink);
+            if (app.email) {
+                const emailLink = make("a", "", app.email);
+                emailLink.href = `mailto:${app.email}`;
+                emailLink.style.cssText = "font-size: 11px; color: #2563eb; text-decoration: none; font-weight: 600; display: block; margin-top: 2px;";
+                identity.append(emailLink);
+            }
             userBox.append(avatar, identity);
 
             const statusConfig = {
@@ -175,6 +181,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 fields.append(wrapper);
             };
 
+            addField("ایمیل", app.email);
             addField("تاریخ تولد شمسی", app.birth_date);
             addField("سال کنکور", app.konkur_year ? String(app.konkur_year) : "");
             addField("سهمیه کنکور", app.konkur_quota);
@@ -437,7 +444,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("btn-copy-creds")?.addEventListener("click", () => {
         if (!latestCredentials) return;
-        const text = `سلام ${latestCredentials.full_name} گرامی،\nحساب کاربری شما در سامانه پایه آکادمی فعال شد.\n\nاطلاعات ورود به پنل مشاور:\nنام کاربری (موبایل): ${latestCredentials.phone}\nرمز عبور: ${latestCredentials.password}\nآدرس ورود: https://paye.academy/login.html\n\n(پس از ورود می‌توانید در صورت تمایل رمز عبور خود را تغییر دهید.)`;
+        const emailLine = latestCredentials.email ? `\nایمیل مشاور: ${latestCredentials.email}` : "";
+        const text = `سلام ${latestCredentials.full_name} گرامی،\nحساب کاربری شما در سامانه پایه آکادمی فعال شد.\n\nاطلاعات ورود به پنل مشاور:\nنام کاربری (موبایل یا ایمیل): ${latestCredentials.phone}${emailLine}\nرمز عبور: ${latestCredentials.password}\nآدرس ورود: https://paye.academy/login.html\n\n(پس از ورود می‌توانید در صورت تمایل رمز عبور خود را تغییر دهید.)`;
         navigator.clipboard.writeText(text).then(() => {
             const copyBtnText = document.getElementById("btn-copy-creds-text");
             if (copyBtnText) copyBtnText.textContent = "✓ اطلاعات با موفقیت کپی شد!";
@@ -449,10 +457,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 
+    let currentAppForApproval = null;
     const openApproveModal = (app) => {
+        currentAppForApproval = app;
         document.getElementById("approve-app-id").value = app.id;
         document.getElementById("approve-full-name").value = app.full_name;
         document.getElementById("approve-phone").value = app.phone;
+        const emailEl = document.getElementById("approve-email");
+        if (emailEl) emailEl.value = app.email || "ثبت نشده";
         document.getElementById("approve-password").value = generateRandomPassword();
         document.getElementById("approve-note").value = "";
         const errEl = document.getElementById("approve-modal-error");
@@ -487,7 +499,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             const data = await res.json();
             if (!res.ok) throw new Error(data.detail || "تأیید درخواست انجام نشد.");
             closeModal("modal-approve-app");
-            showCredentialsModal(data.credentials || { full_name: document.getElementById("approve-full-name").value, phone, password });
+            const creds = data.credentials || { full_name: document.getElementById("approve-full-name").value, phone, password };
+            if (currentAppForApproval?.email) creds.email = currentAppForApproval.email;
+            showCredentialsModal(creds);
             await loadConsultantApplications();
             await loadUsers("consultant");
         } catch (err) {

@@ -46,6 +46,7 @@ class ConsultantApplication(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="consultant_applications")
     phone = models.CharField(max_length=11, db_index=True, verbose_name="شماره موبایل")
+    email = models.EmailField(blank=True, default="", verbose_name="ایمیل")
     full_name = models.CharField(max_length=100, verbose_name="نام و نام خانوادگی")
     national_id = models.CharField(max_length=20, blank=True, verbose_name="کد ملی")
     gender = models.CharField(max_length=10, blank=True, verbose_name="جنسیت")
