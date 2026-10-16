@@ -1,4 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // Check if user is logged in and update header button
+    const loginLink = document.querySelector(".payeh-header__login");
+    if (loginLink) {
+        fetch("/api/auth/me/", { credentials: "include" })
+            .then(res => res.ok ? res.json() : null)
+            .then(user => {
+                if (user && user.role) {
+                    const roles = {
+                        manager: { label: "پنل مدیریت", url: "manager.html" },
+                        admin: { label: "پنل مدیریت", url: "manager.html" },
+                        consultant: { label: "پنل مشاور", url: "consultant.html" },
+                        student: { label: "پنل کاربری", url: "student.html" },
+                        applicant: { label: "پیگیری ثبت‌نام", url: "consultant-register.html#status" },
+                    };
+                    const conf = roles[user.role] || { label: "پنل کاربری", url: "student.html" };
+                    loginLink.href = conf.url;
+                    const span = loginLink.querySelector("span");
+                    if (span) span.textContent = conf.label;
+                    loginLink.style.background = "#eff6ff";
+                    loginLink.style.borderColor = "#93c5fd";
+                    loginLink.style.color = "#1d4ed8";
+                }
+            })
+            .catch(() => {});
+    }
+
     const homepageMagazine = document.getElementById("homepage-magazine-cards");
     if (homepageMagazine) loadHomepageMagazine(homepageMagazine);
     const revealElements = document.querySelectorAll("[data-payeh-reveal]");

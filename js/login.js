@@ -13,6 +13,23 @@ document.addEventListener("DOMContentLoaded", () => {
         .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
         .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
 
+    // If already logged in, redirect immediately to dashboard
+    fetch(`${apiBase}me/`, { credentials: "include" })
+        .then(r => r.ok ? r.json() : null)
+        .then(user => {
+            if (user && user.role) {
+                const destinations = {
+                    student: "student.html",
+                    consultant: "consultant.html",
+                    instructor: "student.html",
+                    admin: "manager.html",
+                    manager: "manager.html",
+                    applicant: "consultant-register.html#status",
+                };
+                window.location.assign(destinations[user.role] || "manager.html");
+            }
+        }).catch(() => {});
+
     passwordToggle?.addEventListener("click", () => {
         const visible = passwordInput.type === "password";
         passwordInput.type = visible ? "text" : "password";
@@ -47,10 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 valid = false;
             }
         } else if (isPhone) {
-            // Valid 11-digit phone number
             valid = true;
         } else if (identifier.length >= 3) {
-            // Valid username (like 'taha' or manager username)
             valid = true;
         } else {
             phoneError.textContent = "نام کاربری، شماره موبایل یا ایمیل معتبر وارد کنید.";
@@ -86,8 +101,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     remember: document.getElementById("payeh-login-remember")?.checked || false,
                 }),
             });
-            const result = await response.json().catch(() => ({}));
-            if (!response.ok) throw new Error(result.detail || "ورود انجام نشد.");
+            const text = await response.text();
+            let result = {};
+            try { result = JSON.parse(text); } catch {}
+
+            if (!response.ok) {
+                if (response.status === 403) {
+                    throw new Error("نشست امنیتی منقضی شده بود؛ لطفاً دوباره دکمه ورود را بزنید.");
+                }
+                throw new Error(result.detail || "نام کاربری، شماره موبایل یا رمز عبور نادرست است.");
+            }
 
             message.textContent = result.detail;
             message.classList.add("is-success");
@@ -101,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
             };
             window.location.assign(destinations[result.role] || "index.html");
         } catch (requestError) {
-            message.textContent = requestError.message || "ارتباط با سرور برقرار نشد.";
+            message.textContent = requestError.message || "خطا در برقراری ارتباط؛ لطفاً دوباره تلاش کنید.";
             message.classList.add("is-error");
         } finally {
             button.disabled = false;

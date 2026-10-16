@@ -1,20 +1,17 @@
 :root {
-    --manager-bg: #f7f9fc;
+    --manager-bg: #f7f8fc;
     --manager-surface: #ffffff;
     --manager-primary: #0b3dff;
     --manager-primary-dark: #0834d6;
     --manager-primary-soft: #edf2ff;
-    --manager-text: #0f172a;
-    --manager-text-secondary: #64748b;
-    --manager-text-muted: #94a3b8;
-    --manager-border: #e2e8f0;
-    --manager-sidebar: #0b0f19;
-    --manager-sidebar-brand: #060911;
-    --manager-sidebar-border: #1e293b;
-    --manager-sidebar-text: #94a3b8;
+    --manager-text: #172033;
+    --manager-text-secondary: #697386;
+    --manager-text-muted: #98a2b3;
+    --manager-border: #e8ebf1;
+    --manager-sidebar: #ffffff;
     --manager-radius: 18px;
-    --manager-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
-    --manager-transition: 220ms ease;
+    --manager-shadow: 0 12px 40px rgba(25, 35, 55, 0.06);
+    --manager-transition: 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -72,22 +69,43 @@ svg {
     position: fixed;
     inset-block: 0;
     right: 0;
-    width: 270px;
+    width: 280px;
     display: flex;
     flex-direction: column;
     background: var(--manager-sidebar);
-    border-left: 1px solid var(--manager-sidebar-border);
+    border-left: 1px solid var(--manager-border);
     z-index: 100;
+    transform: translateX(100%);
+    box-shadow: -15px 0 45px rgba(25, 35, 55, 0.12);
     transition: transform var(--manager-transition);
 }
 
+.payeh-manager__sidebar.is-open {
+    transform: translateX(0);
+}
+
+.payeh-manager__overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 95;
+    transition: opacity var(--manager-transition);
+}
+
+.payeh-manager__overlay.is-active {
+    display: block;
+}
+
 .payeh-manager__brand {
-    height: 110px;
+    height: 100px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: var(--manager-sidebar-brand);
-    border-bottom: 1px solid var(--manager-sidebar-border);
+    justify-content: space-between;
+    padding: 0 20px;
+    background: var(--manager-sidebar);
+    border-bottom: 1px solid var(--manager-border);
 }
 
 .payeh-manager__brand-link {
@@ -97,26 +115,50 @@ svg {
 }
 
 .payeh-manager__brand img {
-    width: 92px;
-    height: 92px;
+    width: 76px;
+    height: 76px;
     object-fit: contain;
+}
+
+.payeh-manager__sidebar-close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: #64748b;
+    border: none;
+    cursor: pointer;
+    transition: all var(--manager-transition);
+}
+
+.payeh-manager__sidebar-close:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.payeh-manager__sidebar-close svg {
+    width: 18px;
+    height: 18px;
 }
 
 .payeh-manager__nav {
     flex: 1;
-    padding: 22px 14px;
+    padding: 20px 14px;
     overflow-y: auto;
 }
 
 .payeh-manager__nav-item {
-    min-height: 50px;
+    min-height: 48px;
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 6px;
-    padding: 0 15px;
-    border-radius: 13px;
-    color: var(--manager-sidebar-text);
+    padding: 0 14px;
+    border-radius: 12px;
+    color: var(--manager-text-secondary);
     font-size: 0.88rem;
     font-weight: 600;
     transition:
@@ -126,14 +168,13 @@ svg {
 }
 
 .payeh-manager__nav-item:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.08);
+    color: var(--manager-primary);
+    background: var(--manager-primary-soft);
 }
 
 .payeh-manager__nav-item.is-active {
-    color: #ffffff;
-    background: var(--manager-primary);
-    box-shadow: 0 4px 14px rgba(11, 61, 255, 0.35);
+    color: var(--manager-primary);
+    background: var(--manager-primary-soft);
     font-weight: 800;
 }
 
@@ -153,14 +194,14 @@ svg {
 
 .payeh-manager__nav-divider {
     height: 1px;
-    margin: 18px 8px;
-    background: var(--manager-sidebar-border);
+    margin: 16px 8px;
+    background: var(--manager-border);
 }
 
 .payeh-manager__sidebar-bottom {
     padding: 16px 14px 20px;
-    background: var(--manager-sidebar-brand);
-    border-top: 1px solid var(--manager-sidebar-border);
+    background: var(--manager-sidebar);
+    border-top: 1px solid var(--manager-border);
 }
 
 .payeh-manager__back-home {
@@ -169,30 +210,29 @@ svg {
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    color: #cbd5e1;
-    background: #161f30;
-    border: 1px solid #222f47;
+    color: var(--manager-text-secondary);
+    background: #f8f9fb;
+    border: 1px solid var(--manager-border);
     font-size: 0.78rem;
     font-weight: 700;
     transition: var(--manager-transition);
 }
 
 .payeh-manager__back-home:hover {
-    color: #ffffff;
-    background: #1e293b;
-    border-color: #334155;
+    color: var(--manager-primary);
+    background: var(--manager-primary-soft);
 }
 
 .payeh-manager__main {
-    width: calc(100% - 270px);
-    margin-right: 270px;
+    width: 100%;
+    margin-right: 0;
     min-height: 100vh;
 }
 
 .payeh-manager__header {
     position: sticky;
     top: 0;
-    min-height: 86px;
+    min-height: 84px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -266,7 +306,34 @@ svg {
 }
 
 .payeh-manager__menu-button {
-    display: none;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid var(--manager-border);
+    cursor: pointer;
+    color: var(--manager-primary);
+    box-shadow: 0 2px 8px rgba(11, 61, 255, 0.06);
+    transition: all var(--manager-transition);
+}
+
+.payeh-manager__menu-button:hover {
+    background: var(--manager-primary-soft);
+    border-color: rgba(11, 61, 255, 0.25);
+    transform: scale(1.04);
+}
+
+.payeh-manager__menu-button span {
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--manager-primary);
+    transition: all var(--manager-transition);
 }
 
 .payeh-manager__content {
@@ -518,58 +585,9 @@ svg {
 
 @media (max-width: 800px) {
 
-    .payeh-manager__sidebar {
-        transform: translateX(100%);
-        box-shadow: -20px 0 50px rgba(0, 0, 0, 0.45);
-    }
-
-    .payeh-manager__sidebar.is-open {
-        transform: translateX(0);
-    }
-
-    .payeh-manager__overlay {
-        display: none;
-    }
-
-    .payeh-manager__overlay.is-active {
-        display: block;
-        position: fixed;
-        inset: 0;
-        background: rgba(11, 15, 25, 0.6);
-        backdrop-filter: blur(4px);
-        z-index: 95;
-    }
-
-    .payeh-manager__main {
-        width: 100%;
-        margin-right: 0;
-    }
-
     .payeh-manager__header {
         min-height: 74px;
         padding: 0 18px;
-    }
-
-    .payeh-manager__menu-button {
-        width: 42px;
-        height: 42px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 5px;
-        border-radius: 12px;
-        background: #0b0f19;
-        cursor: pointer;
-        color: #ffffff;
-        border: 1px solid #1e293b;
-    }
-
-    .payeh-manager__menu-button span {
-        width: 18px;
-        height: 2px;
-        border-radius: 2px;
-        background: #ffffff;
     }
 
     .payeh-manager__content {
