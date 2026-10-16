@@ -109,9 +109,14 @@ def start_consultant_registration(request):
     except Exception as exc:
         return JsonResponse({"detail": f"خطا در پردازش اطلاعات: {exc}"}, status=400)
 
+    # Check if phone belongs to an existing user of other roles
+    existing_user = User.objects.filter(phone=phone).first()
+    if existing_user and (existing_user.role != "applicant" or (request.user.is_authenticated and request.user != existing_user)):
+        return JsonResponse({"detail": "با این شماره موبایل قبلاً حساب کاربری ساخته شده است. لطفاً وارد شوید."}, status=409)
+
     # Directly create user, application, and profile without SMS OTP
     with transaction.atomic():
-        user = User.objects.filter(phone=phone).first()
+        user = existing_user
         if user:
             user.full_name = full_name
             user.email = email

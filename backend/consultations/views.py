@@ -860,6 +860,20 @@ def study_reports(request):
         q = request.GET.get("q", "").strip()[:100].translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"))
         if q:
             rows = rows.filter(Q(student__full_name__icontains=q) | Q(student__phone__icontains=q))
+    elif request.user.role in MANAGER_ROLES:
+        rows = StudyReport.objects.all().select_related("student")
+        student_param = request.GET.get("student", "").strip()
+        if student_param.isdigit():
+            rows = rows.filter(student_id=int(student_param))
+        grade = request.GET.get("grade", "").strip()
+        if grade:
+            rows = rows.filter(student__grade=grade)
+        major = request.GET.get("major", "").strip()
+        if major:
+            rows = rows.filter(student__major=major)
+        q = request.GET.get("q", "").strip()[:100].translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧۸۹", "01234567890123456789"))
+        if q:
+            rows = rows.filter(Q(student__full_name__icontains=q) | Q(student__phone__icontains=q))
     else:
         return error("دسترسی مشاهده گزارش را ندارید.", 403)
 
@@ -910,9 +924,12 @@ def study_report_edit(request, report_id):
     try:
         data = json.loads(request.body or b"{}")
         minutes = int(data.get("minutes"))
+    except (ValueError, TypeError, json.JSONDecodeError):
+        return error("اطلاعات ارسالی معتبر نیست.", 400)
+    try:
         report = StudyReport.objects.select_for_update().get(pk=report_id, student=request.user)
-    except (ValueError, TypeError, StudyReport.DoesNotExist):
-        return error("گزارش پیدا نشد یا اطلاعات معتبر نیست.", 404)
+    except StudyReport.DoesNotExist:
+        return error("گزارش پیدا نشد.", 404)
     if StudyReport.objects.filter(student=report.student, consultant=report.consultant, study_date=report.study_date, subject=report.subject).filter(Q(created_at__gt=report.created_at) | Q(created_at=report.created_at, id__gt=report.id)).exists():
         return error("این نسخه قدیمی است؛ آخرین نسخهٔ گزارش را ویرایش کنید.", 409)
     if not 0 <= minutes <= 1440:

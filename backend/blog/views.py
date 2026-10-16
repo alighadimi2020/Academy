@@ -156,10 +156,11 @@ def serialize_post(post, include_sections=False, include_review_note=False):
 
 @require_GET
 def published_posts(request):
+    from django.db.models import Q
     posts = BlogPost.objects.filter(status=BlogPost.Status.PUBLISHED).select_related("author").prefetch_related("images")
     query = request.GET.get("q", "").strip()[:100]
     if query:
-        posts = posts.filter(title__icontains=query) | posts.filter(summary__icontains=query)
+        posts = posts.filter(Q(title__icontains=query) | Q(summary__icontains=query))
     return JsonResponse({"results": [serialize_post(post) for post in posts[:100]]})
 
 

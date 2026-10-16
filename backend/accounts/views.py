@@ -222,7 +222,7 @@ def login_user(request):
 
 @require_GET
 def current_user(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_active:
         return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
     user = request.user
     grade_labels = dict(User.GRADE_CHOICES)
@@ -351,6 +351,9 @@ def manager_set_user_password(request, user_id):
         target_user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
         return JsonResponse({"detail": "کاربر مورد نظر پیدا نشد."}, status=404)
+
+    if (target_user.role in {"manager", "admin"} or target_user.is_superuser) and not request.user.is_superuser and request.user != target_user:
+        return JsonResponse({"detail": "شما مجاز به تغییر رمز عبور این مدیر یا ادمین نیستید."}, status=403)
 
     try:
         data = json.loads(request.body or b"{}")
