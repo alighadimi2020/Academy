@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
 
     // If already logged in, redirect immediately to dashboard
-    fetch(`${apiBase}me/`, { credentials: "include", cache: "no-store" })
+    fetch(`${apiBase}me/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" })
         .then(r => r.ok ? r.json() : null)
         .then(user => {
             if (user && user.role) {
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
         button.textContent = "در حال ورود...";
 
         try {
-            const csrfResponse = await fetch(`${apiBase}csrf/`, { credentials: "include" });
+            const csrfResponse = await fetch(`${apiBase}csrf/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" });
             const csrfData = await csrfResponse.json();
             const response = await fetch(`${apiBase}login/`, {
                 method: "POST",

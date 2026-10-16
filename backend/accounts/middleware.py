@@ -50,3 +50,18 @@ class SecurityAuditMiddleware:
         outcome = "success" if status_code < 400 else "denied" if status_code < 500 else "error"
         target = re.findall(r"\d+", path)
         record_event(request, f"api.{request.method.lower()}", category, outcome, details={"method": request.method, "path": path[:240], "status": status_code, "target_id": target[-1] if target else ""})
+
+
+class DisableClientCacheMiddleware:
+    """Ensure dynamic responses are never cached by CDNs, reverse proxies, or browsers."""
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if request.path.startswith("/api/") or request.path.startswith("/admin/"):
+            response["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0, private"
+            response["Pragma"] = "no-cache"
+            response["Expires"] = "0"
+        return response
+

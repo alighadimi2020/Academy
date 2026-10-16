@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let registeredPhone = "";
 
     // If already logged in, redirect immediately to dashboard
-    fetch(`${window.location.origin}/api/auth/me/`, { credentials: "include" })
+    fetch(`${window.location.origin}/api/auth/me/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" })
         .then(r => r.ok ? r.json() : null)
         .then(user => {
             if (user && user.role) {
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const post = async (url, body) => {
-        const csrfRes = await fetch("/api/auth/csrf/", { credentials: "include" }).catch(() => null);
+        const csrfRes = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" }).catch(() => null);
         const csrfData = csrfRes && csrfRes.ok ? await csrfRes.json().catch(() => ({})) : {};
         const response = await fetch(url, {
             method: "POST",

@@ -23,11 +23,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.addEventListener("hashchange", () => showPage(location.hash.slice(1) || "dashboard"));
     menuButton?.addEventListener("click", () => sidebar?.classList.toggle("is-open"));
     document.querySelector(".payeh-consultant__logout")?.addEventListener("click", async () => {
-        try { const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then((r) => r.json()); await fetch("/api/auth/logout/", { method: "POST", credentials: "same-origin", headers: { "X-CSRFToken": csrf.csrfToken } }); }
-        finally { location.assign("login.html"); }
+        try { const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then((r) => r.json()); await fetch("/api/auth/logout/", { method: "POST", credentials: "same-origin", headers: { "X-CSRFToken": csrf.csrfToken } }); }
+        finally { location.replace(`login.html?_t=${Date.now()}`); }
     });
     try {
-        const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin", cache: "no-store" });
+        const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
         if (!meResponse.ok) { location.assign("login.html"); return; }
         const user = await meResponse.json();
         if (user.role !== "consultant") { location.assign(user.role === "student" ? "student.html" : "manager.html"); return; }

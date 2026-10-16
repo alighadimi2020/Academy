@@ -113,6 +113,7 @@ def start_registration(request):
                 password=make_password(password),
             )
             user.save()
+            request.session.flush()
             auth_login(request, user)
             record_event(request, "auth.registration.succeeded", "users", "success", subject=f"user:{user.pk}", details={"target_user_id": user.pk, "role": user.role})
     except IntegrityError:

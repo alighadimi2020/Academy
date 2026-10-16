@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     menuButton?.addEventListener("click", () => sidebar?.classList.toggle("is-open"));
     window.addEventListener("hashchange", () => selectPage(location.hash.slice(1) || "dashboard"));
     document.querySelector(".payeh-student__logout")?.addEventListener("click", async () => {
-        try { const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then((response) => response.json()); await fetch("/api/auth/logout/", { method: "POST", credentials: "same-origin", headers: { "X-CSRFToken": csrf.csrfToken } }); }
-        finally { location.assign("login.html"); }
+        try { const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then((response) => response.json()); await fetch("/api/auth/logout/", { method: "POST", credentials: "same-origin", headers: { "X-CSRFToken": csrf.csrfToken } }); }
+        finally { location.replace(`login.html?_t=${Date.now()}`); }
     });
     document.getElementById("student-gender-form")?.addEventListener("submit", async event => {
         event.preventDefault();const message=document.getElementById("student-gender-message"),button=event.currentTarget.querySelector("button");button.disabled=true;message.textContent="در حال ذخیره…";
@@ -693,7 +693,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin", cache: "no-store" });
+        const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
         if (!meResponse.ok) { location.assign("login.html"); return; }
         const me = await meResponse.json();
         if (me.role !== "student") { location.assign(me.role === "consultant" ? "consultant.html" : "manager.html"); return; }

@@ -643,18 +643,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("manager-logout-btn")?.addEventListener("click", async () => {
         try {
-            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then((r) => r.json());
+            const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then((r) => r.json());
             await fetch("/api/auth/logout/", {
                 method: "POST",
                 credentials: "same-origin",
                 headers: { "X-CSRFToken": csrf.csrfToken }
             });
         } finally {
-            location.assign("login.html");
+            location.replace(`login.html?_t=${Date.now()}`);
         }
     });
 
-    const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin", cache: "no-store" });
+    const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
     if (!meResponse.ok) { location.assign("login.html"); return; }
     const me = await meResponse.json();
     if (!["manager", "admin"].includes(me.role)) { location.assign(me.role === "student" ? "student.html" : "consultant.html"); return; }

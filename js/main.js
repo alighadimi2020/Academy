@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Check if user is logged in and update header button
     const loginLink = document.querySelector(".payeh-header__login");
     if (loginLink) {
-        fetch("/api/auth/me/", { credentials: "include", cache: "no-store" })
+        fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" })
             .then(res => res.ok ? res.json() : null)
             .then(user => {
                 if (user && user.role) {
