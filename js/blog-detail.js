@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             appendImagesAfter(index + 1);
         });
 
-        const me = await fetch("/api/auth/me/");
+        const me = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
         if (me.ok) {
             const user = await me.json();
             if (["consultant", "manager", "admin"].includes(user.role)) document.getElementById("write-link").hidden = false;

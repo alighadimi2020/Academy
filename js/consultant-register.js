@@ -583,7 +583,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
         // Check if current user is already an applicant
         try {
-            const meRes = await fetch("/api/auth/me/", { credentials: "same-origin" });
+            const meRes = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
             if (meRes.ok) {
                 const me = await meRes.json();
                 if (me.role === "applicant") {

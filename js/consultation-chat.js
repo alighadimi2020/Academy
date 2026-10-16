@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     try {
-        const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin" });
+        const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
         if (!meResponse.ok) { location.assign("login.html"); return; }
         currentUser = await meResponse.json();
         if (isStaffChat) {

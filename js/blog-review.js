@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const statusMessage = (text, error = false) => { message.textContent = text; message.className = `blog-message${error ? " is-error" : " is-success"}`; };
     const numberFa = (value) => new Intl.NumberFormat("fa-IR").format(value);
     try {
-        const me = await fetch("/api/auth/me/", { credentials: "same-origin" });
+        const me = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
         if (!me.ok) { location.assign("login.html"); return; }
         const user = await me.json();
         if (!["manager", "admin"].includes(user.role)) { list.textContent = "دسترسی بررسی مقاله‌ها فقط برای مدیر مجموعه و ادمین سایت است."; return; }

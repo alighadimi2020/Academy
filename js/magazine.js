@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const numberFa = (value) => new Intl.NumberFormat("fa-IR").format(value);
 
     try {
-        const response = await fetch("/api/auth/me/");
+        const response = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
         if (response.ok) {
             const user = await response.json();
             if (["consultant", "manager", "admin"].includes(user.role)) writeLink.hidden = false;

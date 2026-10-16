@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let editingPostId = new URLSearchParams(window.location.search).get("edit");
     const numberFa = (value) => new Intl.NumberFormat("fa-IR").format(value);
 
-    const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin" });
+    const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
     if (!meResponse.ok) { window.location.assign("login.html"); return; }
     const user = await meResponse.json();
     if (!["consultant", "manager", "admin"].includes(user.role)) {

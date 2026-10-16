@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         overview = data; renderPricing(); renderRequests();
     }
     try {
-        const me = await fetch("/api/auth/me/", { credentials: "same-origin" });
+        const me = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
         if (!me.ok) { location.assign("login.html"); return; }
         const user = await me.json(); if (!["manager", "admin"].includes(user.role)) { location.assign(user.role === "consultant" ? "consultant.html" : "student.html"); return; }
         await loadOverview();
