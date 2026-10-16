@@ -75,7 +75,7 @@ body {
     direction: rtl;
     background: var(--payeh-bg);
     color: var(--payeh-text);
-    font-family: "Peyda", "Tahoma", sans-serif;
+    font-family: "Vazirmatn", "Peyda", "Tahoma", sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 1.8;
@@ -305,24 +305,34 @@ p {
     }
 }
 .payeh-header {
-    position: relative;
-    z-index: 100;
+    position: fixed;
+    top: 12px;
+    left: 0;
+    right: 0;
+    z-index: 1000;
     width: 100%;
-    padding-top: 22px;
+    padding: 0 16px;
+    pointer-events: none;
+    transition: transform 0.3s ease, top 0.3s ease;
+}
+
+.payeh-header .payeh-container {
+    pointer-events: auto;
 }
 
 .payeh-header__inner {
     position: relative;
     display: flex;
     align-items: center;
-    min-height: 78px;
-    padding: 8px 14px 8px 12px;
-    background: rgba(255, 255, 255, 0.88);
-    border: 1px solid rgba(226, 232, 240, 0.85);
-    border-radius: 22px;
-    box-shadow: 0 8px 30px rgba(30, 41, 59, 0.06);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    min-height: 72px;
+    padding: 6px 16px;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 24px;
+    box-shadow: 0 12px 36px -8px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .payeh-header__logo {
@@ -481,13 +491,17 @@ p {
 
 @media (max-width: 768px) {
     .payeh-header {
-        padding-top: 12px;
+        top: 8px;
+        padding: 0 10px;
     }
 
     .payeh-header__inner {
-        min-height: 64px;
-        padding: 5px 8px;
-        border-radius: 17px;
+        min-height: 60px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
     }
 
     .payeh-header__logo {
@@ -626,9 +640,15 @@ p {
 .payeh-hero {
     position: relative;
     width: 100%;
-    padding-top: 1px;
+    padding-top: 105px;
     padding-bottom: 1px;
     overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .payeh-hero {
+        padding-top: 85px;
+    }
 }
 
 .payeh-hero__inner {
@@ -3185,3 +3205,90 @@ p {
     text-align: center;
     color: #68778b;
 }
+
+/* Floating Glass Mobile Bottom Navigation Bar */
+.payeh-mobile-bottom-nav {
+    display: none;
+}
+
+@media (max-width: 820px) {
+    body {
+        padding-bottom: 85px;
+    }
+
+    .payeh-mobile-bottom-nav {
+        position: fixed;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+        left: 14px;
+        right: 14px;
+        margin: 0 auto;
+        max-width: 440px;
+        height: 66px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 6px 10px;
+        background: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.65);
+        border-radius: 28px;
+        box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.18), 0 2px 10px rgba(15, 23, 42, 0.06);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        z-index: 9999;
+        transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .payeh-bottom-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        color: #334155;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 18px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+
+    .payeh-bottom-item svg {
+        width: 21px;
+        height: 21px;
+        stroke: currentColor;
+        stroke-width: 2.1;
+        transition: transform 0.2s ease, stroke 0.2s ease;
+    }
+
+    .payeh-bottom-item span {
+        line-height: 1;
+        letter-spacing: -0.2px;
+    }
+
+    .payeh-bottom-item:hover,
+    .payeh-bottom-item:focus {
+        color: #0284c7;
+    }
+
+    .payeh-bottom-item--active {
+        color: #0284c7;
+        background: rgba(2, 132, 199, 0.08);
+    }
+
+    .payeh-bottom-item--active svg {
+        transform: translateY(-2px);
+        stroke: #0284c7;
+    }
+
+    .payeh-bottom-item--highlight {
+        color: #ea580c;
+        background: rgba(234, 88, 12, 0.08);
+    }
+
+    .payeh-bottom-item--highlight svg {
+        stroke: #ea580c;
+    }
+}
+

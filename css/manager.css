@@ -28,7 +28,7 @@ body {
     min-height: 100vh;
     background: var(--manager-bg);
     color: var(--manager-text);
-    font-family: "Peyda", "Tahoma", sans-serif;
+    font-family: "Vazirmatn", "Peyda", "Tahoma", sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
