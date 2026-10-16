@@ -15,6 +15,38 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentStep = 1;
     let registeredPhone = "";
 
+    // If already logged in, redirect immediately to dashboard
+    fetch(`${window.location.origin}/api/auth/me/`, { credentials: "include" })
+        .then(r => r.ok ? r.json() : null)
+        .then(user => {
+            if (user && user.role) {
+                const destinations = {
+                    student: "student.html",
+                    consultant: "consultant.html",
+                    instructor: "student.html",
+                    admin: "manager.html",
+                    manager: "manager.html",
+                    applicant: "consultant-register.html#status",
+                };
+                window.location.assign(destinations[user.role] || "student.html");
+            }
+        }).catch(() => {});
+
+    // Password visibility toggles
+    const setupPasswordToggle = (inputId, toggleId) => {
+        const input = document.getElementById(inputId);
+        const toggle = document.getElementById(toggleId);
+        if (!input || !toggle) return;
+        toggle.addEventListener("click", () => {
+            const visible = input.type === "password";
+            input.type = visible ? "text" : "password";
+            toggle.classList.toggle("is-visible", visible);
+            toggle.setAttribute("aria-label", visible ? "مخفی کردن رمز عبور" : "نمایش رمز عبور");
+        });
+    };
+    setupPasswordToggle("signup-password", "signup-password-toggle");
+    setupPasswordToggle("signup-password-confirmation", "signup-confirm-toggle");
+
     const digits = (value) => value
         .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
         .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
@@ -50,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         progress.style.width = step === 1 ? "50%" : step === 2 ? "100%" : "100%";
         stepLabel.textContent = step === 3 ? "تایید شماره موبایل" : `مرحله ${step} از ۲`;
         title.textContent = step === 3 ? "کد تایید را وارد کنید" : step === 1 ? "ساخت حساب کاربری" : "اطلاعات تماس و رمز عبور";
-        description.textContent = step === 3 ? `کد ارسال‌شده به ${registeredPhone} را وارد کنید.` : step === 1 ? "اطلاعات تحصیلی خود را وارد کنید." : "شماره تماس و رمز عبور خود را ثبت کنید.";
+        description.textContent = step === 3 ? `کد ارسال‌شده به ${registeredPhone} را وارد کنید.` : step === 1 ? "اطلاعات تحصیلی خود را برای شروع مسیر موفقیت وارد کنید." : "شماره تماس و رمز عبور خود را ثبت کنید.";
         clearErrors();
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
@@ -84,12 +116,20 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const post = async (url, body) => {
+        const csrfRes = await fetch("/api/auth/csrf/", { credentials: "include" }).catch(() => null);
+        const csrfData = csrfRes && csrfRes.ok ? await csrfRes.json().catch(() => ({})) : {};
         const response = await fetch(url, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfData.csrfToken || "",
+            },
             body: JSON.stringify(body),
         });
-        const data = await response.json().catch(() => ({}));
+        const text = await response.text();
+        let data = {};
+        try { data = JSON.parse(text); } catch {}
         if (!response.ok) throw new Error(data.detail || "ارتباط با سرور انجام نشد.");
         return data;
     };
@@ -133,11 +173,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 if (resData.direct_login) {
-                    setMessage("حساب کاربری با موفقیت ساخته شد. در حال انتقال به پنل کاربری...", "success");
+                    setMessage("حساب کاربری با موفقیت ساخته شد. در حال انتقال به پنل دانش‌آموز...", "success");
                     button.disabled = true;
                     setTimeout(() => {
-                        window.location.href = resData.redirect_url || "student.html";
-                    }, 1000);
+                        window.location.assign(resData.redirect_url || "student.html");
+                    }, 800);
                     return;
                 }
 

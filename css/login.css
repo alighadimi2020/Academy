@@ -675,12 +675,58 @@ img {
     }
 }
 
+/* Auth Mode Switcher Tabs */
+.payeh-auth-tabs {
+    display: flex;
+    gap: 8px;
+    background: #F1F5F9;
+    padding: 5px;
+    border-radius: 14px;
+    margin-bottom: 22px;
+}
+
+.payeh-auth-tab {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--payeh-login-text-secondary);
+    text-decoration: none;
+    transition: all var(--payeh-login-transition);
+}
+
+.payeh-auth-tab:hover {
+    color: var(--payeh-login-text);
+}
+
+.payeh-auth-tab.is-active {
+    background: #FFFFFF;
+    color: var(--payeh-login-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    font-weight: 800;
+}
+
 /* Registration form */
-.payeh-signup__container { max-width: 520px; }
+.payeh-signup__container { max-width: 540px; }
 .payeh-signup__progress { height: 5px; overflow: hidden; margin: -8px 0 24px; border-radius: 99px; background: #EEF2F6; }
 .payeh-signup__progress span { display: block; width: 50%; height: 100%; border-radius: inherit; background: var(--payeh-login-primary); transition: width var(--payeh-login-transition); }
+.payeh-login__row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 580px) { .payeh-login__row { grid-template-columns: 1fr; gap: 0; } }
 .payeh-login__input--plain { display: block; padding: 0 15px; text-align: right; }
-select.payeh-login__input { appearance: none; background-color: #fff; cursor: pointer; }
+select.payeh-login__input {
+    appearance: none;
+    background-color: #fff;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 14px center;
+    padding-left: 38px;
+}
 .payeh-signup__actions { display: flex; gap: 10px; }
 .payeh-signup__actions .payeh-login__submit { flex: 1; }
 .payeh-signup__secondary { border: 1px solid var(--payeh-login-border); background: #fff; color: var(--payeh-login-text-secondary); box-shadow: none; }
@@ -688,5 +734,5 @@ select.payeh-login__input { appearance: none; background-color: #fff; cursor: po
 .payeh-signup__notice { margin-bottom: 18px; padding: 12px 14px; border: 1px solid #DBEAFE; border-radius: 12px; background: #EFF6FF; color: #1D4ED8; font-size: 11px; line-height: 1.9; }
 .payeh-login__label small { color: var(--payeh-login-text-muted); font-size: 9px; font-weight: 500; }
 .payeh-signup__step[hidden] { display: none; }
-@media (max-width: 600px) { .payeh-signup__container { max-width: 500px; } }
+@media (max-width: 600px) { .payeh-signup__container { max-width: 100%; } }
 .payeh-login__field > .payeh-login__input { height: 51px; }
