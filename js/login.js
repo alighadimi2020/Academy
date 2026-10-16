@@ -34,7 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
         clearErrors();
         const rawIdentifier = phoneInput.value.trim();
         const isEmail = rawIdentifier.includes("@");
-        const identifier = isEmail ? rawIdentifier.toLowerCase() : digits(rawIdentifier);
+        const normalizedDigits = digits(rawIdentifier);
+        const isPhone = /^09\d{9}$/.test(normalizedDigits);
+        const identifier = isEmail ? rawIdentifier.toLowerCase() : (isPhone ? normalizedDigits : rawIdentifier);
         const password = passwordInput.value;
         let valid = true;
 
@@ -44,12 +46,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 phoneInput.closest(".payeh-login__field")?.classList.add("is-error");
                 valid = false;
             }
+        } else if (isPhone) {
+            // Valid 11-digit phone number
+            valid = true;
+        } else if (identifier.length >= 3) {
+            // Valid username (like 'taha' or manager username)
+            valid = true;
         } else {
-            if (!/^09\d{9}$/.test(identifier)) {
-                phoneError.textContent = "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود یا ایمیل وارد کنید.";
-                phoneInput.closest(".payeh-login__field")?.classList.add("is-error");
-                valid = false;
-            }
+            phoneError.textContent = "نام کاربری، شماره موبایل یا ایمیل معتبر وارد کنید.";
+            phoneInput.closest(".payeh-login__field")?.classList.add("is-error");
+            valid = false;
         }
         if (!password) {
             passwordError.textContent = "رمز عبور را وارد کنید.";

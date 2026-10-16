@@ -45,7 +45,7 @@ class User(AbstractUser):
     )
     GENDER_CHOICES = (("female", "دختر"), ("male", "پسر"))
 
-    phone = models.CharField(max_length=11, unique=True, verbose_name="شماره موبایل")
+    phone = models.CharField(max_length=50, unique=True, verbose_name="نام کاربری یا شماره موبایل")
     full_name = models.CharField(max_length=100, verbose_name="نام و نام خانوادگی")
     national_id = models.CharField(max_length=20, blank=True, verbose_name="کد ملی")
     parent_phone = models.CharField(max_length=11, blank=True, verbose_name="شماره والد")

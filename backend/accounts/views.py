@@ -196,10 +196,17 @@ def login_user(request):
             else:
                 phone = identifier
         else:
-            phone = valid_phone(identifier)
+            matched_user = User.objects.filter(phone__iexact=identifier).first()
+            if matched_user:
+                phone = matched_user.phone
+            else:
+                try:
+                    phone = valid_phone(identifier)
+                except ValueError:
+                    phone = identifier
     except (ValueError, json.JSONDecodeError, UnicodeDecodeError):
         record_event(request, "auth.login.invalid_request", "auth", "denied", details={"reason": "invalid_login_payload"})
-        return JsonResponse({"detail": "شماره موبایل، ایمیل یا رمز عبور نادرست است."}, status=400)
+        return JsonResponse({"detail": "نام کاربری، شماره موبایل، ایمیل یا رمز عبور نادرست است."}, status=400)
 
     user = authenticate(request, phone=phone, password=password)
     if user is None or not user.is_active:
