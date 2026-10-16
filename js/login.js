@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
 
     // If already logged in, redirect immediately to dashboard
-    fetch(`${apiBase}me/`, { credentials: "include" })
+    fetch(`${apiBase}me/`, { credentials: "include", cache: "no-store" })
         .then(r => r.ok ? r.json() : null)
         .then(user => {
             if (user && user.role) {

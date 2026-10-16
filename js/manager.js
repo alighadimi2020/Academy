@@ -654,7 +654,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin" });
+    const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin", cache: "no-store" });
     if (!meResponse.ok) { location.assign("login.html"); return; }
     const me = await meResponse.json();
     if (!["manager", "admin"].includes(me.role)) { location.assign(me.role === "student" ? "student.html" : "consultant.html"); return; }

@@ -106,3 +106,26 @@ class SecurityAndAccountTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn("results", res.json())
         self.assertEqual(len(res.json()["results"]), 1)
+
+    def test_session_flush_and_no_cache_headers(self):
+        # Login as manager first
+        self.client.login(phone="09121234567", password="ManagerPassword123!")
+        res = self.client.get("/api/auth/me/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["role"], "manager")
+        self.assertIn("no-store", res.headers.get("Cache-Control", ""))
+
+        # Now login as student directly
+        res_login = self.client.post(
+            "/api/auth/login/",
+            data=json.dumps({"phone": "09129998877", "password": "StudentPassword123!"}),
+            content_type="application/json"
+        )
+        self.assertEqual(res_login.status_code, 200)
+        self.assertIn("no-store", res_login.headers.get("Cache-Control", ""))
+
+        # Check me endpoint returns student, not manager
+        res_me = self.client.get("/api/auth/me/")
+        self.assertEqual(res_me.status_code, 200)
+        self.assertEqual(res_me.json()["role"], "student")
+        self.assertEqual(res_me.json()["phone"], "09129998877")

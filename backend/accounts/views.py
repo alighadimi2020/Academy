@@ -6,9 +6,17 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.hashers import check_password, make_password
 from django.db import IntegrityError, transaction
 from django.utils import timezone
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_POST
 from django.http import JsonResponse
+
+
+def _add_no_cache_headers(response):
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    return response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -171,13 +179,16 @@ def verify_registration(request):
 
 
 @require_GET
+@never_cache
 @ensure_csrf_cookie
 def csrf_token(request):
     from django.middleware.csrf import get_token
-    return JsonResponse({"csrfToken": get_token(request)})
+    response = JsonResponse({"csrfToken": get_token(request)})
+    return _add_no_cache_headers(response)
 
 
 @require_POST
+@never_cache
 @csrf_protect
 def login_user(request):
     try:
@@ -206,28 +217,34 @@ def login_user(request):
                     phone = identifier
     except (ValueError, json.JSONDecodeError, UnicodeDecodeError):
         record_event(request, "auth.login.invalid_request", "auth", "denied", details={"reason": "invalid_login_payload"})
-        return JsonResponse({"detail": "نام کاربری، شماره موبایل، ایمیل یا رمز عبور نادرست است."}, status=400)
+        response = JsonResponse({"detail": "نام کاربری، شماره موبایل، ایمیل یا رمز عبور نادرست است."}, status=400)
+        return _add_no_cache_headers(response)
 
     user = authenticate(request, phone=phone, password=password)
     if user is None or not user.is_active:
         masked = phone[-4:] if len(phone) >= 4 else phone
         record_event(request, "auth.login.failed", "auth", "denied", subject=f"id-ends-{masked}", details={"reason": "invalid_credentials"})
-        return JsonResponse({"detail": "شماره موبایل/ایمیل یا رمز عبور نادرست است."}, status=401)
+        response = JsonResponse({"detail": "شماره موبایل/ایمیل یا رمز عبور نادرست است."}, status=401)
+        return _add_no_cache_headers(response)
 
+    request.session.flush()
     auth_login(request, user)
     record_event(request, "auth.login.succeeded", "auth", "success", subject=user.phone, details={"role": user.role})
     request.session.set_expiry(1209600 if data.get("remember") else 0)
-    return JsonResponse({"detail": "ورود موفق بود.", "role": user.role})
+    response = JsonResponse({"detail": "ورود موفق بود.", "role": user.role})
+    return _add_no_cache_headers(response)
 
 
 @require_GET
+@never_cache
 def current_user(request):
     if not request.user.is_authenticated or not request.user.is_active:
-        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+        response = JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+        return _add_no_cache_headers(response)
     user = request.user
     grade_labels = dict(User.GRADE_CHOICES)
     major_labels = dict(User.MAJOR_CHOICES)
-    return JsonResponse({
+    response = JsonResponse({
         "id": user.id,
         "phone": user.phone,
         "role": user.role,
@@ -239,6 +256,7 @@ def current_user(request):
         "gender": user.gender,
         "gender_label": dict(User.GENDER_CHOICES).get(user.gender, "ثبت نشده"),
     })
+    return _add_no_cache_headers(response)
 
 
 @require_POST
@@ -297,12 +315,15 @@ def manager_user_list(request):
 
 
 @require_POST
+@never_cache
 @csrf_protect
 def logout_user(request):
     if request.user.is_authenticated:
         record_event(request, "auth.logout", "auth", "success", subject=request.user.phone)
     auth_logout(request)
-    return JsonResponse({"detail": "خروج انجام شد."})
+    request.session.flush()
+    response = JsonResponse({"detail": "خروج انجام شد."})
+    return _add_no_cache_headers(response)
 
 
 @require_POST

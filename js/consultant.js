@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         finally { location.assign("login.html"); }
     });
     try {
-        const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin" });
+        const meResponse = await fetch("/api/auth/me/", { credentials: "same-origin", cache: "no-store" });
         if (!meResponse.ok) { location.assign("login.html"); return; }
         const user = await meResponse.json();
         if (user.role !== "consultant") { location.assign(user.role === "student" ? "student.html" : "manager.html"); return; }
