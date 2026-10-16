@@ -37,12 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerInner = document.querySelector(".payeh-header__inner");
     if (headerInner) {
         const onScroll = () => {
-            if (window.scrollY > 30) {
-                headerInner.style.background = "rgba(255, 255, 255, 0.55)";
-                headerInner.style.boxShadow = "0 16px 40px -10px rgba(15, 23, 42, 0.14), 0 2px 8px rgba(15, 23, 42, 0.05)";
+            if (window.scrollY > 25) {
+                headerInner.classList.add("is-scrolled");
             } else {
-                headerInner.style.background = "rgba(255, 255, 255, 0.68)";
-                headerInner.style.boxShadow = "0 12px 36px -8px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04)";
+                headerInner.classList.remove("is-scrolled");
             }
         };
         window.addEventListener("scroll", onScroll, { passive: true });
