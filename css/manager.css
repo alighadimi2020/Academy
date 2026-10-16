@@ -1,16 +1,19 @@
 :root {
-    --manager-bg: #f7f8fc;
+    --manager-bg: #f7f9fc;
     --manager-surface: #ffffff;
     --manager-primary: #0b3dff;
     --manager-primary-dark: #0834d6;
     --manager-primary-soft: #edf2ff;
-    --manager-text: #172033;
-    --manager-text-secondary: #697386;
-    --manager-text-muted: #98a2b3;
-    --manager-border: #e8ebf1;
-    --manager-sidebar: #ffffff;
+    --manager-text: #0f172a;
+    --manager-text-secondary: #64748b;
+    --manager-text-muted: #94a3b8;
+    --manager-border: #e2e8f0;
+    --manager-sidebar: #0b0f19;
+    --manager-sidebar-brand: #060911;
+    --manager-sidebar-border: #1e293b;
+    --manager-sidebar-text: #94a3b8;
     --manager-radius: 18px;
-    --manager-shadow: 0 12px 40px rgba(25, 35, 55, 0.06);
+    --manager-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
     --manager-transition: 220ms ease;
 }
 
@@ -73,7 +76,7 @@ svg {
     display: flex;
     flex-direction: column;
     background: var(--manager-sidebar);
-    border-left: 1px solid var(--manager-border);
+    border-left: 1px solid var(--manager-sidebar-border);
     z-index: 100;
     transition: transform var(--manager-transition);
 }
@@ -83,7 +86,8 @@ svg {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 1px solid var(--manager-border);
+    background: var(--manager-sidebar-brand);
+    border-bottom: 1px solid var(--manager-sidebar-border);
 }
 
 .payeh-manager__brand-link {
@@ -112,7 +116,7 @@ svg {
     margin-bottom: 6px;
     padding: 0 15px;
     border-radius: 13px;
-    color: var(--manager-text-secondary);
+    color: var(--manager-sidebar-text);
     font-size: 0.88rem;
     font-weight: 600;
     transition:
@@ -122,13 +126,14 @@ svg {
 }
 
 .payeh-manager__nav-item:hover {
-    color: var(--manager-primary);
-    background: var(--manager-primary-soft);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .payeh-manager__nav-item.is-active {
-    color: var(--manager-primary);
-    background: var(--manager-primary-soft);
+    color: #ffffff;
+    background: var(--manager-primary);
+    box-shadow: 0 4px 14px rgba(11, 61, 255, 0.35);
     font-weight: 800;
 }
 
@@ -149,12 +154,13 @@ svg {
 .payeh-manager__nav-divider {
     height: 1px;
     margin: 18px 8px;
-    background: var(--manager-border);
+    background: var(--manager-sidebar-border);
 }
 
 .payeh-manager__sidebar-bottom {
     padding: 16px 14px 20px;
-    border-top: 1px solid var(--manager-border);
+    background: var(--manager-sidebar-brand);
+    border-top: 1px solid var(--manager-sidebar-border);
 }
 
 .payeh-manager__back-home {
@@ -163,16 +169,18 @@ svg {
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    color: var(--manager-text-secondary);
-    background: #f8f9fb;
+    color: #cbd5e1;
+    background: #161f30;
+    border: 1px solid #222f47;
     font-size: 0.78rem;
     font-weight: 700;
     transition: var(--manager-transition);
 }
 
 .payeh-manager__back-home:hover {
-    color: var(--manager-primary);
-    background: var(--manager-primary-soft);
+    color: #ffffff;
+    background: #1e293b;
+    border-color: #334155;
 }
 
 .payeh-manager__main {
@@ -512,11 +520,24 @@ svg {
 
     .payeh-manager__sidebar {
         transform: translateX(100%);
-        box-shadow: -20px 0 50px rgba(15, 23, 42, 0.12);
+        box-shadow: -20px 0 50px rgba(0, 0, 0, 0.45);
     }
 
     .payeh-manager__sidebar.is-open {
         transform: translateX(0);
+    }
+
+    .payeh-manager__overlay {
+        display: none;
+    }
+
+    .payeh-manager__overlay.is-active {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(11, 15, 25, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 95;
     }
 
     .payeh-manager__main {
@@ -538,16 +559,17 @@ svg {
         flex-direction: column;
         gap: 5px;
         border-radius: 12px;
-        background: var(--manager-primary-soft);
+        background: #0b0f19;
         cursor: pointer;
-        color: var(--manager-primary);
+        color: #ffffff;
+        border: 1px solid #1e293b;
     }
 
     .payeh-manager__menu-button span {
         width: 18px;
         height: 2px;
         border-radius: 2px;
-        background: currentColor;
+        background: #ffffff;
     }
 
     .payeh-manager__content {

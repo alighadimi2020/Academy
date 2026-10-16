@@ -100,11 +100,17 @@
                         <path d="M8 17h6"></path>
                     </svg>
                 </span>
-                <span>مقالات</span>
+                <span>مقالات و وبلاگ</span>
+            </a>
+            <a href="blog-editor.html?from=manager" class="payeh-manager__nav-item" style="color: #34d399; background: rgba(52, 211, 153, 0.08); border: 1px dashed rgba(52, 211, 153, 0.3); margin-top: 4px;">
+                <span class="payeh-manager__nav-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </span>
+                <span>ارسال مقاله جدید (مدیر)</span>
             </a>
             <a href="blog-review.html" class="payeh-manager__nav-item manager-review-link">
                 <span class="payeh-manager__nav-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-                <span>درخواست‌های وبلاگ</span>
+                <span>بررسی و تأیید مقالات</span>
             </a>
 
             <div class="payeh-manager__nav-divider"></div>
@@ -119,7 +125,7 @@
                 <span>تنظیمات</span>
             </a>
 
-            <a href="/admin/" target="_blank" class="payeh-manager__nav-item" style="color: #2563eb; background: #eff6ff; border: 1px dashed #bfdbfe; margin-top: 6px;">
+            <a href="/admin/" target="_blank" class="payeh-manager__nav-item" style="color: #60a5fa; background: rgba(59, 130, 246, 0.1); border: 1px dashed rgba(96, 165, 250, 0.35); margin-top: 6px;">
                 <span class="payeh-manager__nav-icon">
                     <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </span>
@@ -132,13 +138,15 @@
             <a href="index.html" class="payeh-manager__back-home">
                 <span>بازگشت به سایت</span>
             </a>
-            <button id="manager-logout-btn" type="button" class="payeh-manager__back-home" style="margin-top: 8px; background: #fee2e2; color: #b91c1c; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <button id="manager-logout-btn" type="button" class="payeh-manager__back-home" style="margin-top: 8px; background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 <svg viewBox="0 0 24 24" width="16" height="16"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 3v18"></path></svg>
                 <span>خروج از حساب</span>
             </button>
         </div>
 
     </aside>
+
+    <div class="payeh-manager__overlay" id="manager-sidebar-overlay"></div>
 
     <main class="payeh-manager__main">
 
@@ -395,7 +403,23 @@
             </section>
 
             <section class="manager-page" id="page-articles">
-                <div class="manager-page__intro"><div><span class="manager-page__eyebrow">مدیریت محتوا</span><h2>درخواست‌های وبلاگ</h2><p>مقاله‌های مشاوران را همین‌جا بررسی، تأیید و منتشر کنید یا با توضیح اختیاری برای اصلاح برگردانید.</p></div></div>
+                <div class="manager-page__intro" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                    <div>
+                        <span class="manager-page__eyebrow">مدیریت محتوا</span>
+                        <h2>مقالات و وبلاگ</h2>
+                        <p>بررسی و تأیید مقالات ارسالی مشاوران یا انتشار مستقیم مقاله جدید توسط مدیر مجموعه</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a href="blog-editor.html?from=manager" class="manager-btn-new-blog" style="display: inline-flex; align-items: center; gap: 8px; background: #0b3dff; color: #ffffff; padding: 10px 18px; border-radius: 12px; font-weight: 800; font-size: 13px; text-decoration: none; box-shadow: 0 4px 14px rgba(11, 61, 255, 0.25); transition: transform 0.2s ease;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                            <span>نوشتن مقاله جدید (مدیر)</span>
+                        </a>
+                        <a href="magazine.html" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #ffffff; color: #334155; border: 1px solid #cbd5e1; padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 13px; text-decoration: none;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+                            <span>مشاهده مجله آنلاین</span>
+                        </a>
+                    </div>
+                </div>
                 <iframe class="manager-blog-review-frame" src="blog-review.html?embedded=manager" title="درخواست‌های وبلاگ برای بررسی مدیر" loading="lazy"></iframe>
             </section>
 

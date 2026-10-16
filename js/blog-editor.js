@@ -19,7 +19,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector("main").replaceChildren(Object.assign(document.createElement("p"), { textContent: "فقط حساب مشاور یا مدیر می‌تواند مقاله ثبت کند." }));
         return;
     }
-    if (["manager", "admin"].includes(user.role)) document.getElementById("review-link").hidden = false;
+    if (["manager", "admin"].includes(user.role)) {
+        document.getElementById("review-link").hidden = false;
+        const mgrLink = document.getElementById("manager-link");
+        if (mgrLink) mgrLink.hidden = false;
+        const fromParam = new URLSearchParams(window.location.search).get("from");
+        const backLink = document.getElementById("blog-back-link");
+        if (backLink && (fromParam === "manager" || document.referrer.includes("manager.html"))) {
+            backLink.href = "manager.html#articles";
+            backLink.textContent = "← بازگشت به پنل مدیریت";
+        }
+        const roleNote = document.getElementById("blog-editor-role-note");
+        if (roleNote) roleNote.textContent = "شما با دسترسی مدیریت وارد شده‌اید. مقاله شما بلافاصله پس از ثبت، مستقیماً و بدون نیاز به تأیید در مجله منتشر خواهد شد.";
+        if (submitButton && !editingPostId) submitButton.textContent = "انتشار مستقیم مقاله در مجله";
+    }
 
     const setMessage = (text, error = false) => {
         message.textContent = text;

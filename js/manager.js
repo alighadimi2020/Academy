@@ -399,12 +399,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         const pageName = item.dataset.page;
         if (!pageName) return;
         event.preventDefault(); window.location.hash = pageName; showPage(pageName);
+        if (window.innerWidth <= 800) toggleSidebar(false);
     }));
     const loadPageFromHash = () => { const name = location.hash.slice(1); showPage(pageTitles[name] ? name : "dashboard"); };
     window.addEventListener("hashchange", loadPageFromHash);
-    managerMenuButton?.addEventListener("click", () => managerSidebar?.classList.toggle("is-open"));
+    const managerOverlay = document.getElementById("manager-sidebar-overlay");
+    const toggleSidebar = (open) => {
+        const isOpen = open !== undefined ? open : !managerSidebar?.classList.contains("is-open");
+        managerSidebar?.classList.toggle("is-open", isOpen);
+        managerOverlay?.classList.toggle("is-active", isOpen);
+    };
+    managerMenuButton?.addEventListener("click", () => toggleSidebar());
+    managerOverlay?.addEventListener("click", () => toggleSidebar(false));
     document.addEventListener("click", (event) => {
-        if (window.innerWidth <= 800 && managerSidebar?.classList.contains("is-open") && !managerSidebar.contains(event.target) && !managerMenuButton?.contains(event.target)) managerSidebar.classList.remove("is-open");
+        if (window.innerWidth <= 800 && managerSidebar?.classList.contains("is-open") && !managerSidebar.contains(event.target) && !managerMenuButton?.contains(event.target) && !managerOverlay?.contains(event.target)) {
+            toggleSidebar(false);
+        }
     });
 
     const openModal = (id) => {

@@ -184,7 +184,7 @@ def login_user(request):
         data = json.loads(request.body or b"{}")
         if not isinstance(data, dict):
             raise ValueError("invalid payload")
-        identifier = str(data.get("phone", "")).strip()
+        identifier = str(data.get("phone") or data.get("identifier") or data.get("username") or "").strip()
         password = str(data.get("password", ""))
         if not identifier or not password:
             raise ValueError("شماره موبایل، ایمیل یا رمز عبور الزامی است.")
