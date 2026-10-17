@@ -6,9 +6,9 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
     <title>پنل مشاور | آکادمی پایه</title>
 
-    <link rel="stylesheet" href="css/fonts.css">
-    <link rel="stylesheet" href="css/consultant.css">
-    <link rel="stylesheet" href="css/consultations.css">
+    <link rel="stylesheet" href="css/fonts.css?v=20261017_1">
+    <link rel="stylesheet" href="css/consultant.css?v=20261017_1">
+    <link rel="stylesheet" href="css/consultations.css?v=20261017_1">
 </head>
 
 <body>
@@ -303,13 +303,91 @@
                         <select id="planner-student"><option value="">در حال دریافت دانش‌آموزان…</option></select>
                     </label>
                     <form id="planner-session-form" class="consultant-plan-form planner-session-form">
+                        <!-- Apple-Style Frosted Glass Curriculum Cascade Selector -->
+                        <div class="apple-glass-curriculum-card">
+                            <div class="curriculum-header">
+                                <div class="curriculum-title">
+                                    <span class="curriculum-icon">📚</span>
+                                    <div>
+                                        <strong>انتخاب هوشمند سرفصل درسی</strong>
+                                        <small>کتاب ➔ فصل ➔ مبحث/گفتار (اختیاری)</small>
+                                    </div>
+                                </div>
+                                <button type="button" class="curriculum-mode-toggle" id="curriculumModeToggle" title="تغییر به ورود دستی یا خودکار">
+                                    <span class="toggle-icon">✏️</span>
+                                    <span class="toggle-text">ورود دستی / سایر</span>
+                                </button>
+                            </div>
+
+                            <!-- Mode 1: Guided Cascading Selector -->
+                            <div class="curriculum-cascade-container" id="curriculumCascadeContainer">
+                                <div class="curriculum-cascade-grid">
+                                    <!-- Level 1: Course / Book -->
+                                    <div class="curriculum-field">
+                                        <label for="curriculumBook">
+                                            <span class="step-badge">۱</span>
+                                            <span>انتخاب کتاب و درس</span>
+                                        </label>
+                                        <div class="glass-select-wrapper">
+                                            <select id="curriculumBook" class="apple-glass-select">
+                                                <option value="">-- انتخاب کتاب درسی --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Level 2: Chapter -->
+                                    <div class="curriculum-field">
+                                        <label for="curriculumChapter">
+                                            <span class="step-badge">۲</span>
+                                            <span>انتخاب فصل</span>
+                                        </label>
+                                        <div class="glass-select-wrapper">
+                                            <select id="curriculumChapter" class="apple-glass-select" disabled>
+                                                <option value="">-- اول کتاب را انتخاب کنید --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Level 3: Topic / Lesson / Speech (Optional) -->
+                                    <div class="curriculum-field">
+                                        <label for="curriculumTopic">
+                                            <span class="step-badge">۳</span>
+                                            <span>درس / گفتار / مبحث</span>
+                                            <span class="optional-tag">اختیاری</span>
+                                        </label>
+                                        <div class="glass-select-wrapper">
+                                            <select id="curriculumTopic" class="apple-glass-select" disabled>
+                                                <option value="">-- کل فصل (بدون مبحث خاص) --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Live Selection Breadcrumb Preview -->
+                                <div class="curriculum-preview-bar" id="curriculumPreviewBar" style="display: none;">
+                                    <span class="preview-label">سرفصل انتخاب‌شده:</span>
+                                    <div class="preview-pills" id="curriculumPreviewPills"></div>
+                                    <button type="button" class="curriculum-reset-btn" id="curriculumResetBtn" title="پاک کردن انتخاب">✕</button>
+                                </div>
+                            </div>
+
+                            <!-- Mode 2: Manual / Custom Input (Toggled) -->
+                            <div class="curriculum-manual-container" id="curriculumManualContainer" style="display: none;">
+                                <label>نام درس سفارشی
+                                    <input type="text" id="curriculumManualSubject" class="apple-glass-input" placeholder="مثلاً: آزمون جامع شبیه‌ساز کنکور یا فیزیک پایه">
+                                </label>
+                            </div>
+
+                            <!-- Hidden input bound to plannerForm with name="subject" -->
+                            <input type="hidden" name="subject" id="planner-subject-hidden" required>
+                        </div>
+
                         <label>روز هفته<select name="weekday"><option value="0">شنبه</option><option value="1">یکشنبه</option><option value="2">دوشنبه</option><option value="3">سه‌شنبه</option><option value="4">چهارشنبه</option><option value="5">پنجشنبه</option><option value="6">جمعه</option></select></label>
-                        <label>نام درس<input name="subject" maxlength="80" required placeholder="مثلاً ریاضی"></label>
                         <label>مدت مطالعه (دقیقه)<input name="planned_minutes" type="number" min="1" max="1440" value="120" required></label>
                         <label>نوع فعالیت<select name="mode"><option value="test">حل تست</option><option value="written">حل تشریحی</option><option value="study">مطالعهٔ درس‌نامه</option></select></label>
                         <label>تعداد تست<input name="test_count" type="number" min="0" max="500" value="0"></label>
                         <label>رنگ باکس<select name="color"><option value="mint">سبز</option><option value="blue">آبی</option><option value="peach">هلویی</option><option value="lavender">یاسی</option><option value="rose">صورتی</option><option value="yellow">زرد</option></select></label>
-                        <label class="plan-instructions">توضیحات<input name="instructions" maxlength="300" placeholder="فصل، صفحات یا نکتهٔ مهم"></label>
+                        <label class="plan-instructions">توضیحات و تمرین‌ها<input name="instructions" id="planner-instructions-input" maxlength="500" placeholder="فصل، صفحات یا نکتهٔ مهم"></label>
                         <button type="submit">ثبت سهمیهٔ روزانه</button><span id="planner-form-message" role="status"></span>
                     </form>
                     <div class="planner-week-heading"><strong>پیش‌نمایش برنامهٔ دانش‌آموز</strong><span>ساعت ایران · تقویم شمسی</span></div>
@@ -432,7 +510,8 @@
 
 </div>
 
-<script src="js/consultant.js"></script>
+<script src="js/curriculum-data.js?v=20261017_1"></script>
+<script src="js/consultant.js?v=20261017_1"></script>
 
 </body>
 </html>

@@ -679,4 +679,279 @@ a {
 .consultant-telegram-btn--test { background: #e3f1e9; color: #17633c; border: 1px solid #b2dcbe; }
 .consultant-telegram-btn--disconnect { background: #fde8e8; color: #b52a2a; border: 1px solid #f6bebe; }
 
+/* ========================================================
+   Apple-Style Frosted Glass Curriculum Cascade Selector
+   ======================================================== */
+.apple-glass-curriculum-card {
+    grid-column: 1 / -1;
+    margin: 8px 0 16px;
+    padding: 20px 22px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    box-shadow: 0 14px 36px -10px rgba(15, 23, 42, 0.08), 0 2px 8px rgba(15, 23, 42, 0.04);
+    backdrop-filter: blur(24px) saturate(190%);
+    -webkit-backdrop-filter: blur(24px) saturate(190%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.curriculum-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+    flex-wrap: wrap;
+}
+
+.curriculum-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.curriculum-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: #ffffff;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    flex-shrink: 0;
+}
+
+.curriculum-title strong {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+}
+
+.curriculum-title small {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.curriculum-mode-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border: 1px solid rgba(203, 213, 225, 0.8);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #334155;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.curriculum-mode-toggle:hover {
+    background: #ffffff;
+    color: #0284c7;
+    border-color: #93c5fd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.curriculum-cascade-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+.curriculum-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.curriculum-field label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.step-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #0284c7;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.optional-tag {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(100, 116, 139, 0.12);
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 600;
+    margin-inline-start: auto;
+}
+
+.glass-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.apple-glass-select,
+.apple-glass-input {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1.5px solid rgba(226, 232, 240, 0.9);
+    border-radius: 14px;
+    color: #0f172a;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    direction: rtl;
+}
+
+.apple-glass-select:focus,
+.apple-glass-input:focus {
+    background: #ffffff;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15), 0 4px 12px rgba(2, 132, 199, 0.08);
+}
+
+.apple-glass-select:disabled {
+    background: rgba(241, 245, 249, 0.6);
+    border-color: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.apple-glass-select optgroup {
+    font-weight: 800;
+    color: #0284c7;
+    background: #f8fafc;
+    padding: 6px 0;
+}
+
+.apple-glass-select option {
+    font-weight: 500;
+    color: #0f172a;
+    background: #ffffff;
+    padding: 8px 12px;
+}
+
+/* Breadcrumb Preview Bar */
+.curriculum-preview-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: rgba(238, 242, 255, 0.7);
+    border: 1px solid rgba(199, 210, 254, 0.7);
+    border-radius: 14px;
+    backdrop-filter: blur(12px);
+    flex-wrap: wrap;
+    animation: fadeInPreview 0.25s ease-out;
+}
+
+@keyframes fadeInPreview {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.preview-label {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #3730a3;
+    white-space: nowrap;
+}
+
+.preview-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.preview-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: #ffffff;
+    border: 1px solid #e0e7ff;
+    border-radius: 10px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #1e293b;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+}
+
+.preview-pill--highlight {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+}
+
+.preview-arrow {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.curriculum-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(226, 232, 240, 0.8);
+    color: #475569;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.curriculum-reset-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+@media (max-width: 850px) {
+    .curriculum-cascade-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
 

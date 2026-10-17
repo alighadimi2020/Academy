@@ -177,10 +177,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     plannerPicker?.addEventListener("change", ()=>{loadPlannerWeek();loadStudyReports();});
     plannerForm?.addEventListener("submit", async (event) => {
-        event.preventDefault(); const message=document.getElementById("planner-form-message"); const studentId=plannerPicker?.value;
-        if(!studentId){message.textContent="اول دانش‌آموز را انتخاب کنید.";return;}
-        const button=plannerForm.querySelector('button[type="submit"]');button.disabled=true;message.textContent="در حال ذخیره…";
-        try { const csrf=await fetch("/api/auth/csrf/",{credentials:"same-origin"}).then(r=>r.json());const payload=Object.fromEntries(new FormData(plannerForm));payload.student_id=Number(studentId);const response=await fetch("/api/consultations/study-sessions/create/",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","X-CSRFToken":csrf.csrfToken},body:JSON.stringify(payload)});const result=await response.json();if(!response.ok)throw new Error(result.detail||"ذخیره برنامه انجام نشد.");message.textContent="سهمیهٔ مطالعه به برنامهٔ دانش‌آموز اضافه شد.";plannerForm.reset();await loadPlannerWeek();await loadStudyReports();}catch(error){message.textContent=error.message;}finally{button.disabled=false;}
+        event.preventDefault();
+        const message = document.getElementById("planner-form-message");
+        const studentId = plannerPicker?.value;
+        if (!studentId) {
+            message.textContent = "اول دانش‌آموز را انتخاب کنید.";
+            return;
+        }
+        const button = plannerForm.querySelector('button[type="submit"]');
+        if (button) button.disabled = true;
+        message.textContent = "در حال ذخیره…";
+        try {
+            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const payload = Object.fromEntries(new FormData(plannerForm));
+            payload.student_id = Number(studentId);
+            if (!payload.subject || !payload.subject.trim()) {
+                message.textContent = "لطفاً ابتدا سرفصل درسی را انتخاب یا وارد کنید.";
+                button.disabled = false;
+                return;
+            }
+            const response = await fetch("/api/consultations/study-sessions/create/", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.detail || "ذخیره برنامه انجام نشد.");
+            message.textContent = "سهمیهٔ مطالعه به برنامهٔ دانش‌آموز اضافه شد.";
+            plannerForm.reset();
+            document.getElementById("curriculumResetBtn")?.click();
+            await loadPlannerWeek();
+            await loadStudyReports();
+        } catch (error) {
+            message.textContent = error.message;
+        } finally {
+            button.disabled = false;
+        }
     });
 
     let reportsFilterTimeout;
@@ -489,5 +522,226 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (error) { target.textContent = error.message || "دریافت فهرست انجام نشد."; }
     }
 
+    function initCurriculumSelector() {
+        const bookSelect = document.getElementById("curriculumBook");
+        const chapterSelect = document.getElementById("curriculumChapter");
+        const topicSelect = document.getElementById("curriculumTopic");
+        const previewBar = document.getElementById("curriculumPreviewBar");
+        const previewPills = document.getElementById("curriculumPreviewPills");
+        const resetBtn = document.getElementById("curriculumResetBtn");
+        const modeToggle = document.getElementById("curriculumModeToggle");
+        const cascadeContainer = document.getElementById("curriculumCascadeContainer");
+        const manualContainer = document.getElementById("curriculumManualContainer");
+        const manualSubject = document.getElementById("curriculumManualSubject");
+        const hiddenSubject = document.getElementById("planner-subject-hidden");
+        const instructionsInput = document.getElementById("planner-instructions-input");
+
+        if (!bookSelect || !chapterSelect || !topicSelect || !hiddenSubject) return;
+
+        const curriculumData = window.CURRICULUM_DATA || (typeof CURRICULUM_DATA !== "undefined" ? CURRICULUM_DATA : []);
+        if (!Array.isArray(curriculumData) || !curriculumData.length) {
+            console.warn("Curriculum data not loaded or empty.");
+            return;
+        }
+
+        let isManualMode = false;
+        let lastAutoInstruction = "";
+
+        // Populate Books grouped by Category
+        const categories = {};
+        curriculumData.forEach((book) => {
+            const cat = book.category || "سایر دروس";
+            if (!categories[cat]) categories[cat] = [];
+            categories[cat].push(book);
+        });
+
+        bookSelect.replaceChildren();
+        bookSelect.add(new Option("-- انتخاب کتاب درسی (الزامی) --", ""));
+
+        Object.entries(categories).forEach(([categoryName, books]) => {
+            const optgroup = document.createElement("optgroup");
+            optgroup.label = `📚 ${categoryName}`;
+            books.forEach((book) => {
+                const opt = new Option(`${book.icon || "📖"} ${book.title}`, book.id);
+                optgroup.appendChild(opt);
+            });
+            bookSelect.appendChild(optgroup);
+        });
+
+        function updateSelection() {
+            if (isManualMode) {
+                const manualVal = (manualSubject?.value || "").trim();
+                hiddenSubject.value = manualVal;
+                if (previewBar) previewBar.style.display = "none";
+                return;
+            }
+
+            const selectedBookId = bookSelect.value;
+            const book = curriculumData.find((b) => b.id === selectedBookId);
+
+            if (!book) {
+                hiddenSubject.value = "";
+                if (previewBar) previewBar.style.display = "none";
+                return;
+            }
+
+            const chapterIdx = chapterSelect.value;
+            if (chapterIdx === "" || chapterIdx === null || chapterIdx === undefined) {
+                hiddenSubject.value = "";
+                if (previewBar) previewBar.style.display = "none";
+                return;
+            }
+
+            const chapter = book.chapters ? book.chapters[Number(chapterIdx)] : null;
+            if (!chapter) {
+                hiddenSubject.value = "";
+                if (previewBar) previewBar.style.display = "none";
+                return;
+            }
+
+            const topicIdx = topicSelect.value;
+            const hasTopic = topicIdx !== "" && topicIdx !== null && topicIdx !== undefined && chapter.topics && chapter.topics[Number(topicIdx)];
+            const topic = hasTopic ? chapter.topics[Number(topicIdx)] : null;
+
+            let formattedSubject = topic
+                ? `${book.title} · ${chapter.title} · ${topic}`
+                : `${book.title} · ${chapter.title}`;
+
+            if (formattedSubject.length > 150) {
+                formattedSubject = formattedSubject.slice(0, 147) + "...";
+            }
+            hiddenSubject.value = formattedSubject;
+
+            if (previewPills && previewBar) {
+                previewPills.replaceChildren();
+
+                const pillBook = document.createElement("span");
+                pillBook.className = "preview-pill pill-book";
+                pillBook.textContent = `${book.icon || "📖"} ${book.title}`;
+                previewPills.appendChild(pillBook);
+
+                const pillChapter = document.createElement("span");
+                pillChapter.className = "preview-pill pill-chapter";
+                pillChapter.textContent = `📑 ${chapter.title}`;
+                previewPills.appendChild(pillChapter);
+
+                if (topic) {
+                    const pillTopic = document.createElement("span");
+                    pillTopic.className = "preview-pill pill-topic";
+                    pillTopic.textContent = `🎯 ${topic}`;
+                    previewPills.appendChild(pillTopic);
+                } else {
+                    const pillAll = document.createElement("span");
+                    pillAll.className = "preview-pill pill-all";
+                    pillAll.textContent = "✨ کل فصل";
+                    previewPills.appendChild(pillAll);
+                }
+
+                previewBar.style.display = "flex";
+            }
+
+            if (instructionsInput) {
+                const currentVal = instructionsInput.value.trim();
+                if (!currentVal || currentVal === lastAutoInstruction) {
+                    const suggestion = topic
+                        ? `مطالعه و حل تست مبحث: ${topic}`
+                        : `مطالعه و مرور کامل: ${chapter.title}`;
+                    instructionsInput.value = suggestion;
+                    lastAutoInstruction = suggestion;
+                }
+            }
+        }
+
+        bookSelect.addEventListener("change", () => {
+            const selectedBookId = bookSelect.value;
+            const book = curriculumData.find((b) => b.id === selectedBookId);
+
+            chapterSelect.replaceChildren();
+            topicSelect.replaceChildren();
+
+            if (!book || !book.chapters || !book.chapters.length) {
+                chapterSelect.disabled = true;
+                chapterSelect.add(new Option("-- اول کتاب را انتخاب کنید --", ""));
+                topicSelect.disabled = true;
+                topicSelect.add(new Option("-- کل فصل (بدون مبحث خاص) --", ""));
+                updateSelection();
+                return;
+            }
+
+            chapterSelect.disabled = false;
+            chapterSelect.add(new Option("-- انتخاب فصل (الزامی) --", ""));
+            book.chapters.forEach((ch, idx) => {
+                chapterSelect.add(new Option(ch.title, String(idx)));
+            });
+
+            topicSelect.disabled = true;
+            topicSelect.add(new Option("-- کل فصل (بدون مبحث خاص) --", ""));
+            updateSelection();
+        });
+
+        chapterSelect.addEventListener("change", () => {
+            const selectedBookId = bookSelect.value;
+            const book = curriculumData.find((b) => b.id === selectedBookId);
+            const chapterIdx = chapterSelect.value;
+
+            topicSelect.replaceChildren();
+
+            if (!book || chapterIdx === "" || !book.chapters || !book.chapters[Number(chapterIdx)]) {
+                topicSelect.disabled = true;
+                topicSelect.add(new Option("-- کل فصل (بدون مبحث خاص) --", ""));
+                updateSelection();
+                return;
+            }
+
+            const chapter = book.chapters[Number(chapterIdx)];
+            topicSelect.disabled = false;
+            topicSelect.add(new Option("-- کل فصل (بدون مبحث خاص) --", ""));
+
+            if (chapter.topics && chapter.topics.length) {
+                chapter.topics.forEach((top, idx) => {
+                    topicSelect.add(new Option(top, String(idx)));
+                });
+            }
+
+            updateSelection();
+        });
+
+        topicSelect.addEventListener("change", updateSelection);
+
+        resetBtn?.addEventListener("click", () => {
+            bookSelect.value = "";
+            chapterSelect.replaceChildren(new Option("-- اول کتاب را انتخاب کنید --", ""));
+            chapterSelect.disabled = true;
+            topicSelect.replaceChildren(new Option("-- کل فصل (بدون مبحث خاص) --", ""));
+            topicSelect.disabled = true;
+            if (manualSubject) manualSubject.value = "";
+            if (instructionsInput && instructionsInput.value === lastAutoInstruction) {
+                instructionsInput.value = "";
+            }
+            lastAutoInstruction = "";
+            updateSelection();
+        });
+
+        modeToggle?.addEventListener("click", () => {
+            isManualMode = !isManualMode;
+            if (isManualMode) {
+                if (cascadeContainer) cascadeContainer.style.display = "none";
+                if (manualContainer) manualContainer.style.display = "block";
+                modeToggle.innerHTML = '<span class="toggle-icon">📚</span><span class="toggle-text">انتخاب از سرفصل‌های مصوب</span>';
+                if (manualSubject) manualSubject.focus();
+            } else {
+                if (cascadeContainer) cascadeContainer.style.display = "block";
+                if (manualContainer) manualContainer.style.display = "none";
+                modeToggle.innerHTML = '<span class="toggle-icon">✏️</span><span class="toggle-text">ورود دستی / سایر</span>';
+            }
+            updateSelection();
+        });
+
+        manualSubject?.addEventListener("input", () => {
+            if (isManualMode) updateSelection();
+        });
+    }
+
+    initCurriculumSelector();
     showPage(location.hash.slice(1) || "dashboard");
 });

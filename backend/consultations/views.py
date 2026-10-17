@@ -604,10 +604,10 @@ def study_sessions_create(request):
     if request.user.role != "consultant": return error("فقط مشاور می‌تواند برنامه ثبت کند.", 403)
     try:
         data=json.loads(request.body or b"{}"); student_id=int(data.get("student_id")); weekday=int(data.get("weekday")); minutes=int(data.get("planned_minutes",60)); subject=str(data.get("subject","")).strip(); mode=data.get("mode","study"); tests=int(data.get("test_count",0) or 0)
-        if not 0 <= weekday <= 6 or not 1 <= minutes <= 1440 or not subject or len(subject)>80 or mode not in {"test","written","study"} or not 0 <= tests <= 500: raise ValueError
+        if not 0 <= weekday <= 6 or not 1 <= minutes <= 1440 or not subject or len(subject)>150 or mode not in {"test","written","study"} or not 0 <= tests <= 500: raise ValueError
         student=get_user_model().objects.get(pk=student_id,role="student",is_active=True)
         if not ConsultationRequest.objects.filter(student=student,assigned_consultant__user=request.user,status="approved").exists(): return error("این دانش‌آموز به شما تخصیص داده نشده است.",403)
-        item=StudySession.objects.create(student=student,consultant=request.user,weekday=weekday,planned_minutes=minutes,subject=subject,mode=mode,test_count=tests if mode=="test" else 0,instructions=str(data.get("instructions",""))[:300],color=data.get("color") if data.get("color") in {"mint","blue","peach","lavender","rose","yellow"} else "mint")
+        item=StudySession.objects.create(student=student,consultant=request.user,weekday=weekday,planned_minutes=minutes,subject=subject,mode=mode,test_count=tests if mode=="test" else 0,instructions=str(data.get("instructions",""))[:500],color=data.get("color") if data.get("color") in {"mint","blue","peach","lavender","rose","yellow"} else "mint")
         return JsonResponse({"id":item.id},status=201)
     except (ValueError,TypeError,KeyError,get_user_model().DoesNotExist): return error("اطلاعات برنامه معتبر نیست.",400)
 
