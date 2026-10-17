@@ -406,23 +406,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     const managerOverlay = document.getElementById("manager-sidebar-overlay");
     const managerSidebarClose = document.getElementById("manager-sidebar-close");
     const toggleSidebar = (open) => {
-        const isOpen = open !== undefined ? open : !managerSidebar?.classList.contains("is-open");
+        const isOpen = open !== undefined ? open : !(managerSidebar?.classList.contains("is-open") || managerSidebar?.classList.contains("open"));
         managerSidebar?.classList.toggle("is-open", isOpen);
+        managerSidebar?.classList.toggle("open", isOpen);
         managerOverlay?.classList.toggle("is-active", isOpen);
+        managerOverlay?.classList.toggle("active", isOpen);
+        document.body.classList.toggle("payeh-sidebar-locked", isOpen);
     };
     managerMenuButton?.addEventListener("click", (e) => {
         e.stopPropagation();
+        e.preventDefault();
         toggleSidebar();
     });
-    managerSidebarClose?.addEventListener("click", () => toggleSidebar(false));
+    managerSidebarClose?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        toggleSidebar(false);
+    });
     managerOverlay?.addEventListener("click", () => toggleSidebar(false));
     document.addEventListener("click", (event) => {
-        if (managerSidebar?.classList.contains("is-open") && !managerSidebar.contains(event.target) && !managerMenuButton?.contains(event.target)) {
+        if ((managerSidebar?.classList.contains("is-open") || managerSidebar?.classList.contains("open")) && !managerSidebar.contains(event.target) && !managerMenuButton?.contains(event.target)) {
             toggleSidebar(false);
         }
     });
     document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && managerSidebar?.classList.contains("is-open")) {
+        if (event.key === "Escape" && (managerSidebar?.classList.contains("is-open") || managerSidebar?.classList.contains("open"))) {
             toggleSidebar(false);
         }
     });

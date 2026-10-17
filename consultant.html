@@ -6,9 +6,9 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
     <title>پنل مشاور | آکادمی پایه</title>
 
-    <link rel="stylesheet" href="css/fonts.css?v=20261017_14">
-    <link rel="stylesheet" href="css/consultant.css?v=20261017_14">
-    <link rel="stylesheet" href="css/consultations.css?v=20261017_14">
+    <link rel="stylesheet" href="css/fonts.css?v=20261017_20">
+    <link rel="stylesheet" href="css/consultant.css?v=20261017_20">
+    <link rel="stylesheet" href="css/consultations.css?v=20261017_20">
 </head>
 
 <body>
@@ -24,6 +24,10 @@
                 <strong>آکادمی پایه</strong>
                 <span>پنل مشاور</span>
             </div>
+
+            <button type="button" class="payeh-sidebar-close" id="consultantSidebarClose" aria-label="بستن منو">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
         </div>
 
         <nav class="payeh-consultant__nav">
@@ -121,7 +125,7 @@
         </div>
 
     </aside>
-
+    <div class="payeh-consultant__overlay" id="consultantSidebarOverlay"></div>
 
     <main class="payeh-consultant__main">
 
@@ -609,8 +613,8 @@
 
 </div>
 
-<script src="js/curriculum-data.js?v=20261017_14"></script>
-<script src="js/consultant.js?v=20261017_14"></script>
+<script src="js/curriculum-data.js?v=20261017_20"></script>
+<script src="js/consultant.js?v=20261017_20"></script>
 
 </body>
 </html>

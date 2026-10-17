@@ -9,8 +9,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (pageTitle) pageTitle.textContent = titles[name] || titles.dashboard;
         if (name === "consultant") document.getElementById("student-consultant-panel")?.scrollIntoView({ behavior: "smooth", block: "center" });
         else window.scrollTo({ top: 0, behavior: "smooth" });
-        sidebar?.classList.remove("is-open");
+        toggleStudentSidebar(false);
     };
+
+    const studentSidebarOverlay = document.getElementById("studentSidebarOverlay");
+    const studentSidebarClose = document.getElementById("studentSidebarClose");
+
+    const toggleStudentSidebar = (force) => {
+        const willOpen = typeof force === "boolean" ? force : !(sidebar?.classList.contains("is-open") || sidebar?.classList.contains("open"));
+        sidebar?.classList.toggle("is-open", willOpen);
+        sidebar?.classList.toggle("open", willOpen);
+        studentSidebarOverlay?.classList.toggle("is-active", willOpen);
+        studentSidebarOverlay?.classList.toggle("active", willOpen);
+        document.body.classList.toggle("payeh-sidebar-locked", willOpen);
+    };
+
     document.querySelectorAll('[data-page="consultant"]').forEach((item) => item.addEventListener("click", (event) => {
         event.preventDefault();
         history.replaceState(null, "", "#consultant");
@@ -19,7 +32,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.querySelectorAll(".payeh-student__nav-item[data-page]:not([data-page=consultant])").forEach((item) => item.addEventListener("click", (event) => {
         event.preventDefault(); const name = item.dataset.page; history.replaceState(null, "", `#${name}`); selectPage(name);
     }));
-    menuButton?.addEventListener("click", () => sidebar?.classList.toggle("is-open"));
+
+    menuButton?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        toggleStudentSidebar();
+    });
+
+    studentSidebarClose?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        toggleStudentSidebar(false);
+    });
+
+    studentSidebarOverlay?.addEventListener("click", () => toggleStudentSidebar(false));
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && (sidebar?.classList.contains("is-open") || sidebar?.classList.contains("open"))) {
+            toggleStudentSidebar(false);
+        }
+    });
+
+    document.addEventListener("click", (e) => {
+        if (window.innerWidth <= 800) {
+            if (sidebar && (sidebar.classList.contains("is-open") || sidebar.classList.contains("open"))) {
+                if (!sidebar.contains(e.target) && !menuButton?.contains(e.target)) {
+                    toggleStudentSidebar(false);
+                }
+            }
+        }
+    });
     window.addEventListener("hashchange", () => selectPage(location.hash.slice(1) || "dashboard"));
     document.querySelector(".payeh-student__logout")?.addEventListener("click", async () => {
         try { const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then((response) => response.json()); await fetch("/api/auth/logout/", { method: "POST", credentials: "same-origin", headers: { "X-CSRFToken": csrf.csrfToken } }); }

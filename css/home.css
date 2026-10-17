@@ -646,16 +646,11 @@ p {
 .payeh-hero {
     position: relative;
     width: 100%;
-    padding-top: 105px;
+    padding-top: 140px;
     padding-bottom: 1px;
     overflow: hidden;
 }
 
-@media (max-width: 768px) {
-    .payeh-hero {
-        padding-top: 85px;
-    }
-}
 
 .payeh-hero__inner {
     position: relative;
@@ -869,7 +864,7 @@ p {
 @media (max-width: 992px) {
 
     .payeh-hero {
-        padding-top: 24px;
+        padding-top: 120px;
         padding-bottom: 56px;
     }
 
@@ -905,7 +900,7 @@ p {
 @media (max-width: 768px) {
 
     .payeh-hero {
-        padding-top: 18px;
+        padding-top: 105px;
         padding-bottom: 42px;
     }
 
@@ -986,7 +981,7 @@ p {
 @media (max-width: 576px) {
 
     .payeh-hero {
-        padding-top: 12px;
+        padding-top: 95px;
         padding-bottom: 30px;
     }
 

@@ -271,8 +271,11 @@ a {
     width: 42px;
     height: 42px;
     border-radius: 10px;
+    border: none;
     background: #f0f2ef;
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .payeh-student__menu svg {
@@ -282,6 +285,18 @@ a {
     stroke: currentColor;
     stroke-width: 1.8;
     stroke-linecap: round;
+}
+
+.payeh-sidebar-close {
+    display: none;
+}
+
+.payeh-student__overlay {
+    display: none;
+}
+
+body.payeh-sidebar-locked {
+    overflow: hidden !important;
 }
 
 .payeh-student__content {
@@ -762,11 +777,63 @@ a {
 @media (max-width: 800px) {
 
     .payeh-student__sidebar {
-        transform: translateX(100%);
+        position: fixed !important;
+        right: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 280px !important;
+        max-width: 85vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        transform: translateX(100%) !important;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        z-index: 10000 !important;
+        box-shadow: -10px 0 35px rgba(0, 0, 0, 0.25) !important;
     }
 
-    .payeh-student__sidebar.open {
-        transform: translateX(0);
+    .payeh-student__sidebar.open,
+    .payeh-student__sidebar.is-open {
+        transform: translateX(0) !important;
+    }
+
+    .payeh-student__overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+    }
+
+    .payeh-student__overlay.is-active,
+    .payeh-student__overlay.active {
+        display: block !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .payeh-sidebar-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: auto;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: none;
+        background: #f0f2ef;
+        color: #444;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: background-color 0.2s;
+    }
+
+    .payeh-sidebar-close:active {
+        background: #e5e8e4;
     }
 
     .payeh-student__main {
@@ -778,6 +845,10 @@ a {
         display: flex;
         align-items: center;
         justify-content: center;
+        border: none;
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
     }
 
     .payeh-student__header {
