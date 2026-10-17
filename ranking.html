@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="رتبه‌بندی دانش‌آموزان Payeh">
+  <title>رتبه‌بندی دانش‌آموزان</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/ranking.css">
+  <script src="js/ranking.js" defer></script>
+</head>
+<body>
+
+  <main class="shell" id="top">
+    <section class="hero">
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit"></div>
+        <div class="trophy">🏆</div>
+        <i>✦</i><b>✧</b>
+      </div>
+      <div class="hero-copy">
+        <h1>رتبه‌بندی دانش‌آموزان <span></span></h1>
+      </div>
+      <div class="updated">
+        <div>
+          <strong>آخرین به‌روزرسانی</strong>
+          <small id="lastUpdated">—</small>
+        </div>
+      </div>
+    </section>
+
+<section class="overview" aria-label="خلاصه رتبه‌بندی">
+
+  <article class="stat-card">
+    <span class="stat-icon" aria-hidden="true">
+      <!-- آیکون رتبه: Lucide "trophy" یا "medal" -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+        <path d="M4 22h16"/>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+      </svg>
+    </span>
+    <div>
+      <label>رتبه من</label>
+      <strong id="myRank">—</strong>
+      <small>در میان دانش‌آموزان</small>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <span class="stat-icon gold-icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+    </span>
+    <div>
+      <label>امتیاز من</label>
+      <strong id="myScore">—</strong>
+      <small>مجموع امتیاز کسب‌شده</small>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <span class="stat-icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </span>
+    <div>
+      <label>تعداد دانش‌آموزان</label>
+      <strong id="studentTotal">—</strong>
+      <small>در فهرست رتبه‌بندی</small>
+    </div>
+  </article>
+
+  <article class="podium-card">
+    <div class="section-title">
+      <div>
+        <small>پیشتازان مسیر</small>
+        <h2>سه رتبه برتر</h2>
+      </div>
+      <span class="podium-icon" aria-hidden="true">
+        <!-- آیکون سکو: Lucide "award" یا "crown" -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="6"/>
+          <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+        </svg>
+      </span>
+    </div>
+    <div id="podiumList" class="podium-list"></div>
+  </article>
+
+</section>
+
+    <section class="ranking-panel">
+      <div class="panel-top">
+        <div>
+          <h2>جدول رتبه‌بندی</h2>
+          <p>رتبه‌ها و امتیازهای دانش‌آموزان را مقایسه کن.</p>
+        </div>
+
+        <div class="controls">
+          <label class="search">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="جست‌وجوی نام دانش‌آموز..." autocomplete="off">
+          </label>
+
+          <label class="sort">
+            مرتب‌سازی بر اساس
+            <select id="sortSelect">
+              <option value="rank">رتبه</option>
+              <option value="score">بیشترین امتیاز</option>
+              <option value="change">بیشترین پیشرفت</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="notice">
+        ⓘ این صفحه با داده‌های واقعی نمایش داده می‌شود؛ برای دریافت داده باید به بک‌اند متصل شود.
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>رتبه</th>
+              <th>نام دانش‌آموز</th>
+              <th>امتیاز</th>
+              <th>تغییر رتبه</th>
+              <th>وضعیت</th>
+            </tr>
+          </thead>
+          <tbody id="rankingTableBody"></tbody>
+        </table>
+
+        <div id="emptyState" class="empty" hidden>
+          <strong>دانش‌آموزی پیدا نشد</strong>
+          <p>عبارت جست‌وجو را تغییر بده و دوباره امتحان کن.</p>
+        </div>
+      </div>
+
+      <div class="table-footer">
+        <span id="rowsInfo">—</span>
+        <div class="pagination">
+          <button id="prevPage" aria-label="صفحه قبل">‹</button>
+          <div id="pageNumbers"></div>
+          <button id="nextPage" aria-label="صفحه بعد">›</button>
+        </div>
+        <label class="page-size">
+          تعداد در هر صفحه
+          <select id="pageSize">
+            <option value="5">۵</option>
+            <option value="10">۱۰</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+
+  </main>
+</body>
+</html>
