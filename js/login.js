@@ -12,8 +12,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const digits = (value) => value
         .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
         .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
+    phoneInput.addEventListener("input", () => {
+        const input = phoneInput;
+        const originalValue = input.value;
+        const cursorPosition = input.selectionStart;
 
-    // If already logged in, redirect immediately to dashboard
+        const normalizedValue = digits(originalValue);
+
+        if (originalValue !== normalizedValue) {
+            input.value = normalizedValue;
+
+            if (cursorPosition !== null) {
+                const offset = originalValue
+                    .slice(0, cursorPosition)
+                    .length - digits(originalValue.slice(0, cursorPosition)).length;
+
+                input.setSelectionRange(
+                    Math.max(0, cursorPosition - offset),
+                    Math.max(0, cursorPosition - offset)
+                );
+            }
+        }
+    });
+
     fetch(`${apiBase}me/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" })
         .then(r => r.ok ? r.json() : null)
         .then(user => {
