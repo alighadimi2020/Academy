@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", async () => {
+const initStudentApp = async () => {
     const sidebar = document.getElementById("studentSidebar");
     const menuButton = document.getElementById("studentMenu");
     const pageTitle = document.getElementById("studentPageTitle");
@@ -16,13 +16,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     const studentSidebarClose = document.getElementById("studentSidebarClose");
 
     const toggleStudentSidebar = (force) => {
-        const willOpen = typeof force === "boolean" ? force : !(sidebar?.classList.contains("is-open") || sidebar?.classList.contains("open"));
+        const isCurrentlyOpen = sidebar?.classList.contains("is-open") || sidebar?.classList.contains("open") || (sidebar && sidebar.style.right === "0px");
+        const willOpen = typeof force === "boolean" ? force : !isCurrentlyOpen;
         sidebar?.classList.toggle("is-open", willOpen);
         sidebar?.classList.toggle("open", willOpen);
         studentSidebarOverlay?.classList.toggle("is-active", willOpen);
         studentSidebarOverlay?.classList.toggle("active", willOpen);
         document.body.classList.toggle("payeh-sidebar-locked", willOpen);
+        if (sidebar) {
+            if (window.innerWidth <= 1024) {
+                sidebar.style.right = willOpen ? "0px" : "-320px";
+                sidebar.style.transform = "none";
+            } else {
+                sidebar.style.right = "";
+                sidebar.style.transform = "";
+            }
+        }
+        if (studentSidebarOverlay) {
+            studentSidebarOverlay.style.display = willOpen ? "block" : "none";
+            studentSidebarOverlay.style.opacity = willOpen ? "1" : "0";
+            studentSidebarOverlay.style.pointerEvents = willOpen ? "auto" : "none";
+        }
     };
+    window.toggleStudentSidebar = toggleStudentSidebar;
 
     document.querySelectorAll('[data-page="consultant"]').forEach((item) => item.addEventListener("click", (event) => {
         event.preventDefault();
@@ -33,19 +49,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         event.preventDefault(); const name = item.dataset.page; history.replaceState(null, "", `#${name}`); selectPage(name);
     }));
 
-    menuButton?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
+    const handleMenuToggle = (e) => {
+        if (e) {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
+        }
         toggleStudentSidebar();
-    });
+    };
 
-    studentSidebarClose?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
+    menuButton?.addEventListener("click", handleMenuToggle);
+    menuButton?.addEventListener("touchend", handleMenuToggle);
+
+    const handleClose = (e) => {
+        if (e) {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
+        }
         toggleStudentSidebar(false);
-    });
+    };
+
+    studentSidebarClose?.addEventListener("click", handleClose);
+    studentSidebarClose?.addEventListener("touchend", handleClose);
 
     studentSidebarOverlay?.addEventListener("click", () => toggleStudentSidebar(false));
+    studentSidebarOverlay?.addEventListener("touchend", (e) => {
+        if (e.cancelable) e.preventDefault();
+        toggleStudentSidebar(false);
+    });
 
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && (sidebar?.classList.contains("is-open") || sidebar?.classList.contains("open"))) {
@@ -54,8 +84,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     document.addEventListener("click", (e) => {
-        if (window.innerWidth <= 800) {
-            if (sidebar && (sidebar.classList.contains("is-open") || sidebar.classList.contains("open"))) {
+        if (window.innerWidth <= 1024) {
+            if (sidebar && (sidebar.classList.contains("is-open") || sidebar.classList.contains("open") || sidebar.style.right === "0px")) {
                 if (!sidebar.contains(e.target) && !menuButton?.contains(e.target)) {
                     toggleStudentSidebar(false);
                 }
@@ -772,4 +802,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (greeting) greeting.textContent = error.message || "اطلاعات حساب دریافت نشد.";
     }
     selectPage(location.hash.slice(1) || "dashboard");
-});
+};
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initStudentApp);
+} else {
+    initStudentApp();
+}

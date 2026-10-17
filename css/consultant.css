@@ -554,25 +554,26 @@ body.payeh-sidebar-locked {
     }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1024px) {
     .payeh-consultant__sidebar {
         position: fixed !important;
-        right: 0 !important;
+        right: -320px !important;
         top: 0 !important;
         bottom: 0 !important;
         width: 280px !important;
         max-width: 85vw !important;
         height: 100vh !important;
         height: 100dvh !important;
-        transform: translateX(100%) !important;
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transform: none !important;
+        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         z-index: 10000 !important;
         box-shadow: -10px 0 35px rgba(0, 0, 0, 0.25) !important;
     }
 
     .payeh-consultant__sidebar.open,
     .payeh-consultant__sidebar.is-open {
-        transform: translateX(0) !important;
+        right: 0 !important;
+        transform: none !important;
     }
 
     .payeh-consultant__overlay {
@@ -596,16 +597,16 @@ body.payeh-sidebar-locked {
     }
 
     .payeh-sidebar-close {
-        display: flex;
+        display: flex !important;
         align-items: center;
         justify-content: center;
         margin-right: auto;
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border-radius: 10px;
         border: none;
         background: #f1f1ee;
-        color: #444;
+        color: #1a1a1a;
         cursor: pointer;
         touch-action: manipulation;
         transition: background-color 0.2s;
@@ -617,17 +618,22 @@ body.payeh-sidebar-locked {
 
     .payeh-consultant__main {
         width: 100%;
-        margin-right: 0;
+        margin-right: 0 !important;
     }
 
     .payeh-consultant__menu {
-        display: flex;
+        display: flex !important;
         align-items: center;
         justify-content: center;
         border: none;
         outline: none;
+        color: #1a1a1a !important;
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
+    }
+
+    .payeh-consultant__menu svg {
+        pointer-events: none;
     }
 
     .payeh-consultant__header {

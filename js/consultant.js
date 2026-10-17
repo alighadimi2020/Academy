@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", async () => {
+const initConsultantApp = async () => {
     const sidebar = document.getElementById("consultantSidebar");
     const menuButton = document.getElementById("consultantMenu");
     const articleList = document.getElementById("consultant-article-list");
@@ -154,27 +154,57 @@ document.addEventListener("DOMContentLoaded", async () => {
     const consultantSidebarClose = document.getElementById("consultantSidebarClose");
 
     const toggleConsultantSidebar = (force) => {
-        const willOpen = typeof force === "boolean" ? force : !(sidebar?.classList.contains("is-open") || sidebar?.classList.contains("open"));
+        const isCurrentlyOpen = sidebar?.classList.contains("is-open") || sidebar?.classList.contains("open") || (sidebar && sidebar.style.right === "0px");
+        const willOpen = typeof force === "boolean" ? force : !isCurrentlyOpen;
         sidebar?.classList.toggle("is-open", willOpen);
         sidebar?.classList.toggle("open", willOpen);
         consultantSidebarOverlay?.classList.toggle("is-active", willOpen);
         consultantSidebarOverlay?.classList.toggle("active", willOpen);
         document.body.classList.toggle("payeh-sidebar-locked", willOpen);
+        if (sidebar) {
+            if (window.innerWidth <= 1024) {
+                sidebar.style.right = willOpen ? "0px" : "-320px";
+                sidebar.style.transform = "none";
+            } else {
+                sidebar.style.right = "";
+                sidebar.style.transform = "";
+            }
+        }
+        if (consultantSidebarOverlay) {
+            consultantSidebarOverlay.style.display = willOpen ? "block" : "none";
+            consultantSidebarOverlay.style.opacity = willOpen ? "1" : "0";
+            consultantSidebarOverlay.style.pointerEvents = willOpen ? "auto" : "none";
+        }
+    };
+    window.toggleConsultantSidebar = toggleConsultantSidebar;
+
+    const handleMenuToggle = (e) => {
+        if (e) {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
+        }
+        toggleConsultantSidebar();
     };
 
-    menuButton?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        toggleConsultantSidebar();
-    });
+    menuButton?.addEventListener("click", handleMenuToggle);
+    menuButton?.addEventListener("touchend", handleMenuToggle);
 
-    consultantSidebarClose?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
+    const handleClose = (e) => {
+        if (e) {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
+        }
         toggleConsultantSidebar(false);
-    });
+    };
+
+    consultantSidebarClose?.addEventListener("click", handleClose);
+    consultantSidebarClose?.addEventListener("touchend", handleClose);
 
     consultantSidebarOverlay?.addEventListener("click", () => toggleConsultantSidebar(false));
+    consultantSidebarOverlay?.addEventListener("touchend", (e) => {
+        if (e.cancelable) e.preventDefault();
+        toggleConsultantSidebar(false);
+    });
 
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && (sidebar?.classList.contains("is-open") || sidebar?.classList.contains("open"))) {
@@ -183,8 +213,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     document.addEventListener("click", (e) => {
-        if (window.innerWidth <= 800) {
-            if (sidebar && (sidebar.classList.contains("is-open") || sidebar.classList.contains("open"))) {
+        if (window.innerWidth <= 1024) {
+            if (sidebar && (sidebar.classList.contains("is-open") || sidebar.classList.contains("open") || sidebar.style.right === "0px")) {
                 if (!sidebar.contains(e.target) && !menuButton?.contains(e.target)) {
                     toggleConsultantSidebar(false);
                 }
@@ -2051,4 +2081,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     initCurriculumSelector();
     initWeekNavigator();
     showPage(location.hash.slice(1) || "dashboard");
-});
+};
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initConsultantApp);
+} else {
+    initConsultantApp();
+}

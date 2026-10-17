@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", async () => {
+const initManagerApp = async () => {
     const managerNavItems = document.querySelectorAll(".payeh-manager__nav-item");
     const managerPages = document.querySelectorAll(".manager-page");
     const managerPageTitle = document.getElementById("manager-page-title");
@@ -406,27 +406,63 @@ document.addEventListener("DOMContentLoaded", async () => {
     const managerOverlay = document.getElementById("manager-sidebar-overlay");
     const managerSidebarClose = document.getElementById("manager-sidebar-close");
     const toggleSidebar = (open) => {
-        const isOpen = open !== undefined ? open : !(managerSidebar?.classList.contains("is-open") || managerSidebar?.classList.contains("open"));
+        const isCurrentlyOpen = managerSidebar?.classList.contains("is-open") || managerSidebar?.classList.contains("open") || (managerSidebar && managerSidebar.style.right === "0px");
+        const isOpen = open !== undefined ? open : !isCurrentlyOpen;
         managerSidebar?.classList.toggle("is-open", isOpen);
         managerSidebar?.classList.toggle("open", isOpen);
         managerOverlay?.classList.toggle("is-active", isOpen);
         managerOverlay?.classList.toggle("active", isOpen);
         document.body.classList.toggle("payeh-sidebar-locked", isOpen);
+        if (managerSidebar) {
+            if (window.innerWidth <= 1024) {
+                managerSidebar.style.right = isOpen ? "0px" : "-320px";
+                managerSidebar.style.transform = "none";
+            } else {
+                managerSidebar.style.right = "";
+                managerSidebar.style.transform = "";
+            }
+        }
+        if (managerOverlay) {
+            managerOverlay.style.display = isOpen ? "block" : "none";
+            managerOverlay.style.opacity = isOpen ? "1" : "0";
+            managerOverlay.style.pointerEvents = isOpen ? "auto" : "none";
+        }
     };
-    managerMenuButton?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
+    window.toggleManagerSidebar = toggleSidebar;
+
+    const handleManagerMenuToggle = (e) => {
+        if (e) {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
+        }
         toggleSidebar();
-    });
-    managerSidebarClose?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
+    };
+
+    managerMenuButton?.addEventListener("click", handleManagerMenuToggle);
+    managerMenuButton?.addEventListener("touchend", handleManagerMenuToggle);
+
+    const handleManagerClose = (e) => {
+        if (e) {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
+        }
+        toggleSidebar(false);
+    };
+
+    managerSidebarClose?.addEventListener("click", handleManagerClose);
+    managerSidebarClose?.addEventListener("touchend", handleManagerClose);
+
+    managerOverlay?.addEventListener("click", () => toggleSidebar(false));
+    managerOverlay?.addEventListener("touchend", (e) => {
+        if (e.cancelable) e.preventDefault();
         toggleSidebar(false);
     });
-    managerOverlay?.addEventListener("click", () => toggleSidebar(false));
+
     document.addEventListener("click", (event) => {
-        if ((managerSidebar?.classList.contains("is-open") || managerSidebar?.classList.contains("open")) && !managerSidebar.contains(event.target) && !managerMenuButton?.contains(event.target)) {
-            toggleSidebar(false);
+        if (window.innerWidth <= 1024) {
+            if ((managerSidebar?.classList.contains("is-open") || managerSidebar?.classList.contains("open") || managerSidebar?.style.right === "0px") && !managerSidebar.contains(event.target) && !managerMenuButton?.contains(event.target)) {
+                toggleSidebar(false);
+            }
         }
     });
     document.addEventListener("keydown", (event) => {
@@ -681,5 +717,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadUsers("student");
     loadUsers("consultant");
     loadConsultantApplications();
-});
+};
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initManagerApp);
+} else {
+    initManagerApp();
+}
 
