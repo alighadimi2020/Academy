@@ -5,7 +5,10 @@ from . import registration_views
 
 urlpatterns = [
     path("study-sessions/", views.study_sessions, name="study-sessions"),
+    path("study-sessions/weeks/", views.study_session_weeks, name="study-session-weeks"),
     path("study-sessions/create/", views.study_sessions_create, name="study-sessions-create"),
+    path("study-sessions/<int:session_id>/delete/", views.study_sessions_delete, name="study-sessions-delete"),
+    path("study-sessions/<int:session_id>/update/", views.study_sessions_update, name="study-sessions-update"),
     path("study-timers/action/", views.study_timer_action, name="study-timer-action"),
     path("study-timers/today/", views.study_timers_today, name="study-timers-today"),
     path("study-timers/create-box/", views.study_timer_create_box, name="study-timer-create-box"),

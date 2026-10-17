@@ -9,7 +9,7 @@ const CURRICULUM_DATA = [
         id: "math_10",
         category: "ریاضیات",
         title: "ریاضی دهم (ریاضی ۱)",
-        icon: "📐",
+        icon: "math",
         grade: "10",
         chapters: [
             {
@@ -76,7 +76,7 @@ const CURRICULUM_DATA = [
         id: "math_11",
         category: "ریاضیات",
         title: "ریاضی یازدهم (ریاضی ۲)",
-        icon: "📐",
+        icon: "math",
         grade: "11",
         chapters: [
             {
@@ -140,7 +140,7 @@ const CURRICULUM_DATA = [
         id: "math_12",
         category: "ریاضیات",
         title: "ریاضی دوازدهم (ریاضی ۳)",
-        icon: "📐",
+        icon: "math",
         grade: "12",
         chapters: [
             {
@@ -201,7 +201,7 @@ const CURRICULUM_DATA = [
         id: "bio_10",
         category: "زیست‌شناسی",
         title: "زیست‌شناسی دهم",
-        icon: "🧬",
+        icon: "biology",
         grade: "10",
         chapters: [
             {
@@ -267,7 +267,7 @@ const CURRICULUM_DATA = [
         id: "bio_11",
         category: "زیست‌شناسی",
         title: "زیست‌شناسی یازدهم",
-        icon: "🧬",
+        icon: "biology",
         grade: "11",
         chapters: [
             {
@@ -345,7 +345,7 @@ const CURRICULUM_DATA = [
         id: "bio_12",
         category: "زیست‌شناسی",
         title: "زیست‌شناسی دوازدهم",
-        icon: "🧬",
+        icon: "biology",
         grade: "12",
         chapters: [
             {
@@ -417,7 +417,7 @@ const CURRICULUM_DATA = [
         id: "phy_10",
         category: "فیزیک",
         title: "فیزیک دهم (فیزیک ۱)",
-        icon: "⚡",
+        icon: "physics",
         grade: "10",
         chapters: [
             {
@@ -469,7 +469,7 @@ const CURRICULUM_DATA = [
         id: "phy_11",
         category: "فیزیک",
         title: "فیزیک یازدهم (فیزیک ۲)",
-        icon: "⚡",
+        icon: "physics",
         grade: "11",
         chapters: [
             {
@@ -517,7 +517,7 @@ const CURRICULUM_DATA = [
         id: "phy_12",
         category: "فیزیک",
         title: "فیزیک دوازدهم (فیزیک ۳)",
-        icon: "⚡",
+        icon: "physics",
         grade: "12",
         chapters: [
             {
@@ -569,7 +569,7 @@ const CURRICULUM_DATA = [
         id: "chem_10",
         category: "شیمی",
         title: "شیمی دهم (شیمی ۱)",
-        icon: "🧪",
+        icon: "chemistry",
         grade: "10",
         chapters: [
             {
@@ -612,7 +612,7 @@ const CURRICULUM_DATA = [
         id: "chem_11",
         category: "شیمی",
         title: "شیمی یازدهم (شیمی ۲)",
-        icon: "🧪",
+        icon: "chemistry",
         grade: "11",
         chapters: [
             {
@@ -658,7 +658,7 @@ const CURRICULUM_DATA = [
         id: "chem_12",
         category: "شیمی",
         title: "شیمی دوازدهم (شیمی ۳)",
-        icon: "🧪",
+        icon: "chemistry",
         grade: "12",
         chapters: [
             {
@@ -715,7 +715,7 @@ const CURRICULUM_DATA = [
         id: "calc_11",
         category: "حسابان",
         title: "حسابان یازدهم (حسابان ۱)",
-        icon: "📐",
+        icon: "math",
         grade: "11",
         chapters: [
             {
@@ -770,7 +770,7 @@ const CURRICULUM_DATA = [
         id: "calc_12",
         category: "حسابان",
         title: "حسابان دوازدهم (حسابان ۲)",
-        icon: "📐",
+        icon: "math",
         grade: "12",
         chapters: [
             {
@@ -818,7 +818,7 @@ const CURRICULUM_DATA = [
         id: "geom_10",
         category: "هندسه",
         title: "هندسه دهم (هندسه ۱)",
-        icon: "📐",
+        icon: "math",
         grade: "10",
         chapters: [
             {
@@ -857,7 +857,7 @@ const CURRICULUM_DATA = [
         id: "geom_11",
         category: "هندسه",
         title: "هندسه یازدهم (هندسه ۲)",
-        icon: "📐",
+        icon: "math",
         grade: "11",
         chapters: [
             {
@@ -890,7 +890,7 @@ const CURRICULUM_DATA = [
         id: "geom_12",
         category: "هندسه",
         title: "هندسه دوازدهم (هندسه ۳)",
-        icon: "📐",
+        icon: "math",
         grade: "12",
         chapters: [
             {
@@ -923,7 +923,7 @@ const CURRICULUM_DATA = [
         id: "geo_11",
         category: "زمین‌شناسی",
         title: "زمین‌شناسی یازدهم",
-        icon: "🌍",
+        icon: "geology",
         grade: "11",
         chapters: [
             {
@@ -1021,7 +1021,7 @@ const CURRICULUM_DATA = [
         id: "fa_10",
         category: "دروس عمومی",
         title: "فارسی دهم",
-        icon: "📖",
+        icon: "general",
         grade: "10",
         chapters: Array.from({ length: 18 }, (_, i) => ({
             title: `درس ${i + 1}: فارسی دهم`,
@@ -1032,7 +1032,7 @@ const CURRICULUM_DATA = [
         id: "fa_11",
         category: "دروس عمومی",
         title: "فارسی یازدهم",
-        icon: "📖",
+        icon: "general",
         grade: "11",
         chapters: Array.from({ length: 18 }, (_, i) => ({
             title: `درس ${i + 1}: فارسی یازدهم`,
@@ -1043,7 +1043,7 @@ const CURRICULUM_DATA = [
         id: "fa_12",
         category: "دروس عمومی",
         title: "فارسی دوازدهم",
-        icon: "📖",
+        icon: "general",
         grade: "12",
         chapters: Array.from({ length: 18 }, (_, i) => ({
             title: `درس ${i + 1}: فارسی دوازدهم`,
@@ -1054,7 +1054,7 @@ const CURRICULUM_DATA = [
         id: "ar_10",
         category: "دروس عمومی",
         title: "عربی دهم",
-        icon: "📖",
+        icon: "general",
         grade: "10",
         chapters: Array.from({ length: 8 }, (_, i) => ({
             title: `درس ${i + 1}: عربی دهم`,
@@ -1065,7 +1065,7 @@ const CURRICULUM_DATA = [
         id: "ar_11",
         category: "دروس عمومی",
         title: "عربی یازدهم",
-        icon: "📖",
+        icon: "general",
         grade: "11",
         chapters: Array.from({ length: 7 }, (_, i) => ({
             title: `درس ${i + 1}: عربی یازدهم`,
@@ -1076,7 +1076,7 @@ const CURRICULUM_DATA = [
         id: "ar_12",
         category: "دروس عمومی",
         title: "عربی دوازدهم",
-        icon: "📖",
+        icon: "general",
         grade: "12",
         chapters: Array.from({ length: 4 }, (_, i) => ({
             title: `درس ${i + 1}: عربی دوازدهم`,
@@ -1087,7 +1087,7 @@ const CURRICULUM_DATA = [
         id: "en_10",
         category: "دروس عمومی",
         title: "زبان انگلیسی دهم",
-        icon: "📖",
+        icon: "general",
         grade: "10",
         chapters: Array.from({ length: 3 }, (_, i) => ({
             title: `درس ${i + 1}: Vision 1`,
@@ -1098,7 +1098,7 @@ const CURRICULUM_DATA = [
         id: "en_11",
         category: "دروس عمومی",
         title: "زبان انگلیسی یازدهم",
-        icon: "📖",
+        icon: "general",
         grade: "11",
         chapters: Array.from({ length: 3 }, (_, i) => ({
             title: `درس ${i + 1}: Vision 2`,
@@ -1109,7 +1109,7 @@ const CURRICULUM_DATA = [
         id: "en_12",
         category: "دروس عمومی",
         title: "زبان انگلیسی دوازدهم",
-        icon: "📖",
+        icon: "general",
         grade: "12",
         chapters: Array.from({ length: 3 }, (_, i) => ({
             title: `درس ${i + 1}: Vision 3`,
@@ -1120,7 +1120,7 @@ const CURRICULUM_DATA = [
         id: "din_10",
         category: "دروس عمومی",
         title: "دینی دهم",
-        icon: "📖",
+        icon: "general",
         grade: "10",
         chapters: Array.from({ length: 12 }, (_, i) => ({
             title: `درس ${i + 1}: دین و زندگی ۱`,
@@ -1131,7 +1131,7 @@ const CURRICULUM_DATA = [
         id: "din_11",
         category: "دروس عمومی",
         title: "دینی یازدهم",
-        icon: "📖",
+        icon: "general",
         grade: "11",
         chapters: Array.from({ length: 12 }, (_, i) => ({
             title: `درس ${i + 1}: دین و زندگی ۲`,
@@ -1142,7 +1142,7 @@ const CURRICULUM_DATA = [
         id: "din_12",
         category: "دروس عمومی",
         title: "دینی دوازدهم",
-        icon: "📖",
+        icon: "general",
         grade: "12",
         chapters: Array.from({ length: 10 }, (_, i) => ({
             title: `درس ${i + 1}: دین و زندگی ۳`,

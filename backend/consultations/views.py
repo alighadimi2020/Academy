@@ -586,13 +586,163 @@ def staff_chat_image(request, conversation_id, message_id):
 @require_GET
 def study_sessions(request):
     from .study_models import StudySession
+    from django.db.models import Q
     if not request.user.is_authenticated or not request.user.is_active: return error("وارد حساب کاربری شوید.", 401)
     if request.user.role == "student": rows = StudySession.objects.filter(student=request.user)
     elif request.user.role == "consultant":
         rows = StudySession.objects.filter(consultant=request.user)
         if request.GET.get("student"): rows = rows.filter(student_id=request.GET["student"])
+    elif request.user.role in MANAGER_ROLES:
+        rows = StudySession.objects.all()
+        if request.GET.get("student"): rows = rows.filter(student_id=request.GET["student"])
     else: return error("دسترسی مشاهده برنامه را ندارید.", 403)
-    return JsonResponse({"results": [{"id": x.id, "student_id": x.student_id, "weekday": x.weekday, "start_time": x.start_time.strftime("%H:%M") if x.start_time else None, "end_time": x.end_time.strftime("%H:%M") if x.end_time else None, "planned_minutes": x.planned_minutes, "subject": x.subject, "mode": x.mode, "test_count": x.test_count, "instructions": x.instructions, "color": x.color} for x in rows]})
+
+    now = timezone.now()
+    days_since_saturday = (now.weekday() - 5) % 7
+    this_saturday = (now - timedelta(days=days_since_saturday)).date()
+
+    week_start = request.GET.get("week_start")
+    if week_start:
+        try:
+            ws_date = datetime.strptime(week_start, "%Y-%m-%d").date()
+            if ws_date == this_saturday:
+                rows = rows.filter(Q(week_start_date=ws_date) | Q(week_start_date__isnull=True))
+            else:
+                rows = rows.filter(week_start_date=ws_date)
+        except (ValueError, TypeError):
+            pass
+    elif request.user.role == "student":
+        rows = rows.filter(Q(week_start_date=this_saturday) | Q(week_start_date__isnull=True))
+
+    return JsonResponse({
+        "results": [
+            {
+                "id": x.id,
+                "student_id": x.student_id,
+                "weekday": x.weekday,
+                "start_time": x.start_time.strftime("%H:%M") if x.start_time else None,
+                "end_time": x.end_time.strftime("%H:%M") if x.end_time else None,
+                "planned_minutes": x.planned_minutes,
+                "subject": x.subject,
+                "mode": x.mode,
+                "test_count": x.test_count,
+                "instructions": x.instructions,
+                "color": x.color,
+                "week_start_date": x.week_start_date.isoformat() if x.week_start_date else None,
+            }
+            for x in rows
+        ]
+    })
+
+
+@require_GET
+def study_session_weeks(request):
+    from .study_models import StudySession
+    from django.db.models import Min, Max, Count, Sum
+    if not request.user.is_authenticated or not request.user.is_active:
+        return error("وارد حساب کاربری شوید.", 401)
+
+    student_id = request.GET.get("student")
+    if request.user.role == "student":
+        target_student_id = request.user.id
+    elif student_id:
+        try:
+            target_student_id = int(student_id)
+        except ValueError:
+            return error("شناسه دانش‌آموز نامعتبر است.", 400)
+    else:
+        return error("شناسه دانش‌آموز الزامی است.", 400)
+
+    if request.user.role == "consultant":
+        rows = StudySession.objects.filter(student_id=target_student_id, consultant=request.user)
+    elif request.user.role in MANAGER_ROLES:
+        rows = StudySession.objects.filter(student_id=target_student_id)
+    elif request.user.role == "student":
+        rows = StudySession.objects.filter(student=request.user)
+    else:
+        return error("دسترسی ندارید.", 403)
+
+    now = timezone.now()
+    days_since_saturday = (now.weekday() - 5) % 7
+    this_saturday = (now - timedelta(days=days_since_saturday)).date()
+
+    agg = rows.aggregate(min_ws=Min("week_start_date"), max_ws=Max("week_start_date"), total_count=Count("id"))
+    min_ws = agg["min_ws"]
+    max_ws = agg["max_ws"]
+
+    null_count = rows.filter(week_start_date__isnull=True).count()
+    if null_count > 0:
+        if not min_ws or min_ws > this_saturday:
+            min_ws = this_saturday
+
+    start_sat = min_ws if min_ws else this_saturday
+    future_limit = this_saturday + timedelta(weeks=4)
+    end_sat = max_ws if (max_ws and max_ws > future_limit) else future_limit
+
+    start_days_since_sat = (start_sat.weekday() - 5) % 7
+    start_sat = start_sat - timedelta(days=start_days_since_sat)
+
+    session_counts = {}
+    for item in rows.exclude(week_start_date__isnull=True).values("week_start_date").annotate(cnt=Count("id"), total_min=Sum("planned_minutes")):
+        ws = item["week_start_date"]
+        session_counts[ws] = (item["cnt"], item["total_min"] or 0)
+
+    if null_count > 0:
+        cur_cnt, cur_min = session_counts.get(this_saturday, (0, 0))
+        null_min = rows.filter(week_start_date__isnull=True).aggregate(m=Sum("planned_minutes"))["m"] or 0
+        session_counts[this_saturday] = (cur_cnt + null_count, cur_min + null_min)
+
+    def _gregorian_to_jalali(gy, gm, gd):
+        g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
+        gy2 = gy - 1600 if gm > 2 else gy - 1601
+        days = 365 * gy2 + (gy2 + 3) // 4 - (gy2 + 99) // 100 + (gy2 + 399) // 400 - 80 + gd + g_d_m[gm - 1]
+        jy = 979 + 33 * (days // 12053) + 4 * ((days % 12053) // 1461)
+        days %= 1461
+        if days >= 366:
+            jy += (days - 1) // 365
+            days = (days - 1) % 365
+        for i in range(11):
+            d = 31 if i < 6 else 30
+            if days < d:
+                return jy, i + 1, days + 1
+            days -= d
+        return jy, 12, days + 1
+
+    fa_months = ['', 'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند']
+
+    weeks_list = []
+    curr = start_sat
+    while curr <= end_sat:
+        fri = curr + timedelta(days=6)
+        cnt, total_min = session_counts.get(curr, (0, 0))
+        is_cur = (curr == this_saturday)
+        is_past = (curr < this_saturday)
+        is_fut = (curr > this_saturday)
+
+        s_y, s_m, s_d = _gregorian_to_jalali(curr.year, curr.month, curr.day)
+        f_y, f_m, f_d = _gregorian_to_jalali(fri.year, fri.month, fri.day)
+        w_label = f"شنبه {s_d} {fa_months[s_m]} تا جمعه {f_d} {fa_months[f_m]}"
+
+        weeks_list.append({
+            "week_start": curr.isoformat(),
+            "week_end": fri.isoformat(),
+            "label": w_label,
+            "session_count": cnt,
+            "total_minutes": total_min,
+            "total_planned_minutes": total_min,
+            "is_current": is_cur,
+            "is_past": is_past,
+            "is_future": is_fut,
+        })
+        curr += timedelta(days=7)
+
+    return JsonResponse({
+        "results": weeks_list,
+        "current_week_start": this_saturday.isoformat(),
+        "first_week_start": start_sat.isoformat(),
+        "latest_week_start": end_sat.isoformat(),
+        "total_sessions": agg["total_count"] or 0
+    })
 
 
 @require_POST
@@ -607,9 +757,89 @@ def study_sessions_create(request):
         if not 0 <= weekday <= 6 or not 1 <= minutes <= 1440 or not subject or len(subject)>150 or mode not in {"test","written","study"} or not 0 <= tests <= 500: raise ValueError
         student=get_user_model().objects.get(pk=student_id,role="student",is_active=True)
         if not ConsultationRequest.objects.filter(student=student,assigned_consultant__user=request.user,status="approved").exists(): return error("این دانش‌آموز به شما تخصیص داده نشده است.",403)
-        item=StudySession.objects.create(student=student,consultant=request.user,weekday=weekday,planned_minutes=minutes,subject=subject,mode=mode,test_count=tests if mode=="test" else 0,instructions=str(data.get("instructions",""))[:500],color=data.get("color") if data.get("color") in {"mint","blue","peach","lavender","rose","yellow"} else "mint")
-        return JsonResponse({"id":item.id},status=201)
+        week_start_date = None
+        ws_str = data.get("week_start_date")
+        if ws_str:
+            try:
+                week_start_date = datetime.strptime(str(ws_str).strip(), "%Y-%m-%d").date()
+            except (ValueError, TypeError):
+                pass
+        item=StudySession.objects.create(
+            student=student,
+            consultant=request.user,
+            weekday=weekday,
+            planned_minutes=minutes,
+            subject=subject,
+            mode=mode,
+            test_count=tests if mode=="test" else 0,
+            instructions=str(data.get("instructions",""))[:500],
+            color=data.get("color") if data.get("color") in {"mint","blue","peach","lavender","rose","yellow"} else "mint",
+            week_start_date=week_start_date
+        )
+        return JsonResponse({"id":item.id, "week_start_date": item.week_start_date.isoformat() if item.week_start_date else None},status=201)
     except (ValueError,TypeError,KeyError,get_user_model().DoesNotExist): return error("اطلاعات برنامه معتبر نیست.",400)
+
+
+@require_POST
+@csrf_protect
+def study_sessions_delete(request, session_id):
+    from .study_models import StudySession
+    if not request.user.is_authenticated or not request.user.is_active: return error("وارد حساب کاربری شوید.", 401)
+    if request.user.role not in {"consultant", "manager", "admin"}: return error("دسترسی ندارید.", 403)
+    try:
+        if request.user.role in {"manager", "admin"}:
+            item = StudySession.objects.get(pk=session_id)
+        else:
+            item = StudySession.objects.get(pk=session_id, consultant=request.user)
+        item.delete()
+        return JsonResponse({"detail": "سهمیهٔ مطالعه با موفقیت حذف شد.", "ok": True})
+    except StudySession.DoesNotExist:
+        return error("برنامه پیدا نشد.", 404)
+
+
+@require_POST
+@csrf_protect
+def study_sessions_update(request, session_id):
+    from .study_models import StudySession
+    if not request.user.is_authenticated or not request.user.is_active: return error("وارد حساب کاربری شوید.", 401)
+    if request.user.role not in {"consultant", "manager", "admin"}: return error("دسترسی ندارید.", 403)
+    try:
+        if request.user.role in {"manager", "admin"}:
+            item = StudySession.objects.get(pk=session_id)
+        else:
+            item = StudySession.objects.get(pk=session_id, consultant=request.user)
+        data = json.loads(request.body or b"{}")
+        if "weekday" in data:
+            wd = int(data["weekday"])
+            if 0 <= wd <= 6:
+                item.weekday = wd
+        if "planned_minutes" in data:
+            mins = int(data["planned_minutes"])
+            if 1 <= mins <= 1440:
+                item.planned_minutes = mins
+        if "color" in data and data["color"] in {"mint","blue","peach","lavender","rose","yellow"}:
+            item.color = data["color"]
+        if "instructions" in data:
+            item.instructions = str(data["instructions"])[:500]
+        if "week_start_date" in data:
+            ws = data["week_start_date"]
+            if ws:
+                item.week_start_date = datetime.strptime(str(ws).strip(), "%Y-%m-%d").date()
+            else:
+                item.week_start_date = None
+        item.save()
+        return JsonResponse({
+            "id": item.id,
+            "weekday": item.weekday,
+            "planned_minutes": item.planned_minutes,
+            "subject": item.subject,
+            "mode": item.mode,
+            "instructions": item.instructions,
+            "color": item.color,
+            "week_start_date": item.week_start_date.isoformat() if item.week_start_date else None,
+        })
+    except (StudySession.DoesNotExist, ValueError, TypeError):
+        return error("ویرایش برنامه انجام نشد.", 400)
 
 
 def _tehran_today():
@@ -621,11 +851,18 @@ def _timer_seconds(timer):
 @require_GET
 def study_timers_today(request):
     from .study_models import StudySession, StudyTimer
+    from django.db.models import Q
     if not authenticated_role(request, {"student"}):
         return error("فقط دانش‌آموز می‌تواند زمان‌سنج را ببیند.", 403)
     today = _tehran_today()
     weekday = (today.weekday() + 2) % 7
-    scheduled_sessions = StudySession.objects.filter(student=request.user, weekday=weekday)
+    this_saturday = today - timedelta(days=weekday)
+    scheduled_sessions = StudySession.objects.filter(
+        student=request.user,
+        weekday=weekday
+    ).filter(
+        Q(week_start_date=this_saturday) | Q(week_start_date__isnull=True)
+    )
     existing_timers = list(StudyTimer.objects.filter(student=request.user, study_date=today).order_by("created_at", "id"))
     existing_plan_ids = {t.plan_id for t in existing_timers if t.plan_id}
     

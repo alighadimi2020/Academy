@@ -6,9 +6,9 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
     <title>پنل مشاور | آکادمی پایه</title>
 
-    <link rel="stylesheet" href="css/fonts.css?v=20261017_1">
-    <link rel="stylesheet" href="css/consultant.css?v=20261017_1">
-    <link rel="stylesheet" href="css/consultations.css?v=20261017_1">
+    <link rel="stylesheet" href="css/fonts.css?v=20261017_14">
+    <link rel="stylesheet" href="css/consultant.css?v=20261017_14">
+    <link rel="stylesheet" href="css/consultations.css?v=20261017_14">
 </head>
 
 <body>
@@ -158,23 +158,21 @@
 
         <section class="payeh-consultant__content" id="consultantContent">
 
-            <div class="payeh-consultant__dashboard">
-
+            <!-- ==========================================
+                 VIEW 1: DASHBOARD
+                 ========================================== -->
+            <div class="payeh-consultant__page-view" id="view-dashboard">
                 <div class="payeh-consultant__welcome">
                     <div>
                         <span>پنل مشاور</span>
-                        <h2>سلام آقا پارسا</h2>
-
+                        <h2>سلام همکار گرامی</h2>
                     </div>
-
                     <div class="payeh-consultant__welcome-icon">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notebook-pen preview-icon"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notebook-pen preview-icon"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/></svg>
                     </div>
                 </div>
 
-
                 <div class="payeh-consultant__stats">
-
                     <div class="payeh-consultant__stat">
                         <div class="payeh-consultant__stat-icon">
                             <svg viewBox="0 0 24 24">
@@ -183,13 +181,11 @@
                                 <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"></path>
                             </svg>
                         </div>
-
                         <div>
                             <span>دانش‌آموزان من</span>
-                            <strong>۱</strong>
+                            <strong id="consultant-stat-students">۱</strong>
                         </div>
                     </div>
-
 
                     <div class="payeh-consultant__stat">
                         <div class="payeh-consultant__stat-icon">
@@ -202,13 +198,11 @@
                                 <path d="M3 18h.01"></path>
                             </svg>
                         </div>
-
                         <div>
                             <span>فعالیت‌های جدید</span>
                             <strong>۰</strong>
                         </div>
                     </div>
-
 
                     <div class="payeh-consultant__stat">
                         <div class="payeh-consultant__stat-icon">
@@ -216,13 +210,11 @@
                                 <path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 9.7 9.7 0 0 1-4-.8L3 21l1.8-4.3A8.1 8.1 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"></path>
                             </svg>
                         </div>
-
                         <div>
                             <span>گفتگوهای جدید</span>
-                            <strong>۰</strong>
+                            <strong id="consultant-stat-chats">۰</strong>
                         </div>
                     </div>
-
 
                     <div class="payeh-consultant__stat">
                         <div class="payeh-consultant__stat-icon">
@@ -233,16 +225,325 @@
                                 <path d="M8 16h5"></path>
                             </svg>
                         </div>
-
                         <div>
                             <span>مقالات من</span>
                             <strong id="consultant-article-count">۰</strong>
                         </div>
                     </div>
-
                 </div>
 
+                <!-- Dashboard Quick Access to Students -->
+                <div class="payeh-consultant__section" id="consultant-dashboard-students-panel">
+                    <div class="payeh-consultant__section-header">
+                        <div>
+                            <span>دانش‌آموزان اختصاص‌یافته</span>
+                            <h3>دانش‌آموزان من</h3>
+                        </div>
+                        <a href="#students" class="consultant-section-link" data-page="students">
+                            <span>مشاهده همه</span>
+                            <svg class="formal-svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                        </a>
+                    </div>
+                    <div id="consultant-dashboard-students-list" class="consultant-assigned-cards-grid" aria-live="polite">
+                        <p class="consultant-article-hint">در حال بارگذاری دانش‌آموزان…</p>
+                    </div>
+                </div>
+            </div>
 
+            <!-- ==========================================
+                 VIEW 2: STUDENTS LIST (Full Page)
+                 ========================================== -->
+            <div class="payeh-consultant__page-view" id="view-students" style="display: none;">
+                <div class="payeh-consultant__section" id="consultant-assigned-students">
+                    <div class="payeh-consultant__section-header">
+                        <div>
+                            <span>پس از تأیید مدیر</span>
+                            <h3>فهرست دانش‌آموزان من</h3>
+                        </div>
+                    </div>
+                    <p class="consultant-article-hint">برای مشاهدهٔ برنامه‌ریزی، گزارش‌های مطالعه و تنظیم جدول درسی روی دکمهٔ «ورود به صفحه دانش‌آموز» کلیک کنید.</p>
+                    <div class="consultant-student-filters" aria-label="فیلتر دانش‌آموزان">
+                        <label>نام یا شماره موبایل<input id="consultant-student-search" type="search" placeholder="جستجو بین دانش‌آموزان من"></label>
+                        <label>پایه<select id="consultant-student-grade"><option value="">همه پایه‌ها</option><option value="2">دوم</option><option value="3">سوم</option><option value="4">چهارم</option><option value="5">پنجم</option><option value="6">ششم</option><option value="7">هفتم</option><option value="8">هشتم</option><option value="9">نهم</option><option value="10">دهم</option><option value="11">یازدهم</option><option value="12">دوازدهم</option><option value="graduate">فارغ‌التحصیل</option></select></label>
+                        <label>رشته<select id="consultant-student-major"><option value="">همه رشته‌ها</option><option value="math">ریاضی فیزیک</option><option value="experimental">تجربی</option><option value="humanities">انسانی</option><option value="technical">فنی</option></select></label>
+                        <label>جنسیت<select id="consultant-student-gender"><option value="">همه</option><option value="female">دختر</option><option value="male">پسر</option><option value="unspecified">ثبت نشده</option></select></label>
+                        <span id="consultant-student-filter-count" role="status"></span>
+                    </div>
+                    <div id="consultant-assigned-list" class="consultant-assigned-cards-grid" aria-live="polite">
+                        <p class="consultant-article-hint">در حال دریافت کارت‌های دانش‌آموزان…</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 VIEW 3: STUDENT DOSSIER WORKSPACE (Dedicated Workspace)
+                 ========================================== -->
+            <div class="payeh-consultant__page-view" id="view-student-dossier" style="display: none;">
+                <section class="payeh-consultant__section consultant-student-dossier" id="consultant-student-dossier">
+                    <!-- Top Navigation & Back Button -->
+                    <div class="dossier-top-bar">
+                        <button type="button" class="dossier-back-btn" id="dossierBackBtn">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                            <span>بازگشت به فهرست دانش‌آموزان</span>
+                        </button>
+                        <a class="dossier-chat-link" id="dossierChatLink" href="#">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 9.7 9.7 0 0 1-4-.8L3 21l1.8-4.3A8.1 8.1 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"/></svg>
+                            <span>گفت‌وگو با این دانش‌آموز</span>
+                        </a>
+                    </div>
+
+                    <!-- Student Profile Spotlight Banner -->
+                    <div class="dossier-student-banner" id="dossierStudentBanner">
+                        <div class="dossier-avatar" id="dossierAvatar">د</div>
+                        <div class="dossier-info">
+                            <div class="dossier-name-row">
+                                <h3 id="dossierName">نام دانش‌آموز</h3>
+                                <span class="dossier-plan-badge" id="dossierPlan">پلن VIP</span>
+                            </div>
+                            <div class="dossier-meta" id="dossierMeta">پایه یازدهم · تجربی · پسر</div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden input to maintain compatibility with plannerPicker -->
+                    <input type="hidden" id="planner-student" value="">
+
+                    <!-- Dossier Tabs -->
+                    <div class="dossier-tabs-nav">
+                        <button type="button" class="dossier-tab-btn active" data-tab="planner">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <span>برنامه‌ریزی درسی و تقویم</span>
+                        </button>
+                        <button type="button" class="dossier-tab-btn" data-tab="reports">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            <span>سوابق و گزارش‌های مطالعه</span>
+                        </button>
+                    </div>
+
+                    <!-- Dossier Tab 1: Planner -->
+                    <div class="dossier-tab-pane active" id="dossierPanePlanner">
+                        <!-- Week Navigation Bar -->
+                        <div class="dossier-week-bar">
+                            <button type="button" class="week-nav-btn" id="weekNavPrevBtn" title="هفته قبل">
+                                <svg class="formal-svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                <span>هفته قبل</span>
+                            </button>
+                            <div class="week-selector-container">
+                                <label for="dossierWeekSelect" class="sr-only">انتخاب هفته</label>
+                                <select id="dossierWeekSelect" class="apple-glass-week-select">
+                                    <!-- Populated dynamically via JS -->
+                                </select>
+                            </div>
+                            <button type="button" class="week-nav-btn" id="weekNavNextBtn" title="هفته بعد">
+                                <span>هفته بعد</span>
+                                <svg class="formal-svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                            </button>
+                            <button type="button" class="week-archive-btn" id="weekArchiveBtn" title="مشاهده آرشیو تمام هفته‌ها از ابتدا تا انتها">
+                                <svg class="formal-svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="4" rx="1"/><path d="M5 7v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+                                <span>آرشیو همه هفته‌ها</span>
+                            </button>
+                            <button type="button" class="week-copy-btn" id="weekCopyBtn" title="کپی کردن برنامه این هفته برای هفته بعد">
+                                <svg class="formal-svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                <span>کپی به هفته بعد</span>
+                            </button>
+                        </div>
+
+                        <form id="planner-session-form" class="consultant-plan-form planner-session-form">
+                            <!-- Apple-Style Frosted Glass Curriculum Cascade Selector -->
+                            <div class="apple-glass-curriculum-card">
+                                <div class="curriculum-header">
+                                    <div class="curriculum-title">
+                                        <span class="curriculum-icon">
+                                            <svg class="formal-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                                        </span>
+                                        <div>
+                                            <strong>انتخاب هوشمند سرفصل درسی</strong>
+                                            <small>انتخاب مرحله‌ای: کتاب، فصل و مبحث مورد نظر</small>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="curriculum-mode-toggle" id="curriculumModeToggle" title="تغییر به ورود دستی یا خودکار">
+                                        <span class="toggle-icon">
+                                            <svg class="formal-svg-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                        </span>
+                                        <span class="toggle-text">ورود دستی / سایر</span>
+                                    </button>
+                                </div>
+
+                                <!-- Mode 1: Guided Cascading Selector with Custom iOS Frosted Glass Pickers -->
+                                <div class="curriculum-cascade-container" id="curriculumCascadeContainer">
+                                    <div class="curriculum-cascade-grid">
+                                        <!-- Level 1: Book -->
+                                        <div class="curriculum-field">
+                                            <label>
+                                                <span class="step-badge">۱</span>
+                                                <span>انتخاب کتاب و درس</span>
+                                            </label>
+                                            <div class="apple-glass-picker-box" id="picker-box-book">
+                                                <!-- Custom iOS Glass Select Picker mounted here -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Level 2: Chapter -->
+                                        <div class="curriculum-field">
+                                            <label>
+                                                <span class="step-badge">۲</span>
+                                                <span>انتخاب فصل</span>
+                                            </label>
+                                            <div class="apple-glass-picker-box" id="picker-box-chapter">
+                                                <!-- Custom iOS Glass Select Picker mounted here -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Level 3: Topic / Speech -->
+                                        <div class="curriculum-field">
+                                            <label>
+                                                <span class="step-badge">۳</span>
+                                                <span>درس / گفتار / مبحث</span>
+                                                <span class="optional-tag">اختیاری</span>
+                                            </label>
+                                            <div class="apple-glass-picker-box" id="picker-box-topic">
+                                                <!-- Custom iOS Glass Select Picker mounted here -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Live Selection Breadcrumb Preview -->
+                                    <div class="curriculum-preview-bar" id="curriculumPreviewBar" style="display: none;">
+                                        <span class="preview-label">سرفصل انتخاب‌شده:</span>
+                                        <div class="preview-pills" id="curriculumPreviewPills"></div>
+                                        <button type="button" class="curriculum-reset-btn" id="curriculumResetBtn" title="پاک کردن انتخاب">
+                                            <svg class="formal-svg-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Mode 2: Manual / Custom Input (Toggled) -->
+                                <div class="curriculum-manual-container" id="curriculumManualContainer" style="display: none;">
+                                    <label>نام درس سفارشی
+                                        <input type="text" id="curriculumManualSubject" class="apple-glass-input" placeholder="مثلاً: آزمون جامع شبیه‌ساز کنکور یا فیزیک پایه">
+                                    </label>
+                                </div>
+
+                                <input type="hidden" name="subject" id="planner-subject-hidden" required>
+                                <input type="hidden" name="week_start_date" id="planner-week-start-hidden">
+                            </div>
+
+                            <div class="planner-form-fields-grid">
+                                <label>روز هفته<select name="weekday" id="planner-weekday-select"><option value="0">شنبه</option><option value="1">یکشنبه</option><option value="2">دوشنبه</option><option value="3">سه‌شنبه</option><option value="4">چهارشنبه</option><option value="5">پنجشنبه</option><option value="6">جمعه</option></select></label>
+                                <label>مدت مطالعه (دقیقه)<input name="planned_minutes" type="number" min="1" max="1440" value="120" required></label>
+                                <label>نوع فعالیت<select name="mode"><option value="test">حل تست</option><option value="written">حل تشریحی</option><option value="study">مطالعهٔ درس‌نامه</option></select></label>
+                                <label>تعداد تست<input name="test_count" type="number" min="0" max="500" value="0"></label>
+                                <label>رنگ باکس<select name="color"><option value="mint">سبز</option><option value="blue">آبی</option><option value="peach">هلویی</option><option value="lavender">یاسی</option><option value="rose">صورتی</option><option value="yellow">زرد</option></select></label>
+                                <label class="plan-instructions">توضیحات و تمرین‌ها<input name="instructions" id="planner-instructions-input" maxlength="500" placeholder="فصل، صفحات یا نکتهٔ مهم"></label>
+                            </div>
+                            <div class="planner-submit-row">
+                                <button type="submit" class="planner-submit-btn">ثبت سهمیهٔ مطالعه برای این روز</button>
+                                <span id="planner-form-message" role="status"></span>
+                            </div>
+                        </form>
+
+                        <div class="planner-week-heading">
+                            <div class="planner-heading-info">
+                                <strong id="consultant-study-week-title">پیش‌نمایش برنامهٔ دانش‌آموز</strong>
+                                <span class="planner-week-badge" id="consultant-study-week-badge"></span>
+                            </div>
+                            <small class="dnd-hint">
+                                <svg class="formal-svg-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                <span>برای جابه‌جایی روز، کارت درس را به روز دلخواه بکشید یا دکمهٔ انتقال را لمس کنید.</span>
+                            </small>
+                        </div>
+                        <div id="consultant-study-week" class="study-week"><p class="consultant-article-hint">در حال دریافت برنامه…</p></div>
+                    </div>
+
+                    <!-- Dossier Tab 2: Reports -->
+                    <div class="dossier-tab-pane" id="dossierPaneReports" style="display: none;">
+                        <div class="planner-week-heading"><strong>گزارش‌های مطالعهٔ این دانش‌آموز</strong></div>
+
+                        <div class="consultant-telegram-card" id="consultant-telegram-card">
+                            <div class="consultant-telegram-info">
+                                <span class="consultant-telegram-icon">
+                                    <svg class="formal-svg-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                </span>
+                                <div>
+                                    <h4>دریافت خودکار گزارش‌ها در تلگرام</h4>
+                                    <p id="consultant-telegram-status-text">در حال بررسی اتصال به تلگرام…</p>
+                                </div>
+                            </div>
+                            <div class="consultant-telegram-actions">
+                                <a id="consultant-telegram-connect-btn" class="consultant-telegram-btn consultant-telegram-btn--connect" href="#" target="_blank" rel="noopener">
+                                    اتصال به ربات تلگرام
+                                </a>
+                                <button id="consultant-telegram-test-btn" type="button" class="consultant-telegram-btn consultant-telegram-btn--test" style="display:none;">
+                                    ارسال پیام تستی
+                                </button>
+                                <button id="consultant-telegram-disconnect-btn" type="button" class="consultant-telegram-btn consultant-telegram-btn--disconnect" style="display:none;">
+                                    قطع اتصال
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="consultant-study-reports" class="consultant-article-hint" aria-live="polite">در حال دریافت گزارش‌ها…</div>
+                    </div>
+
+                    <!-- Full Weeks Archive Modal / Drawer -->
+                    <div class="dossier-archive-modal-backdrop" id="dossierArchiveModalBackdrop" style="display: none;">
+                        <div class="dossier-archive-modal" id="dossierArchiveModal" role="dialog" aria-modal="true" aria-labelledby="archiveModalTitle">
+                            <div class="archive-modal-header">
+                                <div class="archive-modal-title-wrap">
+                                    <span class="archive-modal-icon-wrap">
+                                        <svg class="formal-svg-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="4" rx="1"/><path d="M5 7v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+                                    </span>
+                                    <div>
+                                        <h3 id="archiveModalTitle">آرشیو کامل برنامه‌های هفتگی</h3>
+                                        <small id="archiveModalSubtitle">مشاهده و انتخاب تمام هفته‌ها از اولین برنامه تا آینده</small>
+                                    </div>
+                                </div>
+                                <button type="button" class="archive-modal-close" id="archiveModalCloseBtn" aria-label="بستن">
+                                    <svg class="formal-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </button>
+                            </div>
+                            <div class="archive-modal-stats">
+                                <div class="archive-stat-card">
+                                    <span>مجموع سهمیه‌های درسی</span>
+                                    <strong id="archiveStatTotalSessions">۰</strong>
+                                </div>
+                                <div class="archive-stat-card">
+                                    <span>تعداد کل هفته‌ها</span>
+                                    <strong id="archiveStatTotalWeeks">۰</strong>
+                                </div>
+                                <div class="archive-stat-card">
+                                    <span>تاریخ اولین برنامه</span>
+                                    <strong id="archiveStatFirstWeek">—</strong>
+                                </div>
+                            </div>
+                            <div class="archive-modal-list" id="archiveModalList">
+                                <p class="consultant-article-hint">در حال بارگذاری آرشیو هفته‌ها…</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ==========================================
+                 VIEW 4: CONVERSATIONS
+                 ========================================== -->
+            <div class="payeh-consultant__page-view" id="view-conversations" style="display: none;">
+                <section class="payeh-consultant__section consultant-inbox" id="consultant-conversation-rooms">
+                    <div class="payeh-consultant__section-header"><div><span>پیام‌های مشاوره</span><h3>اتاق‌های گفت‌وگو</h3></div><span id="consultant-chat-room-count" class="chat-room-count">۰ اتاق</span></div>
+                    <p class="consultant-article-hint">گفت‌وگوی هر دانش‌آموز اتاق جداگانه دارد. همچنین می‌توانی مستقیم با مدیر مجموعه گفتگو کنی.</p>
+                    <article class="consultant-manager-chat-room">
+                        <span class="consultant-manager-chat-room__avatar">م</span>
+                        <div><strong>اتاق مدیر مجموعه</strong><small id="consultant-manager-chat-status">در حال بررسی اتاق گفتگو…</small></div>
+                        <button id="consultant-manager-chat-create" type="button" hidden>شروع گفتگو</button>
+                        <a id="consultant-manager-chat-open" href="#" hidden>ورود به اتاق</a>
+                    </article>
+                    <div id="consultant-chat-rooms" class="consultant-chat-rooms" aria-live="polite"><p>در حال دریافت اتاق‌ها…</p></div>
+                </section>
+            </div>
+
+            <!-- ==========================================
+                 VIEW 5: ARTICLES
+                 ========================================== -->
+            <div class="payeh-consultant__page-view" id="view-articles" style="display: none;">
                 <div class="payeh-consultant__section consultant-articles-panel" id="consultant-articles">
                     <div class="payeh-consultant__section-header">
                         <div><span>مجله آنلاین</span><h3>مقاله‌های من</h3></div>
@@ -251,7 +552,12 @@
                     <p class="consultant-article-hint">مقاله‌های ارسالی پس از تأیید مدیر مجموعه یا ادمین در مجله منتشر می‌شوند.</p>
                     <div id="consultant-article-list" aria-live="polite"><p>در حال دریافت مقاله‌ها…</p></div>
                 </div>
+            </div>
 
+            <!-- ==========================================
+                 VIEW 6: PROFILE & SECURITY
+                 ========================================== -->
+            <div class="payeh-consultant__page-view" id="view-profile" style="display: none;">
                 <div class="payeh-consultant__section consultant-profile-panel" id="consultant-profile-settings">
                     <div class="payeh-consultant__section-header"><div><span>اطلاعات قابل نمایش به دانش‌آموز</span><h3>رزومه و ظرفیت من</h3></div></div>
                     <p class="consultant-article-hint">رزومه، رشته دانشگاهی، دانشگاه فعلی و ظرفیت آزاد شما در فهرست مشاوران نمایش داده می‌شود. قیمت پلن‌ها را مدیر مجموعه تعیین می‌کند.</p>
@@ -295,213 +601,6 @@
                         <button class="consultant-write-article" type="submit" id="consultant-pwd-btn">ذخیره رمز عبور جدید</button>
                     </form>
                 </div>
-
-                <section class="payeh-consultant__section consultant-planner" id="consultant-study-planner">
-                    <div class="payeh-consultant__section-header"><div><span>برنامهٔ تکرارشوندهٔ هفتگی</span><h3>برنامه‌ریزی درسی دانش‌آموز</h3></div></div>
-                    <p class="consultant-article-hint">روز و مدت مطالعهٔ هر درس را مشخص کنید. دانش‌آموز زمان مطالعه را خودش انتخاب می‌کند و با کرنومتر گزارش می‌دهد.</p>
-                    <label class="planner-student-picker">دانش‌آموز
-                        <select id="planner-student"><option value="">در حال دریافت دانش‌آموزان…</option></select>
-                    </label>
-                    <form id="planner-session-form" class="consultant-plan-form planner-session-form">
-                        <!-- Apple-Style Frosted Glass Curriculum Cascade Selector -->
-                        <div class="apple-glass-curriculum-card">
-                            <div class="curriculum-header">
-                                <div class="curriculum-title">
-                                    <span class="curriculum-icon">📚</span>
-                                    <div>
-                                        <strong>انتخاب هوشمند سرفصل درسی</strong>
-                                        <small>کتاب ➔ فصل ➔ مبحث/گفتار (اختیاری)</small>
-                                    </div>
-                                </div>
-                                <button type="button" class="curriculum-mode-toggle" id="curriculumModeToggle" title="تغییر به ورود دستی یا خودکار">
-                                    <span class="toggle-icon">✏️</span>
-                                    <span class="toggle-text">ورود دستی / سایر</span>
-                                </button>
-                            </div>
-
-                            <!-- Mode 1: Guided Cascading Selector -->
-                            <div class="curriculum-cascade-container" id="curriculumCascadeContainer">
-                                <div class="curriculum-cascade-grid">
-                                    <!-- Level 1: Course / Book -->
-                                    <div class="curriculum-field">
-                                        <label for="curriculumBook">
-                                            <span class="step-badge">۱</span>
-                                            <span>انتخاب کتاب و درس</span>
-                                        </label>
-                                        <div class="glass-select-wrapper">
-                                            <select id="curriculumBook" class="apple-glass-select">
-                                                <option value="">-- انتخاب کتاب درسی --</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Level 2: Chapter -->
-                                    <div class="curriculum-field">
-                                        <label for="curriculumChapter">
-                                            <span class="step-badge">۲</span>
-                                            <span>انتخاب فصل</span>
-                                        </label>
-                                        <div class="glass-select-wrapper">
-                                            <select id="curriculumChapter" class="apple-glass-select" disabled>
-                                                <option value="">-- اول کتاب را انتخاب کنید --</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Level 3: Topic / Lesson / Speech (Optional) -->
-                                    <div class="curriculum-field">
-                                        <label for="curriculumTopic">
-                                            <span class="step-badge">۳</span>
-                                            <span>درس / گفتار / مبحث</span>
-                                            <span class="optional-tag">اختیاری</span>
-                                        </label>
-                                        <div class="glass-select-wrapper">
-                                            <select id="curriculumTopic" class="apple-glass-select" disabled>
-                                                <option value="">-- کل فصل (بدون مبحث خاص) --</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Live Selection Breadcrumb Preview -->
-                                <div class="curriculum-preview-bar" id="curriculumPreviewBar" style="display: none;">
-                                    <span class="preview-label">سرفصل انتخاب‌شده:</span>
-                                    <div class="preview-pills" id="curriculumPreviewPills"></div>
-                                    <button type="button" class="curriculum-reset-btn" id="curriculumResetBtn" title="پاک کردن انتخاب">✕</button>
-                                </div>
-                            </div>
-
-                            <!-- Mode 2: Manual / Custom Input (Toggled) -->
-                            <div class="curriculum-manual-container" id="curriculumManualContainer" style="display: none;">
-                                <label>نام درس سفارشی
-                                    <input type="text" id="curriculumManualSubject" class="apple-glass-input" placeholder="مثلاً: آزمون جامع شبیه‌ساز کنکور یا فیزیک پایه">
-                                </label>
-                            </div>
-
-                            <!-- Hidden input bound to plannerForm with name="subject" -->
-                            <input type="hidden" name="subject" id="planner-subject-hidden" required>
-                        </div>
-
-                        <label>روز هفته<select name="weekday"><option value="0">شنبه</option><option value="1">یکشنبه</option><option value="2">دوشنبه</option><option value="3">سه‌شنبه</option><option value="4">چهارشنبه</option><option value="5">پنجشنبه</option><option value="6">جمعه</option></select></label>
-                        <label>مدت مطالعه (دقیقه)<input name="planned_minutes" type="number" min="1" max="1440" value="120" required></label>
-                        <label>نوع فعالیت<select name="mode"><option value="test">حل تست</option><option value="written">حل تشریحی</option><option value="study">مطالعهٔ درس‌نامه</option></select></label>
-                        <label>تعداد تست<input name="test_count" type="number" min="0" max="500" value="0"></label>
-                        <label>رنگ باکس<select name="color"><option value="mint">سبز</option><option value="blue">آبی</option><option value="peach">هلویی</option><option value="lavender">یاسی</option><option value="rose">صورتی</option><option value="yellow">زرد</option></select></label>
-                        <label class="plan-instructions">توضیحات و تمرین‌ها<input name="instructions" id="planner-instructions-input" maxlength="500" placeholder="فصل، صفحات یا نکتهٔ مهم"></label>
-                        <button type="submit">ثبت سهمیهٔ روزانه</button><span id="planner-form-message" role="status"></span>
-                    </form>
-                    <div class="planner-week-heading"><strong>پیش‌نمایش برنامهٔ دانش‌آموز</strong><span>ساعت ایران · تقویم شمسی</span></div>
-                    <div id="consultant-study-week" class="study-week"><p class="consultant-article-hint">برای مشاهدهٔ برنامه، یک دانش‌آموز انتخاب کنید.</p></div>
-                    <div class="planner-week-heading"><strong>گزارش‌های مطالعهٔ دانش‌آموز</strong></div>
-                    <div id="consultant-study-reports" class="consultant-article-hint" aria-live="polite">برای مشاهدهٔ گزارش‌ها یک دانش‌آموز انتخاب کنید.</div>
-                </section>
-
-                <section class="payeh-consultant__section consultant-inbox" id="consultant-conversation-rooms">
-                    <div class="payeh-consultant__section-header"><div><span>پیام‌های مشاوره</span><h3>اتاق‌های گفت‌وگو</h3></div><span id="consultant-chat-room-count" class="chat-room-count">۰ اتاق</span></div>
-                    <p class="consultant-article-hint">گفت‌وگوی هر دانش‌آموز اتاق جداگانه دارد. همچنین می‌توانی مستقیم با مدیر مجموعه گفتگو کنی.</p>
-                    <article class="consultant-manager-chat-room">
-                        <span class="consultant-manager-chat-room__avatar">م</span>
-                        <div><strong>اتاق مدیر مجموعه</strong><small id="consultant-manager-chat-status">در حال بررسی اتاق گفتگو…</small></div>
-                        <button id="consultant-manager-chat-create" type="button" hidden>شروع گفتگو</button>
-                        <a id="consultant-manager-chat-open" href="#" hidden>ورود به اتاق</a>
-                    </article>
-                    <div id="consultant-chat-rooms" class="consultant-chat-rooms" aria-live="polite"><p>در حال دریافت اتاق‌ها…</p></div>
-                </section>
-
-                <div class="payeh-consultant__section" id="consultant-assigned-students">
-                    <div class="payeh-consultant__section-header"><div><span>پس از تأیید مدیر</span><h3>دانش‌آموزان اختصاص‌یافته</h3></div></div>
-                    <p class="consultant-article-hint">فقط اطلاعات دانش‌آموزانی را می‌بینید که مدیر به شما تخصیص داده است.</p>
-                    <div class="consultant-student-filters" aria-label="فیلتر دانش‌آموزان">
-                        <label>نام یا شماره موبایل<input id="consultant-student-search" type="search" placeholder="جستجو بین دانش‌آموزان من"></label>
-                        <label>پایه<select id="consultant-student-grade"><option value="">همه پایه‌ها</option><option value="2">دوم</option><option value="3">سوم</option><option value="4">چهارم</option><option value="5">پنجم</option><option value="6">ششم</option><option value="7">هفتم</option><option value="8">هشتم</option><option value="9">نهم</option><option value="10">دهم</option><option value="11">یازدهم</option><option value="12">دوازدهم</option><option value="graduate">فارغ‌التحصیل</option></select></label>
-                        <label>رشته<select id="consultant-student-major"><option value="">همه رشته‌ها</option><option value="math">ریاضی فیزیک</option><option value="experimental">تجربی</option><option value="humanities">انسانی</option><option value="technical">فنی</option></select></label>
-                        <label>جنسیت<select id="consultant-student-gender"><option value="">همه</option><option value="female">دختر</option><option value="male">پسر</option><option value="unspecified">ثبت نشده</option></select></label>
-                        <span id="consultant-student-filter-count" role="status"></span>
-                    </div>
-                    <div id="consultant-assigned-list" aria-live="polite"><p>در حال دریافت فهرست…</p></div>
-                </div>
-
-                <section class="payeh-consultant__section" id="consultant-study-reports-section">
-                    <div class="payeh-consultant__section-header">
-                        <div>
-                            <span>ارسال خودکار در ساعت ۱۲ شب</span>
-                            <h3>گزارش‌های روزانه مطالعه دانش‌آموزان</h3>
-                        </div>
-                    </div>
-                    <p class="consultant-article-hint">گزارش‌های مطالعهٔ هر دانش‌آموز پس از پایان روز و در ساعت ۱۲ شب به‌صورت خودکار تفکیک و در این بخش ثبت می‌شوند.</p>
-                    
-                    <div class="consultant-telegram-card" id="consultant-telegram-card">
-                        <div class="consultant-telegram-info">
-                            <span class="consultant-telegram-icon">✈️</span>
-                            <div>
-                                <h4>دریافت خودکار گزارش‌ها در تلگرام</h4>
-                                <p id="consultant-telegram-status-text">در حال بررسی اتصال به تلگرام…</p>
-                            </div>
-                        </div>
-                        <div class="consultant-telegram-actions">
-                            <a id="consultant-telegram-connect-btn" class="consultant-telegram-btn consultant-telegram-btn--connect" href="#" target="_blank" rel="noopener">
-                                اتصال به ربات تلگرام
-                            </a>
-                            <button id="consultant-telegram-test-btn" type="button" class="consultant-telegram-btn consultant-telegram-btn--test" style="display:none;">
-                                ارسال پیام تستی
-                            </button>
-                            <button id="consultant-telegram-disconnect-btn" type="button" class="consultant-telegram-btn consultant-telegram-btn--disconnect" style="display:none;">
-                                قطع اتصال
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="consultant-student-filters" aria-label="فیلتر گزارش‌ها">
-                        <label>جستجوی نام یا موبایل
-                            <input id="consultant-report-search" type="search" placeholder="نام یا شماره موبایل دانش‌آموز...">
-                        </label>
-                        <label>پایه
-                            <select id="consultant-report-grade">
-                                <option value="">همه پایه‌ها</option>
-                                <option value="2">دوم</option>
-                                <option value="3">سوم</option>
-                                <option value="4">چهارم</option>
-                                <option value="5">پنجم</option>
-                                <option value="6">ششم</option>
-                                <option value="7">هفتم</option>
-                                <option value="8">هشتم</option>
-                                <option value="9">نهم</option>
-                                <option value="10">دهم</option>
-                                <option value="11">یازدهم</option>
-                                <option value="12">دوازدهم</option>
-                                <option value="graduate">فارغ‌التحصیل</option>
-                            </select>
-                        </label>
-                        <label>رشته
-                            <select id="consultant-report-major">
-                                <option value="">همه رشته‌ها</option>
-                                <option value="math">ریاضی فیزیک</option>
-                                <option value="experimental">تجربی</option>
-                                <option value="humanities">انسانی</option>
-                                <option value="technical">فنی</option>
-                            </select>
-                        </label>
-                        <span id="consultant-report-filter-count" role="status"></span>
-                    </div>
-
-                    <div id="consultant-grouped-reports" class="consultant-grouped-reports" aria-live="polite">
-                        <p class="consultant-article-hint">در حال دریافت گزارش‌ها…</p>
-                    </div>
-                </section>
-
-                <div class="payeh-consultant__section" id="consultant-dashboard-students-panel">
-                    <div class="payeh-consultant__section-header">
-                        <div>
-                            <span>دانش‌آموزان اختصاص‌یافته</span>
-                            <h3>دانش‌آموزان من</h3>
-                        </div>
-                        <a href="#students" data-page="students">مشاهده همه</a>
-                    </div>
-                    <div id="consultant-dashboard-students-list" class="consultant-dashboard-students" aria-live="polite">
-                        <p class="consultant-article-hint">در حال بارگذاری دانش‌آموزان…</p>
-                    </div>
-                </div>
-
             </div>
 
         </section>
@@ -510,8 +609,8 @@
 
 </div>
 
-<script src="js/curriculum-data.js?v=20261017_1"></script>
-<script src="js/consultant.js?v=20261017_1"></script>
+<script src="js/curriculum-data.js?v=20261017_14"></script>
+<script src="js/consultant.js?v=20261017_14"></script>
 
 </body>
 </html>

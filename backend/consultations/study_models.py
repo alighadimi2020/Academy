@@ -16,6 +16,7 @@ class StudySession(models.Model):
     instructions = models.CharField(max_length=500, blank=True)
     planned_minutes = models.PositiveSmallIntegerField(default=60, help_text="مدت مطالعه در روز به دقیقه")
     color = models.CharField(max_length=20, default="mint")
+    week_start_date = models.DateField(null=True, blank=True, db_index=True, help_text="تاریخ شنبه آغاز هفته مطالعه")
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         ordering = ["weekday", "start_time"]
