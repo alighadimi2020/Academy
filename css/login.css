@@ -725,3 +725,45 @@ select.payeh-login__input {
 .payeh-signup__step[hidden] { display: none; }
 @media (max-width: 600px) { .payeh-signup__container { max-width: 100%; } }
 .payeh-login__field > .payeh-login__input { height: 51px; }
+
+/* Force English numerals visually for all phone, numeric, and credential inputs */
+.payeh-login__input[type="tel"],
+.payeh-login__input[type="number"],
+.payeh-login__input[inputmode="numeric"],
+.payeh-login__input.en-digits,
+#payeh-login-phone,
+#signup-phone,
+#signup-parent-phone,
+#signup-national-id,
+#reg-phone,
+#reg-national-id,
+#reg-code,
+#reg-quota-rank,
+#approve-phone {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Vazirmatn", sans-serif !important;
+    font-variant-numeric: normal !important;
+    font-feature-settings: normal !important;
+    direction: ltr !important;
+    text-align: right !important;
+    letter-spacing: 0.5px;
+}
+
+.payeh-login__input[type="tel"]::placeholder,
+.payeh-login__input[type="number"]::placeholder,
+.payeh-login__input[inputmode="numeric"]::placeholder,
+.payeh-login__input.en-digits::placeholder,
+#payeh-login-phone::placeholder,
+#signup-phone::placeholder,
+#signup-parent-phone::placeholder,
+#signup-national-id::placeholder,
+#reg-phone::placeholder,
+#reg-national-id::placeholder,
+#reg-code::placeholder,
+#reg-quota-rank::placeholder,
+#approve-phone::placeholder {
+    direction: rtl !important;
+    text-align: right !important;
+    font-family: "Vazirmatn", "Peyda", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    letter-spacing: normal;
+}
+

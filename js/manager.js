@@ -521,6 +521,33 @@ const initManagerApp = async () => {
         });
     });
 
+    const digits = (value) => String(value || "")
+        .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+        .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
+
+    const approvePhoneInput = document.getElementById("approve-phone");
+    if (approvePhoneInput) {
+        const normalizeApprovePhone = () => {
+            const start = approvePhoneInput.selectionStart;
+            const raw = approvePhoneInput.value;
+            let converted = digits(raw).replace(/[^0-9]/g, "");
+            if (converted.length > 11) converted = converted.slice(0, 11);
+            if (raw !== converted) {
+                let newCursor = converted.length;
+                if (start !== null) {
+                    const before = digits(raw.slice(0, start)).replace(/[^0-9]/g, "");
+                    newCursor = Math.min(before.length, converted.length);
+                }
+                approvePhoneInput.value = converted;
+                if (start !== null) {
+                    approvePhoneInput.setSelectionRange(newCursor, newCursor);
+                }
+            }
+        };
+        approvePhoneInput.addEventListener("input", normalizeApprovePhone);
+        approvePhoneInput.addEventListener("paste", () => setTimeout(normalizeApprovePhone, 0));
+    }
+
     let currentAppForApproval = null;
     const openApproveModal = (app) => {
         currentAppForApproval = app;
@@ -543,7 +570,7 @@ const initManagerApp = async () => {
     document.getElementById("form-approve-consultant")?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const appId = document.getElementById("approve-app-id").value;
-        const phone = document.getElementById("approve-phone").value.trim();
+        const phone = digits(document.getElementById("approve-phone").value.trim());
         const password = document.getElementById("approve-password").value.trim();
         const note = document.getElementById("approve-note").value.trim();
         const submitBtn = document.getElementById("btn-submit-approve");

@@ -9,29 +9,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const passwordError = document.getElementById("payeh-login-password-error");
     const message = document.getElementById("payeh-login-message");
     const apiBase = `${window.location.origin}/api/auth/`;
-    const digits = (value) => value
+    const digits = (value) => String(value || "")
         .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
         .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
-    phoneInput.addEventListener("input", () => {
+
+    const normalizePhoneInput = () => {
+        if (!phoneInput) return;
         const start = phoneInput.selectionStart;
+        const end = phoneInput.selectionEnd;
         const originalValue = phoneInput.value;
         const normalizedValue = digits(originalValue);
 
         if (originalValue !== normalizedValue) {
             phoneInput.value = normalizedValue;
-
             if (start !== null) {
-                const normalizedCursor = digits(
-                    originalValue.slice(0, start)
-                ).length;
-
-                phoneInput.setSelectionRange(
-                    normalizedCursor,
-                    normalizedCursor
-                );
+                const normalizedStart = digits(originalValue.slice(0, start)).length;
+                const normalizedEnd = digits(originalValue.slice(0, end)).length;
+                phoneInput.setSelectionRange(normalizedStart, normalizedEnd);
             }
         }
-    });
+    };
+    phoneInput.addEventListener("input", normalizePhoneInput);
+    phoneInput.addEventListener("paste", () => setTimeout(normalizePhoneInput, 0));
     
     fetch(`${apiBase}me/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" })
         .then(r => r.ok ? r.json() : null)
@@ -72,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const isEmail = rawIdentifier.includes("@");
         const normalizedDigits = digits(rawIdentifier);
         const isPhone = /^09\d{9}$/.test(normalizedDigits);
-        const identifier = isEmail ? rawIdentifier.toLowerCase() : (isPhone ? normalizedDigits : rawIdentifier);
+        const identifier = isEmail ? rawIdentifier.toLowerCase() : normalizedDigits;
         const password = passwordInput.value;
         let valid = true;
 

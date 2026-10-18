@@ -47,14 +47,38 @@ document.addEventListener("DOMContentLoaded", () => {
     setupPasswordToggle("signup-password", "signup-password-toggle");
     setupPasswordToggle("signup-password-confirmation", "signup-confirm-toggle");
 
-    const digits = (value) => value
+    const digits = (value) => String(value || "")
         .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
         .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
 
-    document.querySelectorAll('input[inputmode="numeric"]').forEach((input) => {
-        input.addEventListener("input", () => {
-            input.value = digits(input.value).replace(/[^0-9]/g, "");
-        });
+    const attachNumericConverter = (input, maxLength = null) => {
+        if (!input) return;
+        const normalize = () => {
+            const start = input.selectionStart;
+            const raw = input.value;
+            let converted = digits(raw).replace(/[^0-9]/g, "");
+            if (maxLength && converted.length > maxLength) {
+                converted = converted.slice(0, maxLength);
+            }
+            if (raw !== converted) {
+                let newCursor = converted.length;
+                if (start !== null) {
+                    const before = digits(raw.slice(0, start)).replace(/[^0-9]/g, "");
+                    newCursor = Math.min(before.length, converted.length);
+                }
+                input.value = converted;
+                if (start !== null) {
+                    input.setSelectionRange(newCursor, newCursor);
+                }
+            }
+        };
+        input.addEventListener("input", normalize);
+        input.addEventListener("paste", () => setTimeout(normalize, 0));
+    };
+
+    document.querySelectorAll('input[type="tel"], input[inputmode="numeric"], .en-digits').forEach((input) => {
+        const max = input.getAttribute("maxlength") ? parseInt(input.getAttribute("maxlength"), 10) : null;
+        attachNumericConverter(input, max);
     });
 
     const setMessage = (text = "", kind = "") => {

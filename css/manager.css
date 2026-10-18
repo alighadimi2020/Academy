@@ -694,3 +694,27 @@ svg {
     background: #fff;
 }
 .manager-chat-rooms{display:grid;gap:11px;margin-top:15px}.manager-chat-room{display:flex;align-items:center;gap:14px;padding:15px 17px;border:1px solid #e5ebe7;border-radius:15px;background:#fff}.manager-chat-room__avatar{display:grid;width:48px;height:48px;flex:0 0 48px;place-items:center;border-radius:50%;background:#e2f1e7;color:#256443;font-size:19px;font-weight:800}.manager-chat-room__info{display:grid;min-width:0;flex:1;gap:5px}.manager-chat-room__info strong,.manager-chat-room__info span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.manager-chat-room__info strong{color:#29382e;font-size:13px}.manager-chat-room__info span{color:#66736a;font-size:11px}.manager-chat-room__info small{color:#8b958e;font-size:10px}.manager-chat-room>a{padding:10px 14px;border-radius:10px;background:#216a47;color:white;text-decoration:none;font-size:11px;font-weight:800;white-space:nowrap}@media(max-width:560px){.manager-chat-room{gap:10px;padding:12px}.manager-chat-room>a{padding:9px 10px}}
+
+/* Force English numerals visually for numeric/phone inputs in manager */
+input[type="tel"],
+input[type="number"],
+input[inputmode="numeric"],
+.en-digits,
+#approve-phone {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Vazirmatn", sans-serif !important;
+    font-variant-numeric: normal !important;
+    font-feature-settings: normal !important;
+    direction: ltr !important;
+    text-align: right !important;
+}
+
+input[type="tel"]::placeholder,
+input[type="number"]::placeholder,
+input[inputmode="numeric"]::placeholder,
+.en-digits::placeholder,
+#approve-phone::placeholder {
+    direction: rtl !important;
+    text-align: right !important;
+    font-family: "Vazirmatn", "Peyda", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+

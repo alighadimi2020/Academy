@@ -129,3 +129,16 @@ class SecurityAndAccountTests(TestCase):
         self.assertEqual(res_me.status_code, 200)
         self.assertEqual(res_me.json()["role"], "student")
         self.assertEqual(res_me.json()["phone"], "09129998877")
+
+    def test_login_with_persian_digits(self):
+        res_login = self.client.post(
+            "/api/auth/login/",
+            data=json.dumps({"phone": "۰۹۱۲۹۹۹۸۸۷۷", "password": "StudentPassword123!"}),
+            content_type="application/json"
+        )
+        self.assertEqual(res_login.status_code, 200)
+        res_me = self.client.get("/api/auth/me/")
+        self.assertEqual(res_me.status_code, 200)
+        self.assertEqual(res_me.json()["role"], "student")
+        self.assertEqual(res_me.json()["phone"], "09129998877")
+

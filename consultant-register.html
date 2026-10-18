@@ -6,7 +6,8 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
     <meta name="theme-color" content="#FFFCF5">
     <title>ثبت‌نام و ارسال رزومه مشاور | آکادمی پایه</title>
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/login.css?v=20261018_1">
     <style>
         .payeh-consultant-reg__container { max-width: 680px; width: 100%; margin: 30px auto; }
         .payeh-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -224,7 +225,7 @@
                             </div>
                             <div class="payeh-login__field">
                                 <label class="payeh-login__label" for="reg-phone">شماره موبایل *</label>
-                                <input class="payeh-login__input payeh-login__input--plain" id="reg-phone" name="phone" type="tel" maxlength="11" inputmode="numeric" autocomplete="tel" placeholder="۰۹۱۲۱۲۳۴۵۶۷" required>
+                                <input class="payeh-login__input payeh-login__input--plain en-digits" id="reg-phone" name="phone" type="tel" maxlength="11" inputmode="numeric" autocomplete="tel" placeholder="09121234567" required>
                                 <span class="payeh-login__error" data-error="phone"></span>
                             </div>
                         </div>
@@ -237,7 +238,7 @@
                             </div>
                             <div class="payeh-login__field">
                                 <label class="payeh-login__label" for="reg-national-id">کد ملی <small>(اختیاری)</small></label>
-                                <input class="payeh-login__input payeh-login__input--plain" id="reg-national-id" name="national_id" type="text" maxlength="20" inputmode="numeric" placeholder="۱۰ رقم کد ملی">
+                                <input class="payeh-login__input payeh-login__input--plain en-digits" id="reg-national-id" name="national_id" type="text" maxlength="20" inputmode="numeric" placeholder="۱۰ رقم کد ملی">
                                 <span class="payeh-login__error" data-error="national_id"></span>
                             </div>
                         </div>
@@ -315,7 +316,7 @@
 
                             <div class="payeh-login__field">
                                 <label class="payeh-login__label" for="reg-quota-rank">رتبه در سهمیه *</label>
-                                <input class="payeh-login__input payeh-login__input--plain" id="reg-quota-rank" name="quota_rank" type="number" min="1" max="999999" placeholder="مثلاً: ۷۴" required>
+                                <input class="payeh-login__input payeh-login__input--plain en-digits" id="reg-quota-rank" name="quota_rank" type="number" min="1" max="999999" placeholder="مثلاً: 74" required>
                                 <span class="payeh-login__error" data-error="quota_rank"></span>
                             </div>
                         </div>
@@ -396,7 +397,7 @@
 
                         <div class="payeh-login__field">
                             <label class="payeh-login__label" for="reg-code">کد تأیید ۶ رقمی</label>
-                            <input class="payeh-login__input payeh-login__input--plain" id="reg-code" type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required placeholder="مثلاً: ۱۲۳۴۵۶">
+                            <input class="payeh-login__input payeh-login__input--plain en-digits" id="reg-code" type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required placeholder="مثلاً: 123456">
                             <span class="payeh-login__error" data-error="code"></span>
                         </div>
 
@@ -433,6 +434,6 @@
     </main>
 
     <script src="js/live-wallpaper.js"></script>
-    <script src="js/consultant-register.js"></script>
+    <script src="js/consultant-register.js?v=20261018_1"></script>
 </body>
 </html>

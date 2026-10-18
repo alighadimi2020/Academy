@@ -17,6 +17,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     const numberFa = (v) => new Intl.NumberFormat("fa-IR").format(v);
     const normalizeDigits = (val) => String(val || "").replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).trim();
 
+    const attachNumericConverter = (input, maxLength = null) => {
+        if (!input) return;
+        const normalize = () => {
+            const start = input.selectionStart;
+            const raw = input.value;
+            let converted = normalizeDigits(raw).replace(/[^0-9]/g, "");
+            if (maxLength && converted.length > maxLength) {
+                converted = converted.slice(0, maxLength);
+            }
+            if (raw !== converted) {
+                let newCursor = converted.length;
+                if (start !== null) {
+                    const before = normalizeDigits(raw.slice(0, start)).replace(/[^0-9]/g, "");
+                    newCursor = Math.min(before.length, converted.length);
+                }
+                input.value = converted;
+                if (start !== null) {
+                    input.setSelectionRange(newCursor, newCursor);
+                }
+            }
+        };
+        input.addEventListener("input", normalize);
+        input.addEventListener("paste", () => setTimeout(normalize, 0));
+    };
+
+    attachNumericConverter(document.getElementById("reg-phone"), 11);
+    attachNumericConverter(document.getElementById("reg-national-id"), 20);
+    attachNumericConverter(document.getElementById("reg-code"), 6);
+    attachNumericConverter(document.getElementById("reg-quota-rank"), 10);
+
     let lockoutTimer = null;
     let resendCooldownTimer = null;
 

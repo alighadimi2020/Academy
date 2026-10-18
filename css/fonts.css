@@ -83,3 +83,25 @@ textarea,
 select {
     font-family: var(--font-primary) !important;
 }
+
+/* Force English numerals visually for numeric/phone inputs */
+input[type="tel"],
+input[type="number"],
+input[inputmode="numeric"],
+.en-digits {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Vazirmatn", sans-serif !important;
+    font-variant-numeric: normal !important;
+    font-feature-settings: normal !important;
+    direction: ltr !important;
+    text-align: right !important;
+}
+
+input[type="tel"]::placeholder,
+input[type="number"]::placeholder,
+input[inputmode="numeric"]::placeholder,
+.en-digits::placeholder {
+    direction: rtl !important;
+    text-align: right !important;
+    font-family: var(--font-primary) !important;
+}
+
