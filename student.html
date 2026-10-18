@@ -448,6 +448,24 @@
                     <div id="study-week" class="study-week" aria-live="polite"><p>در حال دریافت برنامه…</p></div>
                 </section>
 
+                <!-- Glassmorphism Past Study Reports History Section -->
+                <section class="payeh-student__card student-past-reports-card" id="student-past-reports-section">
+                    <div class="payeh-student__card-header">
+                        <div>
+                            <span>سوابق مطالعاتی تحویل‌شده</span>
+                            <h3>گزارش‌های ثبت‌شدهٔ پیشین</h3>
+                        </div>
+                        <span class="study-plan-badge study-plan-badge--glass">۱۰ گزارش اخیر</span>
+                    </div>
+                    <p class="student-consultant-intro">گزارش‌های روزهای قبل به عنوان سوابق نهایی ثبت شده و در ساعت ۱۲ شب هر روز به مشاور اختصاصی شما تحویل داده شده‌اند.</p>
+                    
+                    <div class="student-glass-reports-container" id="student-glass-reports-container">
+                        <div class="student-glass-reports-rail" id="student-glass-reports-rail">
+                            <!-- Populated with last 10 glass cards + View More arrow button -->
+                        </div>
+                    </div>
+                </section>
+
                 <section class="payeh-student__card student-feedback-panel" id="student-feedbacks-section">
                     <div class="payeh-student__card-header">
                         <div><span>توصیه‌ها و پاسخ‌های مشاور</span><h3>بازخوردهای مشاور روی گزارش‌های مطالعه</h3></div>
@@ -457,12 +475,6 @@
                     <div id="student-feedbacks-list" class="student-feedbacks-list" aria-live="polite">
                         <p class="student-feedbacks-empty">در حال دریافت بازخوردهای مشاور…</p>
                     </div>
-                </section>
-
-                <section class="payeh-student__card student-demographic-card" id="student-profile-panel">
-                    <div class="payeh-student__card-header"><div><span>اطلاعات قابل مشاهده برای مشاور اختصاص‌یافته</span><h3>جنسیت برای دسته‌بندی دانش‌آموزان</h3></div></div>
-                    <p>این مورد اختیاری است و فقط به مشاور اختصاص‌یافتهٔ شما برای فیلتر فهرست دانش‌آموزان نمایش داده می‌شود.</p>
-                    <form id="student-gender-form"><label for="student-gender">جنسیت</label><select id="student-gender" name="gender"><option value="">ثبت نشده</option><option value="female">دختر</option><option value="male">پسر</option></select><button type="submit">ذخیره</button><span id="student-gender-message" role="status"></span></form>
                 </section>
 
                 <section class="payeh-student__card payeh-student__activity-card">
@@ -769,8 +781,23 @@
 
 </div>
 
+<!-- Modal: View All Past Reports -->
+<div class="student-glass-modal-backdrop" id="studentAllReportsModal" style="display:none;" aria-hidden="true">
+    <div class="student-glass-modal-dialog">
+        <header class="student-glass-modal-header">
+            <div class="student-glass-modal-title-group">
+                <span class="payeh-badge-glow">آرشیو کامل</span>
+                <h3>تاریخچه تمام گزارش‌های مطالعه تحویل‌شده</h3>
+            </div>
+            <button type="button" class="student-glass-modal-close" id="studentCloseReportsModal" title="بستن">×</button>
+        </header>
+        <div class="student-glass-modal-body" id="studentAllReportsModalBody">
+            <!-- All reports rendered in glass cards -->
+        </div>
+    </div>
+</div>
 
-<script src="js/student.js?v=20261018_30"></script>
+<script src="js/student.js?v=20261018_31"></script>
 
 </body>
 </html>

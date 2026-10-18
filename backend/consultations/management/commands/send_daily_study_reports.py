@@ -42,6 +42,7 @@ def deliver_pending_daily_reports():
                         "consultant": consultant,
                         "study_date": timer.study_date,
                         "subject": subject,
+                        "topic": timer.topic or (timer.plan.instructions if timer.plan else ""),
                         "minutes": (timer.elapsed_seconds + 30) // 60,
                         "test_count": timer.test_count,
                         "notes": timer.notes,

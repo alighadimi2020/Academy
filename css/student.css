@@ -1165,13 +1165,21 @@ body.payeh-sidebar-locked {
     display: flex;
     background: #f1f5f9;
     padding: 4px;
-    border-radius: 10px;
+    border-radius: 12px;
     gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.payeh-chat-tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .payeh-chat-tab {
-    flex: 1;
-    padding: 7px 10px;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 7px 8px;
     border: none;
     background: transparent;
     border-radius: 8px;
@@ -1182,6 +1190,9 @@ body.payeh-sidebar-locked {
     cursor: pointer;
     transition: all 0.15s ease;
     text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .payeh-chat-tab:hover {
@@ -1461,7 +1472,6 @@ body.payeh-sidebar-locked {
 .payeh-chat-bubble {
     max-width: 78%;
     padding: 12px 16px;
-    border-radius: 16px;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1469,33 +1479,38 @@ body.payeh-sidebar-locked {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
+/* Telegram Outgoing Message (Student / Mine): Green bubble on the left in RTL */
 .payeh-chat-bubble.is-mine {
-    align-self: flex-start;
-    background: #227b4c;
-    color: #ffffff;
-    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+    background: #dcf8c6;
+    color: #111827;
+    border: 1px solid #c9ecb3;
+    border-radius: 18px 18px 4px 18px;
+    box-shadow: 0 1px 2px rgba(22, 101, 52, 0.08);
 }
 
+/* Telegram Incoming Message (Consultant / Other): White bubble on the right in RTL */
 .payeh-chat-bubble.is-other {
-    align-self: flex-end;
+    align-self: flex-start;
     background: #ffffff;
     color: #1e293b;
     border: 1px solid #e2e8f0;
-    border-bottom-left-radius: 4px;
+    border-radius: 18px 18px 18px 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .payeh-chat-bubble__sender {
     font-size: 11px;
     font-weight: 800;
-    color: #059669;
+    color: #0284c7;
 }
 
 .payeh-chat-bubble.is-mine .payeh-chat-bubble__sender {
-    color: #a7f3d0;
+    color: #15803d;
 }
 
 .payeh-chat-bubble__text {
-    font-size: 13px;
+    font-size: 13.5px;
     line-height: 1.8;
     white-space: pre-wrap;
     word-break: break-word;
@@ -1518,7 +1533,7 @@ body.payeh-sidebar-locked {
 }
 
 .payeh-chat-bubble.is-mine .payeh-chat-bubble__time {
-    color: rgba(255, 255, 255, 0.75);
+    color: #4b7a47;
 }
 
 /* Announcement Card in Stream */
@@ -2566,4 +2581,452 @@ body.payeh-sidebar-locked {
         flex-direction: column;
         align-items: stretch;
     }
+}
+
+/* ==========================================================================
+   TODAY'S STUDY BOX: SUBJECT & TOPIC EDITING
+   ========================================================================== */
+.study-box-subject-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.study-box-edit-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    border: 1px solid #d1ded5;
+    background: #f4f8f5;
+    color: #2e6945;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+}
+
+.study-box-edit-icon-btn:hover {
+    background: #e2efe7;
+    border-color: #278555;
+    color: #175e38;
+}
+
+.study-box-topic-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f8faf8;
+    border: 1px solid #e1ebe4;
+    border-radius: 12px;
+}
+
+.study-box-topic-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #2c4233;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.study-box-topic-label {
+    font-weight: 800;
+    color: #185a36;
+    white-space: nowrap;
+    font-size: 11px;
+    background: #e5f5ec;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.study-box-topic-text {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.study-box-inline-edit {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.study-box-inline-input,
+.study-box-inline-select {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 10px;
+    border: 1px solid #278555;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12px;
+    background: #ffffff;
+    color: #1e293b;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(39, 133, 85, 0.12);
+}
+
+.study-box-inline-save {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #206744;
+    color: #ffffff;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.study-box-inline-save:hover {
+    background: #164f33;
+}
+
+.study-box-inline-cancel {
+    padding: 6px 10px;
+    border: 1px solid #d1ded5;
+    border-radius: 8px;
+    background: #f1f5f3;
+    color: #4b6353;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   GLASSMORPHISM PAST STUDY REPORTS SECTION & CARDS
+   ========================================================================== */
+.student-past-reports-card {
+    margin-top: 28px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(246, 250, 248, 0.92));
+    border: 1px solid rgba(226, 238, 231, 0.9);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 8px 30px rgba(22, 64, 42, 0.04);
+}
+
+.study-plan-badge--glass {
+    background: rgba(32, 103, 68, 0.12);
+    color: #1b5b3b;
+    border: 1px solid rgba(32, 103, 68, 0.2);
+}
+
+.student-glass-reports-container {
+    margin-top: 18px;
+    position: relative;
+}
+
+.student-glass-reports-rail {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 8px 4px 18px 4px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(32, 103, 68, 0.25) transparent;
+}
+
+.student-glass-reports-rail::-webkit-scrollbar {
+    height: 6px;
+}
+
+.student-glass-reports-rail::-webkit-scrollbar-thumb {
+    background: rgba(32, 103, 68, 0.25);
+    border-radius: 10px;
+}
+
+.student-glass-report-card {
+    min-width: 270px;
+    max-width: 290px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(24px) saturate(190%);
+    -webkit-backdrop-filter: blur(24px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 10px 24px -6px rgba(15, 23, 42, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.student-glass-report-card::before {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.student-glass-report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 36px -8px rgba(15, 23, 42, 0.12), inset 0 1px 2px rgba(255, 255, 255, 1);
+    border-color: rgba(34, 197, 94, 0.4);
+}
+
+.student-glass-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.student-glass-card__subject {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.student-glass-card__date {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    background: rgba(241, 245, 249, 0.85);
+    padding: 3px 8px;
+    border-radius: 8px;
+    direction: ltr;
+}
+
+.student-glass-card__topic {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #334155;
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 10px;
+    padding: 7px 10px;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.student-glass-card__topic svg {
+    color: #10b981;
+    flex-shrink: 0;
+}
+
+.student-glass-card__stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    background: rgba(241, 245, 249, 0.6);
+    border-radius: 12px;
+}
+
+.student-glass-card__stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.student-glass-card__stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.student-glass-card__stat-val {
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.student-glass-card__notes {
+    font-size: 11.5px;
+    color: #64748b;
+    line-height: 1.6;
+    max-height: 48px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.student-glass-card__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #059669;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(226, 232, 240, 0.8);
+}
+
+.student-glass-card__status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+}
+
+/* View More Arrow Card at end of rail */
+.student-glass-more-card {
+    min-width: 170px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 2px dashed rgba(34, 197, 94, 0.4);
+    border-radius: 20px;
+    padding: 24px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.student-glass-more-card:hover {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: #10b981;
+    transform: translateY(-5px);
+    box-shadow: 0 16px 32px -8px rgba(16, 185, 129, 0.2);
+}
+
+.student-glass-more-arrow {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(16, 185, 129, 0.35);
+    transition: transform 0.25s ease;
+}
+
+.student-glass-more-card:hover .student-glass-more-arrow {
+    transform: scale(1.1) translateX(-4px);
+}
+
+.student-glass-more-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.student-glass-more-sub {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ==========================================================================
+   GLASS MODAL: ALL HISTORICAL REPORTS
+   ========================================================================== */
+.student-glass-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeInModal 0.2s ease-out;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.student-glass-modal-dialog {
+    width: 100%;
+    max-width: 960px;
+    max-height: 85vh;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(28px) saturate(190%);
+    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    border-radius: 28px;
+    box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.25), inset 0 1px 2px rgba(255, 255, 255, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpModal {
+    from { transform: translateY(20px) scale(0.97); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.student-glass-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 28px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.student-glass-modal-title-group h3 {
+    margin: 4px 0 0 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.student-glass-modal-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #64748b;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.student-glass-modal-close:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    transform: rotate(90deg);
+}
+
+.student-glass-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
 }

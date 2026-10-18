@@ -358,6 +358,7 @@ def _chat_message_payload(message):
     return {
         "id": message.id,
         "sender_id": message.sender_id,
+        "sender_role": message.sender.role,
         "sender_name": message.sender.full_name or "کاربر",
         "body": message.body,
         "created_at": message.created_at.isoformat(),
@@ -875,6 +876,7 @@ def study_timers_today(request):
                     student=request.user,
                     plan=session,
                     subject=session.subject,
+                    topic=session.instructions or "",
                     study_date=today,
                 )
                 existing_timers.append(timer)
@@ -884,10 +886,12 @@ def study_timers_today(request):
     results = []
     for x in existing_timers:
         subj = x.subject or (x.plan.subject if x.plan else "مطالعه")
+        topic = x.topic or (x.plan.instructions if x.plan else "")
         results.append({
             "id": x.id,
             "plan_id": x.plan_id,
             "subject": subj,
+            "topic": topic,
             "elapsed_seconds": _timer_seconds(x),
             "running": bool(x.running_since),
             "finished": bool(x.finished_at),
@@ -915,7 +919,8 @@ def study_timer_create_box(request):
         data = json.loads(request.body or b"{}")
         if not isinstance(data, dict):
             raise ValueError
-        subject = str(data.get("subject", "")).strip()[:80]
+        subject = str(data.get("subject", "")).strip()[:150]
+        topic = str(data.get("topic", "")).strip()[:255]
         if not subject:
             raise ValueError("نام درس الزامی است.")
     except (ValueError, TypeError, json.JSONDecodeError):
@@ -931,6 +936,7 @@ def study_timer_create_box(request):
         student=request.user,
         plan=matching_plan,
         subject=subject,
+        topic=topic,
         study_date=today,
     )
     weekday = (today.weekday() + 2) % 7
@@ -938,6 +944,7 @@ def study_timer_create_box(request):
         "id": timer.id,
         "plan_id": timer.plan_id,
         "subject": timer.subject,
+        "topic": timer.topic,
         "elapsed_seconds": 0,
         "running": False,
         "finished": False,
@@ -1002,6 +1009,12 @@ def study_timer_action(request):
             if "notes" in data:
                 timer.notes = str(data.get("notes", ""))[:1000].strip()
 
+            if "subject" in data and str(data.get("subject", "")).strip():
+                timer.subject = str(data.get("subject", "")).strip()[:150]
+
+            if "topic" in data:
+                timer.topic = str(data.get("topic", "")).strip()[:255]
+
             minutes_raw = data.get("minutes")
             if minutes_raw is not None and str(minutes_raw).strip() != "":
                 try:
@@ -1018,9 +1031,11 @@ def study_timer_action(request):
                     timer.elapsed_seconds = new_seconds
                     timer.manual_edits += 1
 
-            timer.save(update_fields=("elapsed_seconds", "running_since", "notes", "manual_edits", "updated_at"))
+            timer.save(update_fields=("elapsed_seconds", "running_since", "notes", "subject", "topic", "manual_edits", "updated_at"))
             return JsonResponse({
                 "id": timer.id,
+                "subject": timer.subject,
+                "topic": timer.topic,
                 "elapsed_seconds": timer.elapsed_seconds,
                 "running": bool(timer.running_since),
                 "finished": bool(timer.finished_at),
@@ -1148,7 +1163,9 @@ def study_reports(request):
             "student_major_value": x.student.major,
             "study_date": x.study_date.isoformat(),
             "subject": x.subject,
+            "topic": x.topic or "",
             "minutes": x.minutes,
+            "test_count": x.test_count,
             "notes": x.notes,
             "manual_edits": x.manual_edits,
             "edits_remaining": max(0, 5 - x.manual_edits),
@@ -1174,6 +1191,8 @@ def study_report_edit(request, report_id):
         report = StudyReport.objects.select_for_update().get(pk=report_id, student=request.user)
     except StudyReport.DoesNotExist:
         return error("گزارش پیدا نشد.", 404)
+    if report.study_date != _tehran_today():
+        return error("تنها گزارش‌های مطالعهٔ روز جاری قابل ویرایش هستند.", 403)
     if StudyReport.objects.filter(student=report.student, consultant=report.consultant, study_date=report.study_date, subject=report.subject).filter(Q(created_at__gt=report.created_at) | Q(created_at=report.created_at, id__gt=report.id)).exists():
         return error("این نسخه قدیمی است؛ آخرین نسخهٔ گزارش را ویرایش کنید.", 409)
     if not 0 <= minutes <= 1440:

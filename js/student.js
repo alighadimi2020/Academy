@@ -73,6 +73,7 @@ const initStudentApp = async () => {
     /* ==========================================================================
        CHAT & MESSENGER MODULE
        ========================================================================== */
+    let currentUserId = null;
     let chatActiveRoomId = null;
     let chatActiveTab = "all";
     let chatPollTimer = null;
@@ -325,13 +326,13 @@ const initStudentApp = async () => {
             }
 
             messages.forEach(msg => {
-                const isMine = msg.sender_role === "student" || msg.sender_name === "شما";
+                const isMine = currentUserId ? (msg.sender_id === currentUserId) : (msg.sender_role === "student" || msg.sender_name === "شما");
                 const bubble = document.createElement("div");
                 bubble.className = `payeh-chat-bubble ${isMine ? "is-mine" : "is-other"}`;
 
                 const sender = document.createElement("span");
                 sender.className = "payeh-chat-bubble__sender";
-                sender.textContent = isMine ? "شما" : msg.sender_name;
+                sender.textContent = isMine ? "شما" : (msg.sender_name || "مشاور");
                 bubble.append(sender);
 
                 if (msg.image_url) {
@@ -1058,10 +1059,6 @@ const initStudentApp = async () => {
         try { const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then((response) => response.json()); await fetch("/api/auth/logout/", { method: "POST", credentials: "same-origin", headers: { "X-CSRFToken": csrf.csrfToken } }); }
         finally { location.replace(`login.html?_t=${Date.now()}`); }
     });
-    document.getElementById("student-gender-form")?.addEventListener("submit", async event => {
-        event.preventDefault();const message=document.getElementById("student-gender-message"),button=event.currentTarget.querySelector("button");button.disabled=true;message.textContent="در حال ذخیره…";
-        try{const csrf=await fetch("/api/auth/csrf/",{credentials:"same-origin"}).then(r=>r.json());const response=await fetch("/api/auth/profile/gender/",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","X-CSRFToken":csrf.csrfToken},body:JSON.stringify({gender:document.getElementById("student-gender").value})});const data=await response.json();if(!response.ok)throw new Error(data.detail||"ذخیره انجام نشد.");message.textContent="اطلاعات ذخیره شد.";}catch(error){message.textContent=error.message;}finally{button.disabled=false;}
-    });
 
     async function loadStudyPlan() {
         const week = document.getElementById("study-week"), box = document.getElementById("study-now"), dateLabel = document.getElementById("study-date");
@@ -1290,19 +1287,104 @@ const initStudentApp = async () => {
                     card.id = `study-box-card-${timer.id}`;
 
                     // Header
+                    // Header with Subject & Edit Subject button
                     const header = document.createElement("div");
                     header.className = "study-box-header";
+
+                    const subjWrap = document.createElement("div");
+                    subjWrap.className = "study-box-subject-wrap";
 
                     const subjStrong = document.createElement("strong");
                     subjStrong.className = "study-box-subject";
                     subjStrong.textContent = timer.subject;
 
+                    const editSubjBtn = document.createElement("button");
+                    editSubjBtn.type = "button";
+                    editSubjBtn.className = "study-box-edit-icon-btn";
+                    editSubjBtn.title = "تغییر درس";
+                    editSubjBtn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>`;
+                    editSubjBtn.disabled = Boolean(timer.delivered);
+
+                    subjWrap.append(subjStrong, editSubjBtn);
+
                     const tag = document.createElement("span");
                     tag.className = `study-box-tag ${timer.is_planned ? "study-box-tag--planned" : "study-box-tag--extra"}`;
                     tag.textContent = timer.is_planned ? "برنامهٔ امروز" : "مطالعهٔ آزاد";
 
-                    header.append(subjStrong, tag);
+                    header.append(subjWrap, tag);
                     card.append(header);
+
+                    // Inline Subject Edit Container (hidden by default)
+                    const subjEditRow = document.createElement("div");
+                    subjEditRow.className = "study-box-inline-edit";
+                    subjEditRow.style.display = "none";
+                    subjEditRow.innerHTML = `
+                        <select class="study-box-inline-select">
+                            ${allAvailableSubjects.map(s => `<option value="${s}" ${s === timer.subject ? "selected" : ""}>${s}</option>`).join("")}
+                        </select>
+                        <button type="button" class="study-box-inline-save">ذخیره</button>
+                        <button type="button" class="study-box-inline-cancel">انصراف</button>
+                    `;
+                    editSubjBtn.addEventListener("click", () => {
+                        subjEditRow.style.display = subjEditRow.style.display === "none" ? "flex" : "none";
+                    });
+                    subjEditRow.querySelector(".study-box-inline-cancel").addEventListener("click", () => {
+                        subjEditRow.style.display = "none";
+                    });
+                    subjEditRow.querySelector(".study-box-inline-save").addEventListener("click", async () => {
+                        const newSubj = subjEditRow.querySelector(".study-box-inline-select").value.trim();
+                        if (!newSubj) return;
+                        await performAction(timer.id, "edit", null, timer.notes || "", { subject: newSubj });
+                    });
+                    card.append(subjEditRow);
+
+                    // Topic / Chapter Row (clearly visible)
+                    const topicRow = document.createElement("div");
+                    topicRow.className = "study-box-topic-row";
+
+                    const topicInfo = document.createElement("div");
+                    topicInfo.className = "study-box-topic-info";
+                    const topicLabel = document.createElement("span");
+                    topicLabel.className = "study-box-topic-label";
+                    topicLabel.textContent = "مبحث / فصل:";
+                    const topicText = document.createElement("span");
+                    topicText.className = "study-box-topic-text";
+                    topicText.textContent = timer.topic || "تعیین‌نشده (کلیک جهت درج)";
+                    topicInfo.append(topicLabel, topicText);
+
+                    const editTopicBtn = document.createElement("button");
+                    editTopicBtn.type = "button";
+                    editTopicBtn.className = "study-box-edit-icon-btn";
+                    editTopicBtn.title = "ویرایش مبحث و فصل";
+                    editTopicBtn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>`;
+                    editTopicBtn.disabled = Boolean(timer.delivered);
+
+                    topicRow.append(topicInfo, editTopicBtn);
+                    card.append(topicRow);
+
+                    // Inline Topic Edit Container (hidden by default)
+                    const topicEditRow = document.createElement("div");
+                    topicEditRow.className = "study-box-inline-edit";
+                    topicEditRow.style.display = "none";
+                    topicEditRow.innerHTML = `
+                        <input type="text" class="study-box-inline-input" placeholder="مبحث یا فصل مطالعه (مثلاً: فصل ۲ - گوارش)" value="${timer.topic ? String(timer.topic).replace(/"/g, '&quot;') : ''}" maxlength="255">
+                        <button type="button" class="study-box-inline-save">ذخیره</button>
+                        <button type="button" class="study-box-inline-cancel">انصراف</button>
+                    `;
+                    editTopicBtn.addEventListener("click", () => {
+                        topicEditRow.style.display = topicEditRow.style.display === "none" ? "flex" : "none";
+                        if (topicEditRow.style.display === "flex") {
+                            topicEditRow.querySelector(".study-box-inline-input").focus();
+                        }
+                    });
+                    topicEditRow.querySelector(".study-box-inline-cancel").addEventListener("click", () => {
+                        topicEditRow.style.display = "none";
+                    });
+                    topicEditRow.querySelector(".study-box-inline-save").addEventListener("click", async () => {
+                        const newTopic = topicEditRow.querySelector(".study-box-inline-input").value.trim();
+                        await performAction(timer.id, "edit", null, timer.notes || "", { topic: newTopic });
+                    });
+                    card.append(topicEditRow);
 
                     if (timer.is_planned && timer.planned_minutes) {
                         const quotaHint = document.createElement("div");
@@ -1544,7 +1626,7 @@ const initStudentApp = async () => {
             }
 
             // Central action handler
-            async function performAction(timerId, actionName, minutes = null, notesVal = "") {
+            async function performAction(timerId, actionName, minutes = null, notesVal = "", extra = {}) {
                 const card = document.getElementById(`study-box-card-${timerId}`);
                 if (card) {
                     card.style.opacity = "0.7";
@@ -1553,7 +1635,7 @@ const initStudentApp = async () => {
                 try {
                     const token = await csrf();
                     if (!token) throw new Error("توکن امنیتی دریافت نشد؛ صفحه را تازه کنید.");
-                    const payload = { timer_id: timerId, action: actionName, notes: notesVal };
+                    const payload = { timer_id: timerId, action: actionName, notes: notesVal, ...extra };
                     if (minutes !== null) payload.minutes = minutes;
                     const r = await fetch("/api/consultations/study-timers/action/", {
                         method: "POST",
@@ -1609,69 +1691,151 @@ const initStudentApp = async () => {
 
             renderTodayBoxes();
 
-            // Load delivered study report history
-            const reports = await fetch("/api/consultations/study-reports/", { credentials: "same-origin" }).then(r => r.json());
-            if (reports.results?.length) {
-                const recent = document.createElement("div");
-                recent.className = "study-report-history";
-                const label = document.createElement("strong");
-                label.textContent = "گزارش‌های ثبت‌شدهٔ اخیر";
-                recent.append(label);
-                reports.results.forEach(x => {
-                    const row = document.createElement("div");
-                    row.className = "study-report-row";
-                    const line = document.createElement("p");
-                    line.textContent = `${x.study_date} · ${x.subject}`;
-                    const minutesInput = document.createElement("input");
-                    minutesInput.type = "number";
-                    minutesInput.min = "0";
-                    minutesInput.max = "1440";
-                    minutesInput.value = x.minutes;
-                    minutesInput.setAttribute("aria-label", "مدت مطالعه به دقیقه");
-                    const notesInput = document.createElement("textarea");
-                    notesInput.value = x.notes || "";
-                    notesInput.maxLength = 1000;
-                    notesInput.placeholder = "توضیحات گزارش";
-                    notesInput.setAttribute("aria-label", "توضیحات گزارش");
-                    const edit = document.createElement("button");
-                    edit.type = "button";
-                    edit.className = "study-start";
-                    edit.textContent = "ویرایش گزارش ارسال‌شده";
-                    const message = document.createElement("span");
-                    message.setAttribute("role", "status");
-                    let remainingEdits = Number(x.edits_remaining ?? 5);
-                    const quota = document.createElement("small");
-                    quota.textContent = `ویرایش باقی‌مانده: ${fa.format(remainingEdits)} بار`;
-                    if (remainingEdits <= 0) edit.disabled = true;
-                    edit.addEventListener("click", async () => {
-                        edit.disabled = true;
-                        try {
-                            const token = await csrf(), r = await fetch(`/api/consultations/study-reports/${x.id}/edit/`, {
-                                method: "POST",
-                                credentials: "same-origin",
-                                headers: { "Content-Type": "application/json", "X-CSRFToken": token },
-                                body: JSON.stringify({ minutes: Number(minutesInput.value), notes: notesInput.value })
-                            }), d = await r.json();
-                            if (!r.ok) throw new Error(d.detail || "ویرایش گزارش انجام نشد.");
-                            message.textContent = "گزارش ارسال‌شده ویرایش شد.";
-                            remainingEdits = d.edits_remaining;
-                            quota.textContent = `ویرایش باقی‌مانده: ${fa.format(remainingEdits)} بار`;
-                            if (remainingEdits <= 0) edit.disabled = true;
-                        } catch (e) {
-                            message.textContent = e.message;
-                        } finally {
-                            edit.disabled = remainingEdits <= 0;
-                        }
-                    });
-                    row.append(line, minutesInput, notesInput, quota, edit, message);
-                    recent.append(row);
-                });
-                week.append(recent);
+            // Load delivered study report history & render in glassmorphic rail
+            try {
+                const reports = await fetch(`/api/consultations/study-reports/?_t=${Date.now()}`, { credentials: "same-origin" }).then(r => r.json());
+                renderPastReportsRail(reports.results || []);
+            } catch (err) {
+                console.error("Error loading past study reports:", err);
             }
         } catch (error) {
             week.textContent = error.message || "برنامه دریافت نشد.";
         }
     }
+
+    const renderPastReportsRail = (allReports) => {
+        const rail = document.getElementById("student-glass-reports-rail");
+        const modal = document.getElementById("studentAllReportsModal");
+        const modalBody = document.getElementById("studentAllReportsModalBody");
+        if (!rail) return;
+        rail.replaceChildren();
+
+        const fa = new Intl.NumberFormat("fa-IR");
+
+        const formatJalali = (dStr) => {
+            if (!dStr) return "";
+            try {
+                const parts = dStr.split("-");
+                if (parts.length === 3) {
+                    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+                    return d.toLocaleDateString("fa-IR", { month: "long", day: "numeric" });
+                }
+                return new Date(dStr).toLocaleDateString("fa-IR", { month: "long", day: "numeric" });
+            } catch {
+                return dStr;
+            }
+        };
+
+        const createReportCard = (x) => {
+            const card = document.createElement("article");
+            card.className = "student-glass-report-card";
+
+            const header = document.createElement("div");
+            header.className = "student-glass-card__header";
+
+            const subj = document.createElement("h4");
+            subj.className = "student-glass-card__subject";
+            subj.textContent = x.subject;
+
+            const date = document.createElement("span");
+            date.className = "student-glass-card__date";
+            date.textContent = formatJalali(x.study_date);
+
+            header.append(subj, date);
+
+            const topicEl = document.createElement("div");
+            topicEl.className = "student-glass-card__topic";
+            topicEl.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> <span>${x.topic || "مطالعه مباحث اصلی"}</span>`;
+
+            const stats = document.createElement("div");
+            stats.className = "student-glass-card__stats";
+
+            const h = Math.floor(x.minutes / 60);
+            const m = x.minutes % 60;
+            const timeStr = h > 0 ? `${fa.format(h)} ساعت و ${fa.format(m)} دقیقه` : `${fa.format(m)} دقیقه`;
+
+            stats.innerHTML = `
+                <div class="student-glass-card__stat-item">
+                    <span class="student-glass-card__stat-label">مدت مطالعه</span>
+                    <span class="student-glass-card__stat-val">${timeStr}</span>
+                </div>
+                <div class="student-glass-card__stat-item" style="align-items:flex-end;">
+                    <span class="student-glass-card__stat-label">تست زده‌شده</span>
+                    <span class="student-glass-card__stat-val">${x.test_count > 0 ? `${fa.format(x.test_count)} تست` : "—"}</span>
+                </div>
+            `;
+
+            card.append(header, topicEl, stats);
+
+            if (x.notes) {
+                const notes = document.createElement("p");
+                notes.className = "student-glass-card__notes";
+                notes.textContent = x.notes;
+                card.append(notes);
+            }
+
+            const status = document.createElement("div");
+            status.className = "student-glass-card__status";
+            status.innerHTML = `<span class="student-glass-card__status-dot"></span> <span>تحویل‌شده به مشاور (نهایی)</span>`;
+            card.append(status);
+
+            return card;
+        };
+
+        if (!allReports.length) {
+            const empty = document.createElement("div");
+            empty.style.padding = "28px";
+            empty.style.textAlign = "center";
+            empty.style.color = "#64748b";
+            empty.style.width = "100%";
+            empty.textContent = "هنوز گزارش مطالعه‌ای در سامانه نهایی نشده است. گزارش‌های ثبت‌شده هر شب ساعت ۱۲ به این بخش منتقل می‌شوند.";
+            rail.append(empty);
+            return;
+        }
+
+        // Show last 10 in rail
+        allReports.slice(0, 10).forEach(x => {
+            rail.append(createReportCard(x));
+        });
+
+        // View more card with arrow at end of rail
+        const moreCard = document.createElement("div");
+        moreCard.className = "student-glass-more-card";
+        moreCard.title = "مشاهده تمام گزارش‌های گذشته";
+        moreCard.innerHTML = `
+            <div class="student-glass-more-arrow">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </div>
+            <span class="student-glass-more-title">مشاهده بیشتر</span>
+            <span class="student-glass-more-sub">آرشیو تمام گزارش‌ها (${fa.format(allReports.length)})</span>
+        `;
+        moreCard.addEventListener("click", () => {
+            if (modal && modalBody) {
+                modalBody.replaceChildren();
+                allReports.forEach(x => modalBody.append(createReportCard(x)));
+                modal.style.display = "flex";
+                modal.setAttribute("aria-hidden", "false");
+            }
+        });
+        rail.append(moreCard);
+
+        document.getElementById("studentCloseReportsModal")?.addEventListener("click", () => {
+            if (modal) {
+                modal.style.display = "none";
+                modal.setAttribute("aria-hidden", "true");
+            }
+        });
+
+        modal?.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+                modal.setAttribute("aria-hidden", "true");
+            }
+        });
+    };
 
     async function loadStudyFeedbacks() {
         const target = document.getElementById("student-feedbacks-list");
@@ -1729,9 +1893,9 @@ const initStudentApp = async () => {
         const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
         if (!meResponse.ok) { location.assign("login.html"); return; }
         const me = await meResponse.json();
+        currentUserId = me.id;
         if (me.role !== "student") { location.assign(me.role === "consultant" ? "consultant.html" : "manager.html"); return; }
         const name = me.full_name || "دانش‌آموز";
-        const genderSelect=document.getElementById("student-gender");if(genderSelect)genderSelect.value=me.gender||"";
         loadStudyPlan();
         loadStudyFeedbacks();
         ["student-sidebar-name", "student-account-name"].forEach((id) => { const node = document.getElementById(id); if (node) node.textContent = name; });
