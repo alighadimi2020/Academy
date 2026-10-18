@@ -1114,6 +1114,13 @@ def study_reports(request):
     else:
         return error("دسترسی مشاهده گزارش را ندارید.", 403)
 
+    from_date = request.GET.get("from_date", "").strip()
+    to_date = request.GET.get("to_date", "").strip()
+    if from_date:
+        rows = rows.filter(study_date__gte=from_date)
+    if to_date:
+        rows = rows.filter(study_date__lte=to_date)
+
     grade_labels = dict(User.GRADE_CHOICES)
     major_labels = dict(User.MAJOR_CHOICES)
 

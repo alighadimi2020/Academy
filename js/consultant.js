@@ -11,6 +11,103 @@ const initConsultantApp = async () => {
     let currentWeekOffset = 0;
     let studentWeeksArchive = [];
 
+    // Articles state
+    let consultantArticlesList = [];
+    let consultantArticlesFilterStatus = "all";
+    let consultantArticlesSearchQuery = "";
+
+    // Study reports & Jalali range picker state
+    let currentStudentReports = [];
+    let reportsDateSortOrder = "desc";
+    let reportsDateRange = { start: null, end: null };
+
+    // ==========================================
+    // STANDALONE JALALI CONVERSION HELPERS
+    // ==========================================
+    function gregorianToJalali(gy, gm, gd) {
+        const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+        let gy2 = (gm > 2) ? (gy + 1) : gy;
+        let days = 355666 + (365 * gy) + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400) + gd + g_d_m[gm - 1];
+        let jy = -1595 + (33 * Math.floor(days / 12053));
+        days %= 12053;
+        jy += 4 * Math.floor(days / 1461);
+        days %= 1461;
+        if (days > 365) {
+            jy += Math.floor((days - 1) / 365);
+            days = (days - 1) % 365;
+        }
+        let jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+        let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+        return { jy, jm, jd };
+    }
+
+    function jalaliToGregorian(jy, jm, jd) {
+        let gy = (jy <= 979) ? 621 : 1600;
+        jy -= (jy <= 979) ? 0 : 979;
+        let days = (365 * jy) + (Math.floor(jy / 33) * 8) + Math.floor(((jy % 33) + 3) / 4) + 78 + jd + ((jm < 7) ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+        gy += 400 * Math.floor(days / 146097);
+        days %= 146097;
+        if (days > 36524) {
+            gy += 100 * Math.floor(--days / 36524);
+            days %= 36524;
+            if (days >= 365) days++;
+        }
+        gy += 4 * Math.floor(days / 1461);
+        days %= 1461;
+        if (days > 365) {
+            gy += Math.floor((days - 1) / 365);
+            days = (days - 1) % 365;
+        }
+        let gd = days + 1;
+        const sal_a = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        let gm;
+        for (gm = 0; gm < 13 && gd > sal_a[gm]; gm++) gd -= sal_a[gm];
+        return { gy, gm, gd };
+    }
+
+    function isJalaliLeapYear(jy) {
+        const r = (jy % 33);
+        return [1, 5, 9, 13, 17, 22, 26, 30].includes(r);
+    }
+
+    function jalaliMonthDays(jy, jm) {
+        if (jm <= 6) return 31;
+        if (jm <= 11) return 30;
+        return isJalaliLeapYear(jy) ? 30 : 29;
+    }
+
+    const jalaliMonthNames = [
+        "فروردین", "اردیبهشت", "خرداد",
+        "تیر", "مرداد", "شهریور",
+        "مهر", "آبان", "آذر",
+        "دی", "بهمن", "اسفند"
+    ];
+
+    function formatJalaliDisplay(isoDateStr, format = "short") {
+        if (!isoDateStr) return "";
+        try {
+            const raw = isoDateStr.split("T")[0].replace(/\//g, "-").trim();
+            const parts = raw.split("-");
+            if (parts.length !== 3) return isoDateStr;
+            const gy = parseInt(parts[0], 10);
+            const gm = parseInt(parts[1], 10);
+            const gd = parseInt(parts[2], 10);
+            const { jy, jm, jd } = gregorianToJalali(gy, gm, gd);
+            if (format === "full") {
+                const d = new Date(Date.UTC(gy, gm - 1, gd));
+                const weekdayName = new Intl.DateTimeFormat("fa-IR-u-ca-persian", { weekday: "long" }).format(d);
+                return `${weekdayName} ${numberFa(jd)} ${jalaliMonthNames[jm - 1]} ${numberFa(jy)}`;
+            }
+            return `${numberFa(jy)}/${String(jm).padStart(2, "0").replace(/[0-9]/g, d => "۰۱۲۳۴۵۶۷۸۹"[d])}/${String(jd).padStart(2, "0").replace(/[0-9]/g, d => "۰۱۲۳۴۵۶۷۸۹"[d])}`;
+        } catch (e) {
+            return isoDateStr;
+        }
+    }
+
+    function toIsoDate(gy, gm, gd) {
+        return `${gy}-${String(gm).padStart(2, "0")}-${String(gd).padStart(2, "0")}`;
+    }
+
     function getFormalSvgIcon(name, extraClass = "") {
         const cls = extraClass ? `formal-svg-icon ${extraClass}` : "formal-svg-icon";
         switch (name) {
@@ -54,6 +151,14 @@ const initConsultantApp = async () => {
                 return `<svg class="${cls}" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
             case "calendar":
                 return `<svg class="${cls}" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+            case "clock":
+                return `<svg class="${cls}" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+            case "quote":
+                return `<svg class="${cls}" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/></svg>`;
+            case "phone":
+                return `<svg class="${cls}" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+            case "grade":
+                return `<svg class="${cls}" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`;
             default:
                 return `<svg class="${cls}" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>`;
         }
@@ -238,25 +343,160 @@ const initConsultantApp = async () => {
         loadDailyStudyReports();
         loadTelegramStatus();
         loadManagerSupportRoom();
-        const response = await fetch("/api/blog/mine/", { credentials: "same-origin" });
-        const payload = await response.json();
-        if (!response.ok) throw new Error(payload.detail || "دریافت مقاله‌ها انجام نشد.");
-        const posts = payload.results || [];
-        if (count) count.textContent = numberFa(posts.length);
-        articleList.replaceChildren();
-        if (!posts.length) { const empty = document.createElement("p"); empty.textContent = "هنوز مقاله‌ای ثبت نکرده‌اید. از دکمهٔ بالا اولین مقاله‌تان را بنویسید."; articleList.append(empty); }
-        const labels = { pending: "در انتظار تأیید", published: "منتشرشده", rejected: "نیازمند اصلاح" };
-        posts.forEach((post) => {
-            const row = document.createElement("article"); row.className = "consultant-article-row";
-            const details = document.createElement("div"); const heading = document.createElement("h4"); heading.textContent = post.title;
-            const meta = document.createElement("div"); meta.className = "consultant-article-meta";
-            const date = post.created_at ? new Date(post.created_at).toLocaleDateString("fa-IR") : "";
-            meta.textContent = [post.category, `${numberFa(post.reading_minutes)} دقیقه مطالعه`, date].filter(Boolean).join(" · "); details.append(heading, meta);
-            const status = document.createElement("span"); status.className = `consultant-article-status consultant-article-status--${post.status}`; status.textContent = labels[post.status] || post.status; row.append(details, status); articleList.append(row);
-            if (post.status === "published") { const link = document.createElement("a"); link.className = "consultant-article-link"; link.href = `blog-detail.html?id=${encodeURIComponent(post.id)}`; link.textContent = "مشاهده مقاله منتشرشده"; details.append(link); }
-            if (post.status === "rejected" && post.review_note) { const note = document.createElement("p"); note.className = "consultant-article-note"; note.textContent = `توضیح مدیر: ${post.review_note}`; details.append(note); }
+        initConsultantArticlesFilters();
+        await loadConsultantArticles();
+    } catch (error) {
+        const grid = document.getElementById("consultant-article-list");
+        if (grid) grid.innerHTML = `<p class="consultant-article-hint">${error.message || "خطا در بارگذاری پنل."}</p>`;
+    }
+
+    function initConsultantArticlesFilters() {
+        const searchInput = document.getElementById("consultant-articles-search");
+        if (searchInput) {
+            searchInput.addEventListener("input", (e) => {
+                consultantArticlesSearchQuery = e.target.value;
+                renderConsultantArticles();
+            });
+        }
+
+        const tabs = document.querySelectorAll("#consultant-article-tabs .glass-tab-btn");
+        tabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                tabs.forEach(t => t.classList.toggle("active", t === tab));
+                consultantArticlesFilterStatus = tab.dataset.status || "all";
+                renderConsultantArticles();
+            });
         });
-    } catch (error) { if (articleList) articleList.textContent = error.message || "فهرست مقاله‌ها بارگذاری نشد."; }
+    }
+
+    function renderConsultantArticles() {
+        const grid = document.getElementById("consultant-article-list");
+        if (!grid) return;
+        grid.replaceChildren();
+
+        const countEl = document.getElementById("consultant-article-count");
+        if (countEl) countEl.textContent = numberFa(consultantArticlesList.length);
+
+        // Update tab counts
+        const countAll = consultantArticlesList.length;
+        const countPublished = consultantArticlesList.filter(p => p.status === "published").length;
+        const countPending = consultantArticlesList.filter(p => p.status === "pending").length;
+        const countRejected = consultantArticlesList.filter(p => p.status === "rejected").length;
+
+        const tabAllEl = document.getElementById("article-tab-count-all");
+        if (tabAllEl) tabAllEl.textContent = numberFa(countAll);
+        const tabPubEl = document.getElementById("article-tab-count-published");
+        if (tabPubEl) tabPubEl.textContent = numberFa(countPublished);
+        const tabPendEl = document.getElementById("article-tab-count-pending");
+        if (tabPendEl) tabPendEl.textContent = numberFa(countPending);
+        const tabRejEl = document.getElementById("article-tab-count-rejected");
+        if (tabRejEl) tabRejEl.textContent = numberFa(countRejected);
+
+        // Filter by status
+        let filtered = consultantArticlesList;
+        if (consultantArticlesFilterStatus !== "all") {
+            filtered = filtered.filter(p => p.status === consultantArticlesFilterStatus);
+        }
+
+        // Filter by search query
+        const query = consultantArticlesSearchQuery.trim().toLocaleLowerCase("fa");
+        if (query) {
+            filtered = filtered.filter(p => 
+                (p.title && p.title.toLocaleLowerCase("fa").includes(query)) ||
+                (p.category && p.category.toLocaleLowerCase("fa").includes(query))
+            );
+        }
+
+        if (!filtered.length) {
+            const empty = document.createElement("div");
+            empty.className = "glass-articles-empty";
+            empty.innerHTML = `
+                <div class="glass-articles-empty-icon">${getFormalSvgIcon("book")}</div>
+                <h4>${consultantArticlesList.length === 0 ? "هنوز مقاله‌ای ثبت نکرده‌اید" : "مقاله‌ای مطابق با فیلترها یافت نشد"}</h4>
+                <p>${consultantArticlesList.length === 0 ? "از دکمهٔ «نوشتن مقاله جدید» در بالا می‌توانید اولین مقالهٔ تخصصی خود را در مجله ثبت کنید." : "عبارت جستجو یا فیلتر وضعیت را تغییر دهید."}</p>
+            `;
+            grid.append(empty);
+            return;
+        }
+
+        const labels = {
+            published: "منتشرشده",
+            pending: "در انتظار تأیید",
+            rejected: "نیازمند اصلاح"
+        };
+
+        filtered.forEach(post => {
+            const card = document.createElement("article");
+            card.className = "glass-article-card";
+
+            const topRow = document.createElement("div");
+            topRow.className = "glass-article-top-row";
+
+            const category = document.createElement("span");
+            category.className = "glass-article-category";
+            category.innerHTML = `${getFormalSvgIcon("topic")} <span>${post.category || "مقاله تخصصی"}</span>`;
+
+            const readTime = document.createElement("span");
+            readTime.className = "glass-article-reading-time";
+            readTime.innerHTML = `${getFormalSvgIcon("clock")} <span>${numberFa(post.reading_minutes || 5)} دقیقه مطالعه</span>`;
+
+            topRow.append(category, readTime);
+
+            const title = document.createElement("h4");
+            title.className = "glass-article-title";
+            title.textContent = post.title;
+
+            const metaRow = document.createElement("div");
+            metaRow.className = "glass-article-meta-row";
+
+            const date = document.createElement("span");
+            date.className = "glass-article-date";
+            const jalaliDateStr = formatJalaliDisplay(post.created_at, "short");
+            date.innerHTML = `${getFormalSvgIcon("calendar")} <span>${jalaliDateStr}</span>`;
+
+            const statusPill = document.createElement("span");
+            statusPill.className = `glass-article-status-pill glass-article-status-pill--${post.status}`;
+            statusPill.innerHTML = `<span class="status-indicator status-indicator--${post.status}"></span> <span>${labels[post.status] || post.status}</span>`;
+
+            metaRow.append(date, statusPill);
+
+            card.append(topRow, title, metaRow);
+
+            if (post.status === "rejected" && post.review_note) {
+                const note = document.createElement("p");
+                note.className = "glass-article-note";
+                note.textContent = `توضیح بازبینی مدیر: ${post.review_note}`;
+                card.append(note);
+            }
+
+            if (post.status === "published") {
+                const footer = document.createElement("div");
+                footer.className = "glass-article-footer";
+                const link = document.createElement("a");
+                link.className = "glass-article-view-link";
+                link.href = `blog-detail.html?id=${encodeURIComponent(post.id)}`;
+                link.innerHTML = `<span>مشاهده در مجله</span> ${getFormalSvgIcon("arrowRight")}`;
+                footer.append(link);
+                card.append(footer);
+            }
+
+            grid.append(card);
+        });
+    }
+
+    async function loadConsultantArticles() {
+        const grid = document.getElementById("consultant-article-list");
+        if (!grid) return;
+        try {
+            const response = await fetch("/api/blog/mine/", { credentials: "same-origin" });
+            const payload = await response.json();
+            if (!response.ok) throw new Error(payload.detail || "دریافت مقاله‌ها انجام نشد.");
+            consultantArticlesList = payload.results || [];
+            renderConsultantArticles();
+        } catch (error) {
+            grid.innerHTML = `<p class="consultant-article-hint">${error.message || "فهرست مقاله‌ها بارگذاری نشد."}</p>`;
+        }
+    }
     async function loadConsultantProfile() {
         const form = document.getElementById("consultant-profile-form");
         const message = document.getElementById("consultant-profile-message");
@@ -694,35 +934,398 @@ const initConsultantApp = async () => {
         }
     }
 
+    function getSubjectCategory(subject) {
+        if (!subject) return "general";
+        const s = subject.toLocaleLowerCase("fa");
+        if (s.includes("شیمی")) return "chemistry";
+        if (s.includes("زیست")) return "biology";
+        if (s.includes("ریاضی") || s.includes("حسابان") || s.includes("هندسه") || s.includes("آمار")) return "math";
+        if (s.includes("فیزیک")) return "physics";
+        return "general";
+    }
+
+    function renderStudentReportsView() {
+        const target = document.getElementById("consultant-study-reports");
+        if (!target) return;
+        target.replaceChildren();
+
+        // 1. Filter by date range
+        let filtered = currentStudentReports.slice();
+        if (reportsDateRange.start) {
+            filtered = filtered.filter(r => (r.study_date || "") >= reportsDateRange.start);
+        }
+        if (reportsDateRange.end) {
+            filtered = filtered.filter(r => (r.study_date || "") <= reportsDateRange.end);
+        }
+
+        // 2. Sort by study_date
+        filtered.sort((a, b) => {
+            const dateA = a.study_date || "";
+            const dateB = b.study_date || "";
+            if (reportsDateSortOrder === "asc") {
+                return dateA.localeCompare(dateB) || (a.id - b.id);
+            }
+            return dateB.localeCompare(dateA) || (b.id - a.id);
+        });
+
+        // 3. Update total badge & active filter bar
+        const totalBadge = document.getElementById("dossierReportsTotalBadge");
+        if (totalBadge) {
+            totalBadge.textContent = `${numberFa(currentStudentReports.length)} گزارش`;
+        }
+
+        const activeBar = document.getElementById("reportsActiveFiltersBar");
+        const rangeText = document.getElementById("reportsDateRangeText");
+        const countText = document.getElementById("reportsFilteredCount");
+        const triggerLabel = document.getElementById("jalaliDateRangeLabel");
+
+        if (reportsDateRange.start || reportsDateRange.end) {
+            if (activeBar) activeBar.style.display = "flex";
+            const startFa = formatJalaliDisplay(reportsDateRange.start, "short") || "ابتدای دوره";
+            const endFa = formatJalaliDisplay(reportsDateRange.end, "short") || "امروز";
+            const labelStr = `از ${startFa} تا ${endFa}`;
+            if (rangeText) rangeText.textContent = labelStr;
+            if (triggerLabel) triggerLabel.textContent = `بازه: ${labelStr}`;
+            if (countText) countText.textContent = `نمایش ${numberFa(filtered.length)} از ${numberFa(currentStudentReports.length)} گزارش`;
+        } else {
+            if (activeBar) activeBar.style.display = "none";
+            if (triggerLabel) triggerLabel.textContent = "بازه زمانی: همه گزارش‌ها";
+        }
+
+        if (!filtered.length) {
+            const empty = document.createElement("div");
+            empty.className = "glass-articles-empty";
+            empty.innerHTML = `
+                <div class="glass-articles-empty-icon">${getFormalSvgIcon("calendar")}</div>
+                <h4>${currentStudentReports.length === 0 ? "هنوز گزارشی ثبت نشده است" : "گزارشی در این بازهٔ زمانی یافت نشد"}</h4>
+                <p>${currentStudentReports.length === 0 ? "گزارش‌های روزانه دانش‌آموز هر شب ساعت ۱۲ قطعی شده و در اینجا به نمایش درمی‌آیند." : "می‌توانید با کلیک روی دکمهٔ بازه زمانی، تاریخ دیگری را انتخاب یا فیلتر را حذف کنید."}</p>
+            `;
+            target.append(empty);
+            return;
+        }
+
+        // 4. Render 3D Glassmorphic Quote / Speech Bubble Cards
+        filtered.forEach(report => {
+            const card = document.createElement("article");
+            card.className = "study-report-quote-card";
+
+            const header = document.createElement("div");
+            header.className = "report-bubble-header";
+
+            const subjectGroup = document.createElement("div");
+            subjectGroup.className = "report-subject-group";
+
+            const cat = getSubjectCategory(report.subject);
+            const badge = document.createElement("span");
+            badge.className = `report-subject-badge report-subject-badge--${cat}`;
+            badge.innerHTML = `${getFormalSvgIcon(cat === "math" ? "math" : cat === "biology" ? "biology" : cat === "physics" ? "physics" : cat === "chemistry" ? "chemistry" : "book")} <span>${report.subject}</span>`;
+
+            const duration = document.createElement("span");
+            duration.className = "report-duration-chip";
+            const hrs = Math.floor(report.minutes / 60);
+            const mins = report.minutes % 60;
+            const durText = hrs > 0 ? (mins > 0 ? `${numberFa(hrs)} ساعت و ${numberFa(mins)} دقیقه` : `${numberFa(hrs)} ساعت`) : `${numberFa(mins)} دقیقه`;
+            duration.innerHTML = `${getFormalSvgIcon("clock")} <span>${durText}</span>`;
+
+            subjectGroup.append(badge, duration);
+
+            const metaRight = document.createElement("div");
+            metaRight.className = "report-header-meta";
+
+            const dateChip = document.createElement("span");
+            dateChip.className = "report-date-chip";
+            const jalaliFull = formatJalaliDisplay(report.study_date, "full");
+            dateChip.innerHTML = `${getFormalSvgIcon("calendar")} <span>${jalaliFull}</span>`;
+
+            const midnightTag = document.createElement("span");
+            midnightTag.className = "report-midnight-tag";
+            midnightTag.innerHTML = `${getFormalSvgIcon("check")} <span>ارسال ۱۲ شب</span>`;
+
+            metaRight.append(dateChip, midnightTag);
+            header.append(subjectGroup, metaRight);
+
+            // Quote bubble for Student's comment/notes
+            const quoteBubble = document.createElement("div");
+            quoteBubble.className = "report-quote-bubble";
+
+            const quoteIcon = document.createElement("div");
+            quoteIcon.className = "report-quote-icon";
+            quoteIcon.textContent = "“";
+
+            const quoteContent = document.createElement("div");
+            quoteContent.className = "report-quote-content";
+
+            if (report.notes && report.notes.trim()) {
+                const noteText = document.createElement("p");
+                noteText.className = "report-quote-text";
+                noteText.textContent = report.notes;
+                quoteContent.append(noteText);
+            } else {
+                const emptyNote = document.createElement("p");
+                emptyNote.className = "report-quote-empty";
+                emptyNote.textContent = "مطالعه انجام شد بدون یادداشت اضافه";
+                quoteContent.append(emptyNote);
+            }
+
+            quoteBubble.append(quoteIcon, quoteContent);
+            card.append(header, quoteBubble);
+            target.append(card);
+        });
+    }
+
     async function loadStudyReports() {
         const target = document.getElementById("consultant-study-reports");
         if (!target || !plannerPicker?.value) return;
+        target.innerHTML = `<p class="consultant-article-hint">در حال بارگذاری گزارش‌های مطالعه…</p>`;
         try {
             const response = await fetch(`/api/consultations/study-reports/?student=${encodeURIComponent(plannerPicker.value)}`, { credentials: "same-origin" });
             const data = await response.json();
             if (!response.ok) throw new Error(data.detail || "گزارش‌ها دریافت نشد.");
-            target.replaceChildren();
-            if (!data.results.length) {
-                target.textContent = "هنوز گزارشی ثبت نشده است.";
-                return;
-            }
-            data.results.forEach((report) => {
-                const row = document.createElement("article");
-                row.className = "planner-session-card";
-                const title = document.createElement("strong");
-                title.textContent = `${report.subject} · ${numberFa(report.minutes)} دقیقه`;
-                const day = document.createElement("span");
-                day.textContent = report.study_date;
-                row.append(title, day);
-                if (report.notes) {
-                    const note = document.createElement("small");
-                    note.textContent = report.notes;
-                    row.append(note);
-                }
-                target.append(row);
-            });
+            currentStudentReports = data.results || [];
+            initJalaliDatePicker();
+            renderStudentReportsView();
         } catch (error) {
-            target.textContent = error.message;
+            target.innerHTML = `<p class="consultant-article-hint">${error.message || "خطا در دریافت گزارش‌ها"}</p>`;
+        }
+    }
+
+    let isJalaliPickerInitialized = false;
+    function initJalaliDatePicker() {
+        if (isJalaliPickerInitialized) return;
+        isJalaliPickerInitialized = true;
+
+        const triggerBtn = document.getElementById("jalaliDateRangePickerBtn");
+        const backdrop = document.getElementById("jalaliPickerBackdrop");
+        const closeBtn = document.getElementById("jalaliPickerCloseBtn");
+        const prevMonthBtn = document.getElementById("jalaliPrevMonthBtn");
+        const nextMonthBtn = document.getElementById("jalaliNextMonthBtn");
+        const monthLabel = document.getElementById("jalaliCurrentMonthLabel");
+        const daysGrid = document.getElementById("jalaliDaysGrid");
+        const resetBtn = document.getElementById("jalaliResetFilterBtn");
+        const applyBtn = document.getElementById("jalaliApplyFilterBtn");
+        const clearTagBtn = document.getElementById("reportsClearDateBtn");
+        const sortSelect = document.getElementById("reportsDateSort");
+        const rangeStartDisplay = document.getElementById("rangeStartDisplay");
+        const rangeEndDisplay = document.getElementById("rangeEndDisplay");
+        const rangeStartBox = document.getElementById("rangeStartBox");
+        const rangeEndBox = document.getElementById("rangeEndBox");
+        const presetChips = document.querySelectorAll(".jalali-quick-presets .preset-chip");
+
+        const todayObj = new Date();
+        const todayJalali = gregorianToJalali(todayObj.getFullYear(), todayObj.getMonth() + 1, todayObj.getDate());
+        const todayIso = toIsoDate(todayObj.getFullYear(), todayObj.getMonth() + 1, todayObj.getDate());
+
+        let viewJy = todayJalali.jy;
+        let viewJm = todayJalali.jm;
+        let tempStartIso = reportsDateRange.start;
+        let tempEndIso = reportsDateRange.end;
+        let pickingStep = "start"; // 'start' or 'end'
+
+        function openPicker() {
+            tempStartIso = reportsDateRange.start;
+            tempEndIso = reportsDateRange.end;
+            pickingStep = tempStartIso ? "end" : "start";
+            if (tempStartIso) {
+                const parts = tempStartIso.split("-").map(Number);
+                const j = gregorianToJalali(parts[0], parts[1], parts[2]);
+                viewJy = j.jy;
+                viewJm = j.jm;
+            } else {
+                viewJy = todayJalali.jy;
+                viewJm = todayJalali.jm;
+            }
+            if (backdrop) backdrop.style.display = "flex";
+            if (triggerBtn) triggerBtn.classList.add("is-open");
+            renderCalendar();
+        }
+
+        function closePicker() {
+            if (backdrop) backdrop.style.display = "none";
+            if (triggerBtn) triggerBtn.classList.remove("is-open");
+        }
+
+        triggerBtn?.addEventListener("click", openPicker);
+        closeBtn?.addEventListener("click", closePicker);
+        backdrop?.addEventListener("click", (e) => {
+            if (e.target === backdrop) closePicker();
+        });
+
+        clearTagBtn?.addEventListener("click", () => {
+            reportsDateRange = { start: null, end: null };
+            tempStartIso = null;
+            tempEndIso = null;
+            presetChips.forEach(c => c.classList.toggle("active", c.dataset.preset === "all"));
+            renderStudentReportsView();
+        });
+
+        sortSelect?.addEventListener("change", (e) => {
+            reportsDateSortOrder = e.target.value;
+            renderStudentReportsView();
+        });
+
+        prevMonthBtn?.addEventListener("click", () => {
+            viewJm--;
+            if (viewJm < 1) {
+                viewJm = 12;
+                viewJy--;
+            }
+            renderCalendar();
+        });
+
+        nextMonthBtn?.addEventListener("click", () => {
+            viewJm++;
+            if (viewJm > 12) {
+                viewJm = 1;
+                viewJy++;
+            }
+            renderCalendar();
+        });
+
+        presetChips.forEach(chip => {
+            chip.addEventListener("click", () => {
+                presetChips.forEach(c => c.classList.toggle("active", c === chip));
+                const p = chip.dataset.preset;
+                const now = new Date();
+                const nowIso = toIsoDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
+
+                if (p === "all") {
+                    tempStartIso = null;
+                    tempEndIso = null;
+                } else if (p === "today") {
+                    tempStartIso = nowIso;
+                    tempEndIso = nowIso;
+                    viewJy = todayJalali.jy;
+                    viewJm = todayJalali.jm;
+                } else if (p === "last7") {
+                    const d = new Date(now);
+                    d.setDate(d.getDate() - 6);
+                    tempStartIso = toIsoDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
+                    tempEndIso = nowIso;
+                    viewJy = todayJalali.jy;
+                    viewJm = todayJalali.jm;
+                } else if (p === "last30") {
+                    const d = new Date(now);
+                    d.setDate(d.getDate() - 29);
+                    tempStartIso = toIsoDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
+                    tempEndIso = nowIso;
+                    viewJy = todayJalali.jy;
+                    viewJm = todayJalali.jm;
+                } else if (p === "thisMonth") {
+                    const m1 = jalaliToGregorian(todayJalali.jy, todayJalali.jm, 1);
+                    const mEnd = jalaliToGregorian(todayJalali.jy, todayJalali.jm, jalaliMonthDays(todayJalali.jy, todayJalali.jm));
+                    tempStartIso = toIsoDate(m1.gy, m1.gm, m1.gd);
+                    tempEndIso = toIsoDate(mEnd.gy, mEnd.gm, mEnd.gd);
+                    viewJy = todayJalali.jy;
+                    viewJm = todayJalali.jm;
+                }
+                pickingStep = "start";
+                renderCalendar();
+            });
+        });
+
+        resetBtn?.addEventListener("click", () => {
+            tempStartIso = null;
+            tempEndIso = null;
+            reportsDateRange = { start: null, end: null };
+            presetChips.forEach(c => c.classList.toggle("active", c.dataset.preset === "all"));
+            closePicker();
+            renderStudentReportsView();
+        });
+
+        applyBtn?.addEventListener("click", () => {
+            if (tempStartIso && !tempEndIso) {
+                tempEndIso = tempStartIso;
+            }
+            if (tempStartIso && tempEndIso && tempStartIso > tempEndIso) {
+                const swap = tempStartIso;
+                tempStartIso = tempEndIso;
+                tempEndIso = swap;
+            }
+            reportsDateRange = { start: tempStartIso, end: tempEndIso };
+            closePicker();
+            renderStudentReportsView();
+        });
+
+        function renderCalendar() {
+            if (monthLabel) {
+                monthLabel.textContent = `${jalaliMonthNames[viewJm - 1]} ${numberFa(viewJy)}`;
+            }
+
+            if (rangeStartDisplay) {
+                rangeStartDisplay.textContent = tempStartIso ? formatJalaliDisplay(tempStartIso, "short") : "انتخاب نشده";
+            }
+            if (rangeEndDisplay) {
+                rangeEndDisplay.textContent = tempEndIso ? formatJalaliDisplay(tempEndIso, "short") : "انتخاب نشده";
+            }
+
+            if (rangeStartBox && rangeEndBox) {
+                rangeStartBox.classList.toggle("is-active", pickingStep === "start");
+                rangeEndBox.classList.toggle("is-active", pickingStep === "end");
+            }
+
+            if (!daysGrid) return;
+            daysGrid.replaceChildren();
+
+            const totalMonthDays = jalaliMonthDays(viewJy, viewJm);
+            const firstGreg = jalaliToGregorian(viewJy, viewJm, 1);
+            const firstDateObj = new Date(Date.UTC(firstGreg.gy, firstGreg.gm - 1, firstGreg.gd));
+            const startWeekday = (firstDateObj.getUTCDay() + 1) % 7; // 0=Sat ... 6=Fri
+
+            // Empty prefix cells
+            for (let i = 0; i < startWeekday; i++) {
+                const emptyCell = document.createElement("div");
+                emptyCell.className = "jalali-day-cell is-empty";
+                daysGrid.append(emptyCell);
+            }
+
+            // Month days
+            for (let day = 1; day <= totalMonthDays; day++) {
+                const greg = jalaliToGregorian(viewJy, viewJm, day);
+                const cellIso = toIsoDate(greg.gy, greg.gm, greg.gd);
+
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "jalali-day-cell";
+                btn.textContent = numberFa(day);
+
+                if (cellIso === todayIso) {
+                    btn.classList.add("is-today");
+                }
+
+                if (tempStartIso && !tempEndIso && cellIso === tempStartIso) {
+                    btn.classList.add("is-range-single");
+                } else if (tempStartIso && tempEndIso) {
+                    if (cellIso === tempStartIso && cellIso === tempEndIso) {
+                        btn.classList.add("is-range-single");
+                    } else if (cellIso === tempStartIso) {
+                        btn.classList.add("is-range-start");
+                    } else if (cellIso === tempEndIso) {
+                        btn.classList.add("is-range-end");
+                    } else if (cellIso > tempStartIso && cellIso < tempEndIso) {
+                        btn.classList.add("is-in-range");
+                    }
+                }
+
+                btn.addEventListener("click", () => {
+                    presetChips.forEach(c => c.classList.remove("active"));
+                    if (pickingStep === "start" || !tempStartIso) {
+                        tempStartIso = cellIso;
+                        tempEndIso = null;
+                        pickingStep = "end";
+                    } else {
+                        if (cellIso < tempStartIso) {
+                            tempEndIso = tempStartIso;
+                            tempStartIso = cellIso;
+                        } else {
+                            tempEndIso = cellIso;
+                        }
+                        pickingStep = "start";
+                    }
+                    renderCalendar();
+                });
+
+                daysGrid.append(btn);
+            }
         }
     }
 
@@ -891,7 +1494,7 @@ const initConsultantApp = async () => {
                     duration.textContent = `${numberFa(Math.floor(r.minutes / 60))} ساعت و ${numberFa(r.minutes % 60)} دقیقه`;
                     const date = document.createElement("span");
                     date.className = "consultant-report-date";
-                    date.textContent = `تاریخ: ${r.study_date}`;
+                    date.textContent = `تاریخ: ${formatJalaliDisplay(r.study_date, "short")}`;
                     rowMain.append(title, duration, date);
 
                     if (r.notes) {
@@ -1252,14 +1855,37 @@ const initConsultantApp = async () => {
 
         const meta = document.getElementById("dossierMeta");
         if (meta) {
-            const metaParts = [
-                student.student_grade ? `پایه ${student.student_grade}` : null,
-                student.student_major,
-                student.student_gender_label && student.student_gender_label !== "ثبت نشده" ? student.student_gender_label : null,
-                student.student_phone
-            ].filter(Boolean);
-            meta.textContent = metaParts.join(" · ");
+            meta.replaceChildren();
+            const chips = document.createElement("div");
+            chips.className = "dossier-meta-chips";
+            if (student.student_grade) {
+                const c = document.createElement("span");
+                c.className = "dossier-meta-chip";
+                c.innerHTML = `${getFormalSvgIcon("grade")} <span>پایه ${student.student_grade}</span>`;
+                chips.append(c);
+            }
+            if (student.student_major) {
+                const c = document.createElement("span");
+                c.className = "dossier-meta-chip";
+                c.innerHTML = `${getFormalSvgIcon("book")} <span>${student.student_major}</span>`;
+                chips.append(c);
+            }
+            if (student.student_gender_label && student.student_gender_label !== "ثبت نشده") {
+                const c = document.createElement("span");
+                c.className = "dossier-meta-chip";
+                c.innerHTML = `<span>${student.student_gender_label}</span>`;
+                chips.append(c);
+            }
+            if (student.student_phone) {
+                const c = document.createElement("span");
+                c.className = "dossier-meta-chip";
+                c.innerHTML = `${getFormalSvgIcon("phone")} <span>${student.student_phone}</span>`;
+                chips.append(c);
+            }
+            meta.append(chips);
         }
+
+        reportsDateRange = { start: null, end: null };
 
         const chatLink = document.getElementById("dossierChatLink");
         if (chatLink) {

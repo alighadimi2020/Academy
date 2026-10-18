@@ -460,7 +460,12 @@
 
                     <!-- Dossier Tab 2: Reports -->
                     <div class="dossier-tab-pane" id="dossierPaneReports" style="display: none;">
-                        <div class="planner-week-heading"><strong>گزارش‌های مطالعهٔ این دانش‌آموز</strong></div>
+                        <div class="planner-week-heading">
+                            <div>
+                                <strong>گزارش‌های مطالعهٔ این دانش‌آموز</strong>
+                                <span class="reports-total-badge" id="dossierReportsTotalBadge"></span>
+                            </div>
+                        </div>
 
                         <div class="consultant-telegram-card" id="consultant-telegram-card">
                             <div class="consultant-telegram-info">
@@ -485,7 +490,107 @@
                             </div>
                         </div>
 
-                        <div id="consultant-study-reports" class="consultant-article-hint" aria-live="polite">در حال دریافت گزارش‌ها…</div>
+                        <!-- Study Reports Filter & Jalali Date Range Bar -->
+                        <div class="reports-filter-bar" id="reportsFilterBar">
+                            <div class="reports-filter-controls">
+                                <!-- Persian Calendar Date Range Picker Trigger Button -->
+                                <button type="button" class="jalali-picker-trigger-btn" id="jalaliDateRangePickerBtn" title="انتخاب بازه زمانی از روی تقویم شمسی">
+                                    <span class="trigger-icon">
+                                        <svg class="formal-svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    </span>
+                                    <span class="trigger-label" id="jalaliDateRangeLabel">بازه زمانی: همه گزارش‌ها</span>
+                                    <svg class="formal-svg-icon chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                                </button>
+
+                                <!-- Date Sorting Dropdown -->
+                                <div class="reports-sort-container">
+                                    <label for="reportsDateSort" class="sr-only">مرتب‌سازی بر اساس تاریخ</label>
+                                    <div class="reports-sort-box">
+                                        <svg class="formal-svg-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                                        <select id="reportsDateSort" class="glass-select-input">
+                                            <option value="desc">مرتب‌سازی: جدیدترین به قدیمی‌ترین</option>
+                                            <option value="asc">مرتب‌سازی: قدیمی‌ترین به جدیدترین</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Active Filters & Summary Bar -->
+                            <div class="reports-active-filters-bar" id="reportsActiveFiltersBar" style="display: none;">
+                                <div class="active-filter-tag" id="reportsDateRangeTag">
+                                    <span id="reportsDateRangeText">از ۱۴۰۵/۰۷/۰۱ تا ۱۴۰۵/۰۷/۳۰</span>
+                                    <button type="button" class="tag-remove-btn" id="reportsClearDateBtn" title="حذف فیلتر تاریخ">
+                                        <svg class="formal-svg-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    </button>
+                                </div>
+                                <span class="reports-filtered-count" id="reportsFilteredCount"></span>
+                            </div>
+                        </div>
+
+                        <!-- Jalali Date Range Picker Modal / Popover -->
+                        <div class="jalali-picker-backdrop" id="jalaliPickerBackdrop" style="display: none;">
+                            <div class="jalali-picker-card" id="jalaliPickerCard" role="dialog" aria-modal="true" aria-labelledby="jalaliPickerTitle">
+                                <div class="jalali-picker-header">
+                                    <div class="jalali-picker-title-wrap">
+                                        <svg class="formal-svg-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                        <h4 id="jalaliPickerTitle">انتخاب بازهٔ تاریخ گزارش‌ها (شمسی)</h4>
+                                    </div>
+                                    <button type="button" class="jalali-picker-close-btn" id="jalaliPickerCloseBtn" aria-label="بستن">
+                                        <svg class="formal-svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    </button>
+                                </div>
+
+                                <!-- Quick Presets Row -->
+                                <div class="jalali-quick-presets">
+                                    <button type="button" class="preset-chip active" data-preset="all">همه زمان‌ها</button>
+                                    <button type="button" class="preset-chip" data-preset="today">امروز</button>
+                                    <button type="button" class="preset-chip" data-preset="last7">۷ روز اخیر</button>
+                                    <button type="button" class="preset-chip" data-preset="last30">۳۰ روز اخیر</button>
+                                    <button type="button" class="preset-chip" data-preset="thisMonth">این ماه</button>
+                                </div>
+
+                                <!-- Range Selection Inputs Bar -->
+                                <div class="jalali-range-inputs">
+                                    <div class="range-input-box is-active" id="rangeStartBox">
+                                        <label>از تاریخ:</label>
+                                        <span id="rangeStartDisplay">انتخاب نشده</span>
+                                    </div>
+                                    <span class="range-arrow">←</span>
+                                    <div class="range-input-box" id="rangeEndBox">
+                                        <label>تا تاریخ:</label>
+                                        <span id="rangeEndDisplay">انتخاب نشده</span>
+                                    </div>
+                                </div>
+
+                                <!-- Jalali Month Navigation -->
+                                <div class="jalali-month-nav">
+                                    <button type="button" class="month-nav-btn" id="jalaliPrevMonthBtn" title="ماه قبل">
+                                        <svg class="formal-svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                    <div class="jalali-current-month" id="jalaliCurrentMonthLabel">مهر ۱۴۰۵</div>
+                                    <button type="button" class="month-nav-btn" id="jalaliNextMonthBtn" title="ماه بعد">
+                                        <svg class="formal-svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                                    </button>
+                                </div>
+
+                                <!-- Weekdays Row -->
+                                <div class="jalali-weekdays-grid">
+                                    <span>ش</span><span>ی</span><span>د</span><span>س</span><span>چ</span><span>پ</span><span>ج</span>
+                                </div>
+
+                                <!-- Days Grid (Rendered dynamically) -->
+                                <div class="jalali-days-grid" id="jalaliDaysGrid"></div>
+
+                                <!-- Footer Actions -->
+                                <div class="jalali-picker-footer">
+                                    <button type="button" class="jalali-clear-btn" id="jalaliResetFilterBtn">حذف فیلتر بازه</button>
+                                    <button type="button" class="jalali-apply-btn" id="jalaliApplyFilterBtn">اعمال بازه زمانی</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3D Glassmorphic Quote / Speech Bubbles Grid -->
+                        <div id="consultant-study-reports" class="consultant-study-reports-grid" aria-live="polite">در حال دریافت گزارش‌ها…</div>
                     </div>
 
                     <!-- Full Weeks Archive Modal / Drawer -->
@@ -545,16 +650,61 @@
             </div>
 
             <!-- ==========================================
-                 VIEW 5: ARTICLES
+                 VIEW 5: ARTICLES (3D Glassmorphism Showcase)
                  ========================================== -->
             <div class="payeh-consultant__page-view" id="view-articles" style="display: none;">
-                <div class="payeh-consultant__section consultant-articles-panel" id="consultant-articles">
-                    <div class="payeh-consultant__section-header">
-                        <div><span>مجله آنلاین</span><h3>مقاله‌های من</h3></div>
-                        <a href="blog-editor.html" class="consultant-write-article">نوشتن مقاله جدید</a>
+                <div class="payeh-consultant__section consultant-articles-panel glass-articles-panel" id="consultant-articles">
+                    <!-- 3D Glass Header -->
+                    <div class="glass-articles-header">
+                        <div class="glass-articles-title-group">
+                            <div class="glass-articles-badge-icon">
+                                <svg class="formal-svg-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            </div>
+                            <div>
+                                <span class="glass-badge-pill">مجله تخصصی پایه‌آکادمی</span>
+                                <h3>مقاله‌های من</h3>
+                                <p class="glass-articles-subtitle">مقاله‌های ارسالی پس از تأیید مدیر مجموعه در مجلهٔ سراسری پایه‌آکادمی منتشر می‌شوند.</p>
+                            </div>
+                        </div>
+                        <a href="blog-editor.html" class="glass-write-article-btn">
+                            <svg class="formal-svg-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                            <span>نوشتن مقاله جدید</span>
+                        </a>
                     </div>
-                    <p class="consultant-article-hint">مقاله‌های ارسالی پس از تأیید مدیر مجموعه یا ادمین در مجله منتشر می‌شوند.</p>
-                    <div id="consultant-article-list" aria-live="polite"><p>در حال دریافت مقاله‌ها…</p></div>
+
+                    <!-- 3D Glass Filter & Search Toolbar -->
+                    <div class="glass-articles-toolbar">
+                        <div class="glass-search-input-wrap">
+                            <svg class="formal-svg-icon search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="search" id="consultant-articles-search" class="glass-search-input" placeholder="جستجو در عنوان یا موضوع مقاله‌ها…">
+                        </div>
+                        <div class="glass-filter-tabs" id="consultant-article-tabs">
+                            <button type="button" class="glass-tab-btn active" data-status="all">
+                                <span>همه</span>
+                                <span class="tab-count" id="article-tab-count-all">۰</span>
+                            </button>
+                            <button type="button" class="glass-tab-btn" data-status="published">
+                                <span class="status-indicator status-indicator--published"></span>
+                                <span>منتشرشده</span>
+                                <span class="tab-count" id="article-tab-count-published">۰</span>
+                            </button>
+                            <button type="button" class="glass-tab-btn" data-status="pending">
+                                <span class="status-indicator status-indicator--pending"></span>
+                                <span>در انتظار تأیید</span>
+                                <span class="tab-count" id="article-tab-count-pending">۰</span>
+                            </button>
+                            <button type="button" class="glass-tab-btn" data-status="rejected">
+                                <span class="status-indicator status-indicator--rejected"></span>
+                                <span>نیازمند اصلاح</span>
+                                <span class="tab-count" id="article-tab-count-rejected">۰</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3D Glass Cards Grid -->
+                    <div id="consultant-article-list" class="glass-articles-grid" aria-live="polite">
+                        <p class="consultant-article-hint">در حال بارگذاری مقاله‌ها…</p>
+                    </div>
                 </div>
             </div>
 
