@@ -180,4 +180,20 @@ class ConsultationMessage(models.Model):
     def __str__(self):
         return f"پیام {self.sender_id} در گفت‌وگو {self.request_id or self.conversation_id}"
 
+
+class AcademyAnnouncement(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="academy_announcements")
+    title = models.CharField(max_length=250, blank=True)
+    body = models.CharField(max_length=4000)
+    image = models.ImageField(upload_to="announcements/%Y/%m/", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ("-created_at", "-id")
+
+    def __str__(self):
+        return f"اطلاعیه {self.id} از {self.author_id}: {self.title or self.body[:30]}"
+
+
 from .study_models import StudySession
+

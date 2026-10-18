@@ -2,13 +2,976 @@ const initStudentApp = async () => {
     const sidebar = document.getElementById("studentSidebar");
     const menuButton = document.getElementById("studentMenu");
     const pageTitle = document.getElementById("studentPageTitle");
-    const titles = { dashboard: "داشبورد", activities: "فعالیت‌های من", performance: "عملکرد من", consultant: "مشاور من", tasks: "برنامه و وظایف", profile: "پروفایل" };
+    const titles = {
+        dashboard: "داشبورد",
+        chat: "پیام‌ها و گفت‌وگو",
+        ranking: "رتبه‌بندی و لیگ برتر",
+        performance: "عملکرد من",
+        activities: "فعالیت‌های من",
+        consultant: "مشاور من",
+        tasks: "برنامه و وظایف",
+        profile: "پروفایل"
+    };
 
+    const faDigit = (n) => {
+        if (n === null || n === undefined || isNaN(n)) return "۰";
+        return new Intl.NumberFormat("fa-IR").format(n);
+    };
+
+    const getCsrfToken = async () => {
+        const match = document.cookie.match(/csrftoken=([^;]+)/);
+        if (match) return match[1];
+        try {
+            const res = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
+            const d = await res.json();
+            return d.csrfToken;
+        } catch {
+            return "";
+        }
+    };
+
+    // Vector Cartoon Character Generator (STRICTLY NO EMOJIS)
+    const getCartoonAvatarSvg = (avatarIdx = 0, size = 64) => {
+        const pal = [
+            { bg: "#fef3c7", face: "#fde68a", hair: "#d97706", acc: "#f59e0b", glasses: true, cap: true },
+            { bg: "#ede9fe", face: "#ddd6fe", hair: "#7c3aed", acc: "#8b5cf6", glasses: false, cap: false },
+            { bg: "#d1fae5", face: "#a7f3d0", hair: "#059669", acc: "#10b981", glasses: true, cap: false },
+            { bg: "#e0f2fe", face: "#bae6fd", hair: "#0284c7", acc: "#0ea5e9", glasses: false, cap: false },
+            { bg: "#fce7f3", face: "#fbcfe8", hair: "#db2777", acc: "#ec4899", glasses: false, cap: true },
+            { bg: "#ffedd5", face: "#fed7aa", hair: "#ea580c", acc: "#f97316", glasses: true, cap: false },
+            { bg: "#ccfbf1", face: "#99f6e4", hair: "#0d9488", acc: "#14b8a6", glasses: false, cap: false },
+            { bg: "#fee2e2", face: "#fecaca", hair: "#dc2626", acc: "#ef4444", glasses: true, cap: true },
+        ];
+        const c = pal[Math.abs(avatarIdx || 0) % pal.length];
+        return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" class="payeh-cartoon-avatar">
+            <circle cx="50" cy="50" r="48" fill="${c.bg}" stroke="${c.acc}" stroke-width="2.5"/>
+            <path d="M22 88 C25 68 75 68 78 88 Z" fill="${c.acc}"/>
+            <rect x="44" y="60" width="12" height="12" rx="4" fill="${c.face}"/>
+            <ellipse cx="50" cy="46" rx="24" ry="22" fill="${c.face}"/>
+            <path d="M26 44 C26 24 74 24 74 44 C68 34 56 32 50 34 C42 32 32 36 26 44 Z" fill="${c.hair}"/>
+            <circle cx="41" cy="46" r="3" fill="#1e293b"/>
+            <circle cx="42" cy="45" r="1" fill="#ffffff"/>
+            <circle cx="59" cy="46" r="3" fill="#1e293b"/>
+            <circle cx="60" cy="45" r="1" fill="#ffffff"/>
+            <path d="M37 40 Q41 38 45 40" stroke="#1e293b" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M55 40 Q59 38 63 40" stroke="#1e293b" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M43 54 Q50 61 57 54" stroke="#1e293b" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <circle cx="35" cy="52" r="4" fill="#f43f5e" opacity="0.3"/>
+            <circle cx="65" cy="52" r="4" fill="#f43f5e" opacity="0.3"/>
+            ${c.glasses ? `
+            <circle cx="41" cy="46" r="8" fill="none" stroke="#1e293b" stroke-width="2"/>
+            <circle cx="59" cy="46" r="8" fill="none" stroke="#1e293b" stroke-width="2"/>
+            <line x1="49" y1="46" x2="51" y2="46" stroke="#1e293b" stroke-width="2"/>` : ''}
+            ${c.cap ? `
+            <polygon points="50,14 74,24 50,30 26,24" fill="#1e293b"/>
+            <rect x="42" y="27" width="16" height="5" fill="#0f172a"/>
+            <line x1="68" y1="24" x2="72" y2="34" stroke="#eab308" stroke-width="2"/>
+            <circle cx="72" cy="35" r="2" fill="#eab308"/>` : ''}
+        </svg>`;
+    };
+
+    /* ==========================================================================
+       CHAT & MESSENGER MODULE
+       ========================================================================== */
+    let chatActiveRoomId = null;
+    let chatActiveTab = "all";
+    let chatPollTimer = null;
+    let chatAnnouncements = [];
+    let chatAssignedRequest = null;
+    let chatSelectedImage = null;
+    let chatPreviewUrl = null;
+
+    const loadChatView = async () => {
+        try {
+            const [annRes, reqRes] = await Promise.all([
+                fetch(`/api/consultations/announcements/?_t=${Date.now()}`, { credentials: "same-origin" }),
+                fetch(`/api/consultations/requests/?_t=${Date.now()}`, { credentials: "same-origin" })
+            ]);
+            if (annRes.ok) {
+                const annData = await annRes.json();
+                chatAnnouncements = annData.results || [];
+            }
+            if (reqRes.ok) {
+                const reqData = await reqRes.json();
+                chatAssignedRequest = (reqData.results || []).find(r => r.status === "approved" || r.status === "pending") || null;
+            }
+            renderChatRooms();
+            if (!chatActiveRoomId) {
+                selectChatRoom("channel");
+            } else {
+                selectChatRoom(chatActiveRoomId);
+            }
+        } catch (err) {
+            console.error("Error loading chat view:", err);
+        }
+    };
+
+    const renderChatRooms = () => {
+        const list = document.getElementById("chatRoomsList");
+        if (!list) return;
+        list.replaceChildren();
+
+        const latestAnn = chatAnnouncements[0];
+        const annSnippet = latestAnn ? (latestAnn.title || latestAnn.body.slice(0, 40)) : "اطلاعیه‌های رسمی آکادمی";
+        const annDate = latestAnn ? new Date(latestAnn.created_at).toLocaleDateString("fa-IR") : "";
+
+        // 1. Channel Room Item
+        if (chatActiveTab === "all" || chatActiveTab === "channels") {
+            const item = document.createElement("div");
+            item.className = `payeh-chat-item${chatActiveRoomId === "channel" ? " active" : ""}`;
+            item.dataset.roomId = "channel";
+            item.innerHTML = `
+                <div class="payeh-chat-avatar-wrap">
+                    <div class="payeh-chat-avatar payeh-chat-avatar--channel">کا</div>
+                </div>
+                <div class="payeh-chat-item__content">
+                    <div class="payeh-chat-item__top">
+                        <span class="payeh-chat-item__name">کانال اطلاع‌رسانی پایه</span>
+                        <span class="payeh-chat-item__time">${annDate}</span>
+                    </div>
+                    <div class="payeh-chat-item__bottom">
+                        <span class="payeh-chat-item__snippet">${annSnippet}</span>
+                        <span class="payeh-chat-badge payeh-chat-badge--channel">رسمی</span>
+                    </div>
+                </div>
+            `;
+            item.addEventListener("click", () => selectChatRoom("channel"));
+            list.append(item);
+        }
+
+        // 2. Consultant Room Item
+        if (chatActiveTab === "all" || chatActiveTab === "consultants") {
+            const hasConsultant = chatAssignedRequest && chatAssignedRequest.status === "approved";
+            const consultantName = hasConsultant ? chatAssignedRequest.assigned_consultant_name : (chatAssignedRequest ? "در انتظار تایید مشاور" : "مشاور من");
+            const initials = consultantName.split(" ").slice(0, 2).map(w => w[0]).join("") || "مش";
+
+            const item = document.createElement("div");
+            item.className = `payeh-chat-item${chatActiveRoomId === "consultant" ? " active" : ""}`;
+            item.dataset.roomId = "consultant";
+            item.innerHTML = `
+                <div class="payeh-chat-avatar-wrap">
+                    <div class="payeh-chat-avatar payeh-chat-avatar--consultant">${initials}</div>
+                </div>
+                <div class="payeh-chat-item__content">
+                    <div class="payeh-chat-item__top">
+                        <span class="payeh-chat-item__name">${consultantName}</span>
+                        <span class="payeh-chat-item__time">آنلاین</span>
+                    </div>
+                    <div class="payeh-chat-item__bottom">
+                        <span class="payeh-chat-item__snippet">${hasConsultant ? "ارتباط مستقیم با مشاور" : "مشاهده وضعیت درخواست"}</span>
+                        <span class="payeh-chat-badge payeh-chat-badge--consultant">${hasConsultant ? "مشاور" : "درخواست"}</span>
+                    </div>
+                </div>
+            `;
+            item.addEventListener("click", () => selectChatRoom("consultant"));
+            list.append(item);
+        }
+    };
+
+    const selectChatRoom = async (roomId) => {
+        chatActiveRoomId = roomId;
+        document.querySelectorAll(".payeh-chat-item").forEach(item => {
+            item.classList.toggle("active", item.dataset.roomId === roomId);
+        });
+
+        const container = document.querySelector(".payeh-chat-container");
+        if (container) container.classList.add("has-active-chat");
+
+        const emptyState = document.getElementById("chatEmptyState");
+        const activeContainer = document.getElementById("chatActiveContainer");
+        if (emptyState) emptyState.style.display = "none";
+        if (activeContainer) activeContainer.style.display = "flex";
+
+        const titleEl = document.getElementById("chatActiveTitle");
+        const subEl = document.getElementById("chatActiveSubtitle");
+        const avatarEl = document.getElementById("chatActiveAvatar");
+        const badgeEl = document.getElementById("chatActiveBadge");
+        const stream = document.getElementById("chatMessagesStream");
+        const consultantInput = document.getElementById("chatConsultantInputBar");
+        const channelReadonly = document.getElementById("chatChannelReadonlyBar");
+
+        if (roomId === "channel") {
+            if (titleEl) titleEl.textContent = "کانال اطلاع‌رسانی پایه";
+            if (subEl) subEl.textContent = "کانال رسمی مدیریت آکادمی پایه";
+            if (avatarEl) {
+                avatarEl.textContent = "کا";
+                avatarEl.className = "payeh-chat-active__avatar payeh-chat-avatar--channel";
+            }
+            if (badgeEl) {
+                badgeEl.textContent = "فقط خواندنی";
+                badgeEl.className = "payeh-chat-role-badge payeh-chat-badge--channel";
+            }
+            if (consultantInput) consultantInput.style.display = "none";
+            if (channelReadonly) channelReadonly.style.display = "flex";
+
+            renderAnnouncementStream();
+        } else if (roomId === "consultant") {
+            const hasConsultant = chatAssignedRequest && chatAssignedRequest.status === "approved";
+            const consultantName = hasConsultant ? chatAssignedRequest.assigned_consultant_name : "مشاور من";
+            const initials = consultantName.split(" ").slice(0, 2).map(w => w[0]).join("") || "مش";
+
+            if (titleEl) titleEl.textContent = consultantName;
+            if (subEl) subEl.textContent = hasConsultant ? `مشاور اختصاصی · پلن ${chatAssignedRequest.plan_label}` : "درخواست مشاوره";
+            if (avatarEl) {
+                avatarEl.textContent = initials;
+                avatarEl.className = "payeh-chat-active__avatar payeh-chat-avatar--consultant";
+            }
+            if (badgeEl) {
+                badgeEl.textContent = hasConsultant ? "گفت‌وگو فعال" : "در انتظار";
+                badgeEl.className = "payeh-chat-role-badge payeh-chat-badge--consultant";
+            }
+
+            if (hasConsultant) {
+                if (consultantInput) consultantInput.style.display = "flex";
+                if (channelReadonly) channelReadonly.style.display = "none";
+                await loadConsultantMessages();
+            } else {
+                if (consultantInput) consultantInput.style.display = "none";
+                if (channelReadonly) channelReadonly.style.display = "none";
+                if (stream) {
+                    stream.replaceChildren();
+                    const notice = document.createElement("div");
+                    notice.className = "payeh-chat-empty-state";
+                    notice.innerHTML = `
+                        <div class="payeh-chat-empty-icon">
+                            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 9.7 9.7 0 0 1-4-.8L3 21l1.8-4.3A8.1 8.1 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"/></svg>
+                        </div>
+                        <h3>مشاور اختصاصی فعال ندارید</h3>
+                        <p>${chatAssignedRequest ? "درخواست شما ثبت شده و منتظر تایید مدیر مجموعه است." : "شما هنوز درخواستی برای مشاوره ثبت نکرده‌اید."}</p>
+                        <a href="consultations.html" class="payeh-student__hero-button" style="margin-top:14px; text-decoration:none;">مشاهده و انتخاب مشاوران</a>
+                    `;
+                    stream.append(notice);
+                }
+            }
+        }
+    };
+
+    const renderAnnouncementStream = () => {
+        const stream = document.getElementById("chatMessagesStream");
+        if (!stream) return;
+        stream.replaceChildren();
+
+        if (!chatAnnouncements.length) {
+            const p = document.createElement("p");
+            p.className = "student-feedbacks-empty";
+            p.textContent = "هنوز اطلاعیه‌ای در کانال منتشر نشده است.";
+            stream.append(p);
+            return;
+        }
+
+        chatAnnouncements.forEach(a => {
+            const card = document.createElement("article");
+            card.className = "payeh-announcement-card";
+
+            const top = document.createElement("div");
+            top.className = "payeh-announcement-card__top";
+
+            const tag = document.createElement("span");
+            tag.className = "payeh-announcement-card__tag";
+            tag.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg> ${a.author_name || "مدیر مجموعه"}`;
+
+            const time = document.createElement("span");
+            time.className = "payeh-announcement-card__time";
+            time.textContent = new Date(a.created_at).toLocaleDateString("fa-IR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+
+            top.append(tag, time);
+
+            if (a.title) {
+                const title = document.createElement("h4");
+                title.className = "payeh-announcement-card__title";
+                title.textContent = a.title;
+                card.append(top, title);
+            } else {
+                card.append(top);
+            }
+
+            const body = document.createElement("p");
+            body.className = "payeh-announcement-card__body";
+            body.textContent = a.body;
+            card.append(body);
+
+            if (a.image_url) {
+                const img = document.createElement("img");
+                img.className = "payeh-announcement-card__image";
+                img.src = a.image_url;
+                img.alt = a.title || "تصویر اطلاعیه";
+                card.append(img);
+            }
+
+            stream.append(card);
+        });
+
+        stream.scrollTop = stream.scrollHeight;
+    };
+
+    const loadConsultantMessages = async () => {
+        if (!chatAssignedRequest || chatAssignedRequest.status !== "approved") return;
+        const stream = document.getElementById("chatMessagesStream");
+        if (!stream) return;
+
+        try {
+            const res = await fetch(`/api/consultations/requests/${chatAssignedRequest.id}/messages/?_t=${Date.now()}`, { credentials: "same-origin" });
+            if (!res.ok) throw new Error("خطا در دریافت پیام‌ها");
+            const data = await res.json();
+            const messages = data.results || [];
+
+            stream.replaceChildren();
+            if (!messages.length) {
+                const p = document.createElement("p");
+                p.className = "student-feedbacks-empty";
+                p.textContent = "هنوز پیامی ارسال نشده است. اولین پیام را شما ارسال کنید!";
+                stream.append(p);
+                return;
+            }
+
+            messages.forEach(msg => {
+                const isMine = msg.sender_role === "student" || msg.sender_name === "شما";
+                const bubble = document.createElement("div");
+                bubble.className = `payeh-chat-bubble ${isMine ? "is-mine" : "is-other"}`;
+
+                const sender = document.createElement("span");
+                sender.className = "payeh-chat-bubble__sender";
+                sender.textContent = isMine ? "شما" : msg.sender_name;
+                bubble.append(sender);
+
+                if (msg.image_url) {
+                    const img = document.createElement("img");
+                    img.className = "payeh-chat-bubble__image";
+                    img.src = `/api/consultations/requests/${chatAssignedRequest.id}/images/${msg.id}/`;
+                    img.alt = "تصویر پیوست";
+                    bubble.append(img);
+                }
+
+                if (msg.body) {
+                    const text = document.createElement("div");
+                    text.className = "payeh-chat-bubble__text";
+                    text.textContent = msg.body;
+                    bubble.append(text);
+                }
+
+                const time = document.createElement("span");
+                time.className = "payeh-chat-bubble__time";
+                time.textContent = msg.created_at ? new Date(msg.created_at).toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" }) : "";
+                bubble.append(time);
+
+                stream.append(bubble);
+            });
+
+            stream.scrollTop = stream.scrollHeight;
+        } catch (err) {
+            console.error("Consultant message fetch error:", err);
+        }
+    };
+
+    const sendConsultantMessage = async (e) => {
+        if (e) e.preventDefault();
+        if (!chatAssignedRequest || chatAssignedRequest.status !== "approved") return;
+        const textInput = document.getElementById("chatTextInput");
+        const sendBtn = document.getElementById("chatSendBtn");
+        const text = textInput ? textInput.value.trim() : "";
+
+        if (!text && !chatSelectedImage) return;
+
+        const csrfToken = await getCsrfToken();
+        const formData = new FormData();
+        formData.append("body", text || "تصویر ارسال شد");
+        if (chatSelectedImage) {
+            formData.append("image", chatSelectedImage);
+        }
+
+        if (sendBtn) sendBtn.disabled = true;
+
+        try {
+            const res = await fetch(`/api/consultations/requests/${chatAssignedRequest.id}/messages/`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "X-CSRFToken": csrfToken },
+                body: formData
+            });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                alert(errData.detail || "خطا در ارسال پیام");
+                return;
+            }
+
+            if (textInput) textInput.value = "";
+            clearChatImage();
+            await loadConsultantMessages();
+        } catch (err) {
+            alert(err.message || "خطا در ارسال پیام");
+        } finally {
+            if (sendBtn) sendBtn.disabled = false;
+        }
+    };
+
+    const clearChatImage = () => {
+        chatSelectedImage = null;
+        if (chatPreviewUrl) {
+            URL.revokeObjectURL(chatPreviewUrl);
+            chatPreviewUrl = null;
+        }
+        const preview = document.getElementById("chatImagePreview");
+        if (preview) preview.style.display = "none";
+        const fileInput = document.getElementById("chatImageInput");
+        if (fileInput) fileInput.value = "";
+    };
+
+    // Chat search and tab filters
+    document.getElementById("chatSearchInput")?.addEventListener("input", (e) => {
+        const query = e.target.value.trim().toLowerCase();
+        document.querySelectorAll(".payeh-chat-item").forEach(item => {
+            const name = item.querySelector(".payeh-chat-item__name")?.textContent.toLowerCase() || "";
+            const snip = item.querySelector(".payeh-chat-item__snippet")?.textContent.toLowerCase() || "";
+            const match = !query || name.includes(query) || snip.includes(query);
+            item.style.display = match ? "flex" : "none";
+        });
+    });
+
+    document.querySelectorAll(".payeh-chat-tab[data-chat-tab]").forEach(tab => {
+        tab.addEventListener("click", () => {
+            document.querySelectorAll(".payeh-chat-tab").forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            chatActiveTab = tab.dataset.chatTab;
+            renderChatRooms();
+        });
+    });
+
+    document.getElementById("chatBackMobile")?.addEventListener("click", () => {
+        const container = document.querySelector(".payeh-chat-container");
+        if (container) container.classList.remove("has-active-chat");
+    });
+
+    document.getElementById("chatImageInput")?.addEventListener("change", (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+            alert("حجم تصویر نباید بیشتر از ۵ مگابایت باشد.");
+            e.target.value = "";
+            return;
+        }
+        chatSelectedImage = file;
+        if (chatPreviewUrl) URL.revokeObjectURL(chatPreviewUrl);
+        chatPreviewUrl = URL.createObjectURL(file);
+
+        const preview = document.getElementById("chatImagePreview");
+        const thumb = document.getElementById("chatPreviewThumb");
+        const nameEl = document.getElementById("chatPreviewName");
+        if (thumb) thumb.src = chatPreviewUrl;
+        if (nameEl) nameEl.textContent = `${file.name} (${(file.size / 1024).toFixed(0)} کیلوبایت)`;
+        if (preview) preview.style.display = "flex";
+    });
+
+    document.getElementById("chatPreviewRemove")?.addEventListener("click", clearChatImage);
+    document.getElementById("chatMessageForm")?.addEventListener("submit", sendConsultantMessage);
+
+    /* ==========================================================================
+       RANKING & LEAGUE MODULE (NO EMOJIS - Vector Cartoon Icons)
+       ========================================================================== */
+    let currentRankingMetric = "hours";
+
+    const loadRankingView = async (metric = currentRankingMetric) => {
+        currentRankingMetric = metric;
+        document.querySelectorAll(".payeh-ranking-tab[data-metric]").forEach(tab => {
+            tab.classList.toggle("active", tab.dataset.metric === metric);
+        });
+
+        const labelMap = { hours: "ساعت مطالعه", tests: "تست‌های زده‌شده", avg_tests: "میانگین تست روزانه" };
+        const thLabel = document.getElementById("thMetricLabel");
+        if (thLabel) thLabel.textContent = labelMap[metric] || "امتیاز معیار";
+
+        try {
+            const res = await fetch(`/api/consultations/ranking/?metric=${metric}&_t=${Date.now()}`, { credentials: "same-origin" });
+            if (!res.ok) throw new Error("دریافت رتبه‌بندی ممکن نشد.");
+            const data = await res.json();
+
+            renderPodium(data.top_three || [], metric);
+            renderMyRankCard(data.my_stats, data.gap_to_next, metric, data.total_students);
+            renderLeaderboardTable(data.leaderboard || [], metric);
+
+            const countBadge = document.getElementById("rankingCountBadge");
+            if (countBadge) countBadge.textContent = `${faDigit(data.total_students)} شرکت‌کننده`;
+        } catch (err) {
+            console.error("Error loading ranking view:", err);
+        }
+    };
+
+    const renderPodium = (topThree, metric) => {
+        const container = document.getElementById("rankingPodium");
+        if (!container) return;
+        container.replaceChildren();
+
+        if (!topThree.length) {
+            container.innerHTML = `<p class="student-feedbacks-empty">اطلاعاتی برای نمایش در سکوی قهرمانی ثبت نشده است.</p>`;
+            return;
+        }
+
+        const unitMap = { hours: "ساعت", tests: "تست", avg_tests: "تست/روز" };
+        const unit = unitMap[metric] || "";
+
+        // Reorder for 3D podium display: Rank 2 on right, Rank 1 in center, Rank 3 on left (in RTL)
+        const spots = [];
+        const rank1 = topThree.find(x => x.rank === 1);
+        const rank2 = topThree.find(x => x.rank === 2);
+        const rank3 = topThree.find(x => x.rank === 3);
+
+        if (rank2) spots.push(rank2);
+        if (rank1) spots.push(rank1);
+        if (rank3) spots.push(rank3);
+
+        spots.forEach(item => {
+            const spotEl = document.createElement("div");
+            spotEl.className = `payeh-podium-spot payeh-podium-spot--${item.rank}`;
+
+            let badgeSvg = "";
+            if (item.rank === 1) {
+                badgeSvg = `<svg class="payeh-podium-badge-svg" viewBox="0 0 24 24" width="28" height="28" fill="#f59e0b">
+                    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+                </svg>`;
+            } else if (item.rank === 2) {
+                badgeSvg = `<svg class="payeh-podium-badge-svg" viewBox="0 0 24 24" width="24" height="24" fill="#94a3b8">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>`;
+            } else {
+                badgeSvg = `<svg class="payeh-podium-badge-svg" viewBox="0 0 24 24" width="22" height="22" fill="#d97706">
+                    <circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+                </svg>`;
+            }
+
+            const avatarHtml = getCartoonAvatarSvg(item.avatar_index || item.student_id, item.rank === 1 ? 84 : 70);
+
+            spotEl.innerHTML = `
+                <div class="payeh-podium-character-wrap">
+                    ${badgeSvg}
+                    <div class="payeh-podium-avatar-card">
+                        ${avatarHtml}
+                    </div>
+                </div>
+                <div class="payeh-podium-name">${item.name}</div>
+                <div class="payeh-podium-score">${faDigit(item.score)} ${unit}</div>
+                <div class="payeh-podium-pedestal">
+                    <span class="payeh-podium-pedestal-num">${faDigit(item.rank)}</span>
+                    <span class="payeh-podium-pedestal-label">${item.rank === 1 ? 'قهرمان' : (item.rank === 2 ? 'رتبه دوم' : 'رتبه سوم')}</span>
+                </div>
+            `;
+            container.append(spotEl);
+        });
+    };
+
+    const renderMyRankCard = (myStats, gapToNext, metric, totalStudents) => {
+        const card = document.getElementById("rankingMyCard");
+        if (!card) return;
+        if (!myStats) {
+            card.style.display = "none";
+            return;
+        }
+        card.style.display = "flex";
+
+        const unitMap = { hours: "ساعت", tests: "تست", avg_tests: "تست/روز" };
+        const unit = unitMap[metric] || "";
+        const avatarSvg = getCartoonAvatarSvg(myStats.avatar_index || myStats.student_id, 46);
+
+        let gapHtml = "";
+        if (gapToNext) {
+            gapHtml = `<div class="payeh-my-gap-badge">
+                تنها ${faDigit(gapToNext.points_needed)} ${unit} تا رتبه ${faDigit(gapToNext.target_rank)} فاصله داری! 🎯
+            </div>`;
+        } else if (myStats.rank === 1) {
+            gapHtml = `<div class="payeh-my-gap-badge" style="background:#fef3c7; border-color:#fde68a; color:#b45309;">
+                صدرنشین لیگ! جایگاه خود را حفظ کنید 👑
+            </div>`;
+        }
+
+        const pct = Math.max(1, Math.round((myStats.rank / Math.max(1, totalStudents)) * 100));
+
+        card.innerHTML = `
+            <div class="payeh-my-position-left">
+                <div class="payeh-my-avatar-wrap">
+                    ${avatarSvg}
+                </div>
+                <div>
+                    <h3 class="payeh-my-position-title">جایگاه شما: رتبه ${faDigit(myStats.rank)} از ${faDigit(totalStudents)}</h3>
+                    <p class="payeh-my-position-sub">جزو برترین ${faDigit(pct)}٪ داوطلبان آکادمی پایه</p>
+                </div>
+            </div>
+            <div class="payeh-my-position-right">
+                <div class="payeh-my-stat-pill">
+                    <span class="payeh-my-stat-label">امتیاز ثبت‌شده</span>
+                    <span class="payeh-my-stat-val">${faDigit(myStats.score)} ${unit}</span>
+                </div>
+                ${gapHtml}
+            </div>
+        `;
+    };
+
+    const renderLeaderboardTable = (leaderboard, metric) => {
+        const tbody = document.getElementById("rankingTableBody");
+        if (!tbody) return;
+        tbody.replaceChildren();
+
+        const unitMap = { hours: "ساعت", tests: "تست", avg_tests: "تست/روز" };
+        const unit = unitMap[metric] || "";
+
+        leaderboard.forEach(item => {
+            const tr = document.createElement("tr");
+            if (item.is_me) tr.className = "is-me";
+
+            let rankBadge = "";
+            if (item.rank === 1) {
+                rankBadge = `<span class="payeh-rank-badge payeh-rank-badge--1">۱</span>`;
+            } else if (item.rank === 2) {
+                rankBadge = `<span class="payeh-rank-badge payeh-rank-badge--2">۲</span>`;
+            } else if (item.rank === 3) {
+                rankBadge = `<span class="payeh-rank-badge payeh-rank-badge--3">۳</span>`;
+            } else {
+                rankBadge = `<span class="payeh-rank-badge payeh-rank-badge--other">${faDigit(item.rank)}</span>`;
+            }
+
+            const miniAvatar = getCartoonAvatarSvg(item.avatar_index || item.student_id, 32);
+
+            tr.innerHTML = `
+                <td>${rankBadge}</td>
+                <td>
+                    <div class="payeh-student-cell">
+                        <div class="payeh-student-mini-avatar">${miniAvatar}</div>
+                        <span>${item.name}</span>
+                        ${item.is_me ? '<span class="payeh-tag" style="background:#bbf7d0; color:#15803d;">شما</span>' : ''}
+                    </div>
+                </td>
+                <td><span class="payeh-tag">${item.grade} · ${item.major}</span></td>
+                <td><strong style="color:#227b4c; font-size:14px;">${faDigit(item.score)} ${unit}</strong></td>
+                <td>${faDigit(item.total_hours)} ساعت</td>
+                <td>${faDigit(item.total_tests)} تست</td>
+                <td>${faDigit(item.avg_tests)} تست/روز</td>
+            `;
+            tbody.append(tr);
+        });
+    };
+
+    document.querySelectorAll(".payeh-ranking-tab[data-metric]").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const m = btn.dataset.metric;
+            loadRankingView(m);
+        });
+    });
+
+    /* ==========================================================================
+       PERFORMANCE & ANALYTICS CHARTS (SVG Pure Responsive)
+       ========================================================================== */
+    let perfInterval = "weekly";
+    let perfMetric = "hours";
+
+    const loadPerformanceView = async () => {
+        try {
+            const res = await fetch(`/api/consultations/student-performance/?interval=${perfInterval}&metric=${perfMetric}&_t=${Date.now()}`, { credentials: "same-origin" });
+            if (!res.ok) throw new Error("خطا در دریافت اطلاعات عملکرد تحصیلی");
+            const data = await res.json();
+
+            renderPerfKpis(data.kpi);
+            renderPerfLineChart(data.timeline || [], perfMetric);
+            renderPerfDonutChart(data.subject_breakdown || [], perfMetric, perfMetric === "hours" ? data.kpi.total_hours : data.kpi.total_tests);
+        } catch (err) {
+            console.error("Performance view error:", err);
+        }
+    };
+
+    const renderPerfKpis = (kpi) => {
+        const container = document.getElementById("perfKpiContainer");
+        if (!container || !kpi) return;
+
+        container.innerHTML = `
+            <div class="payeh-kpi-card">
+                <div class="payeh-kpi-icon" style="background:#ecfdf5; color:#059669;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div class="payeh-kpi-info">
+                    <span class="payeh-kpi-label">مجموع ساعت مطالعه</span>
+                    <span class="payeh-kpi-value">${faDigit(kpi.total_hours)} <span class="payeh-kpi-unit">ساعت</span></span>
+                </div>
+            </div>
+
+            <div class="payeh-kpi-card">
+                <div class="payeh-kpi-icon" style="background:#eff6ff; color:#2563eb;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </div>
+                <div class="payeh-kpi-info">
+                    <span class="payeh-kpi-label">کل تست‌های ثبت‌شده</span>
+                    <span class="payeh-kpi-value">${faDigit(kpi.total_tests)} <span class="payeh-kpi-unit">تست</span></span>
+                </div>
+            </div>
+
+            <div class="payeh-kpi-card">
+                <div class="payeh-kpi-icon" style="background:#fef3c7; color:#d97706;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                </div>
+                <div class="payeh-kpi-info">
+                    <span class="payeh-kpi-label">میانگین روزانه</span>
+                    <span class="payeh-kpi-value">${faDigit(kpi.avg_daily_tests)} <span class="payeh-kpi-unit">تست/روز</span></span>
+                </div>
+            </div>
+
+            <div class="payeh-kpi-card">
+                <div class="payeh-kpi-icon" style="background:#f5f3ff; color:#7c3aed;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                </div>
+                <div class="payeh-kpi-info">
+                    <span class="payeh-kpi-label">بیشترین تمرکز درسی</span>
+                    <span class="payeh-kpi-value" style="font-size:16px;">${kpi.top_subject}</span>
+                </div>
+            </div>
+        `;
+    };
+
+    const renderPerfLineChart = (timeline, metric) => {
+        const container = document.getElementById("perfLineChartContainer");
+        const titleEl = document.getElementById("perfLineChartTitle");
+        const unitEl = document.getElementById("perfLineChartUnit");
+        if (!container) return;
+
+        const isHours = metric === "hours";
+        if (titleEl) titleEl.textContent = `روند ${isHours ? "ساعت مطالعه" : "تست‌های حل‌شده"} در طول زمان`;
+        if (unitEl) unitEl.textContent = `واحد: ${isHours ? "ساعت" : "تست"}`;
+
+        container.replaceChildren();
+
+        if (!timeline.length) {
+            container.innerHTML = `<p class="student-feedbacks-empty">اطلاعاتی در این بازه زمانی برای رسم نمودار وجود ندارد.</p>`;
+            return;
+        }
+
+        const width = 640;
+        const height = 260;
+        const padL = 45;
+        const padR = 25;
+        const padT = 30;
+        const padB = 40;
+        const plotW = width - padL - padR;
+        const plotH = height - padT - padB;
+
+        const rawVals = timeline.map(t => Number(t.value) || 0);
+        const maxRaw = Math.max(...rawVals, 0);
+        const maxVal = maxRaw === 0 ? 10 : Math.ceil(maxRaw * 1.25);
+
+        // Calculate coords
+        const points = timeline.map((item, i) => {
+            const x = padL + (i / Math.max(1, timeline.length - 1)) * plotW;
+            const y = padT + plotH - ((Number(item.value) || 0) / maxVal) * plotH;
+            return { x, y, label: item.label, value: item.value };
+        });
+
+        // Cubic Bezier path
+        let linePath = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+        for (let i = 0; i < points.length - 1; i++) {
+            const p0 = points[i === 0 ? 0 : i - 1];
+            const p1 = points[i];
+            const p2 = points[i + 1];
+            const p3 = points[i + 2] || p2;
+            const cp1x = p1.x + (p2.x - p0.x) / 6;
+            const cp1y = p1.y + (p2.y - p0.y) / 6;
+            const cp2x = p2.x - (p3.x - p1.x) / 6;
+            const cp2y = p2.y - (p3.y - p1.y) / 6;
+            linePath += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+        }
+
+        const areaPath = `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${(padT + plotH).toFixed(1)} L ${points[0].x.toFixed(1)} ${(padT + plotH).toFixed(1)} Z`;
+
+        // 4 Horizontal Guide Lines
+        let gridLines = "";
+        for (let g = 0; g <= 4; g++) {
+            const gy = padT + (g / 4) * plotH;
+            const gVal = Math.round(maxVal * (1 - g / 4));
+            gridLines += `
+                <line x1="${padL}" y1="${gy.toFixed(1)}" x2="${padL + plotW}" y2="${gy.toFixed(1)}" stroke="#e2e8f0" stroke-dasharray="4,4"/>
+                <text x="${padL - 10}" y="${(gy + 4).toFixed(1)}" font-size="11" fill="#94a3b8" text-anchor="end" font-weight="700">${faDigit(gVal)}</text>
+            `;
+        }
+
+        // X-Axis Labels
+        let xLabels = "";
+        points.forEach((p, idx) => {
+            xLabels += `<text x="${p.x.toFixed(1)}" y="${(height - 10).toFixed(1)}" font-size="11" fill="#64748b" text-anchor="middle" font-weight="700">${p.label}</text>`;
+        });
+
+        // Interactive Dots
+        let dots = "";
+        points.forEach((p, idx) => {
+            dots += `
+                <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5.5" fill="#227b4c" stroke="#ffffff" stroke-width="2.5" class="payeh-chart-dot" data-idx="${idx}" style="cursor:pointer; transition:transform 0.15s ease;"/>
+            `;
+        });
+
+        const svgHtml = `
+            <svg class="payeh-svg-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                    <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#227b4c" stop-opacity="0.32"/>
+                        <stop offset="100%" stop-color="#227b4c" stop-opacity="0.0"/>
+                    </linearGradient>
+                </defs>
+                ${gridLines}
+                <path d="${areaPath}" fill="url(#lineGrad)"/>
+                <path d="${linePath}" fill="none" stroke="#227b4c" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                ${xLabels}
+                ${dots}
+            </svg>
+            <div id="chartTooltip" class="payeh-chart-tooltip" style="display:none; opacity:0;"></div>
+        `;
+
+        container.innerHTML = svgHtml;
+
+        // Tooltip listeners
+        const tooltip = container.querySelector("#chartTooltip");
+        container.querySelectorAll(".payeh-chart-dot").forEach(dot => {
+            dot.addEventListener("mouseenter", (e) => {
+                const idx = Number(dot.dataset.idx);
+                const pt = points[idx];
+                if (!pt || !tooltip) return;
+                tooltip.textContent = `${pt.label}: ${faDigit(pt.value)} ${isHours ? "ساعت" : "تست"}`;
+                tooltip.style.display = "block";
+                tooltip.style.opacity = "1";
+                const rect = dot.getBoundingClientRect();
+                const parentRect = container.getBoundingClientRect();
+                tooltip.style.left = `${rect.left - parentRect.left + 5}px`;
+                tooltip.style.top = `${rect.top - parentRect.top - 10}px`;
+            });
+            dot.addEventListener("mouseleave", () => {
+                if (tooltip) {
+                    tooltip.style.opacity = "0";
+                    tooltip.style.display = "none";
+                }
+            });
+        });
+    };
+
+    const renderPerfDonutChart = (subjects, metric, totalVal) => {
+        const chartBox = document.getElementById("perfDonutChartContainer");
+        const legendBox = document.getElementById("perfDonutLegend");
+        const titleEl = document.getElementById("perfDonutChartTitle");
+        const unitEl = document.getElementById("perfDonutChartUnit");
+        if (!chartBox || !legendBox) return;
+
+        const isHours = metric === "hours";
+        if (titleEl) titleEl.textContent = `توزیع تمرکز بر اساس ${isHours ? "ساعت مطالعه" : "تعداد تست"}`;
+        if (unitEl) unitEl.textContent = isHours ? "سهم ساعت" : "سهم تست";
+
+        chartBox.replaceChildren();
+        legendBox.replaceChildren();
+
+        if (!subjects.length) {
+            chartBox.innerHTML = `<p class="student-feedbacks-empty">داده‌ای ثبت نشده است.</p>`;
+            return;
+        }
+
+        const size = 220;
+        const radius = 72;
+        const strokeW = 24;
+        const circumference = 2 * Math.PI * radius;
+        let cumulativeOffset = 0;
+
+        let arcsHtml = "";
+        subjects.forEach(item => {
+            const pct = Math.max(0, Number(item.percentage) || 0);
+            const dash = (pct / 100) * circumference;
+            const gap = Math.max(0, circumference - dash);
+
+            arcsHtml += `
+                <circle cx="${size / 2}" cy="${size / 2}" r="${radius}"
+                        fill="transparent"
+                        stroke="${item.color}"
+                        stroke-width="${strokeW}"
+                        stroke-dasharray="${dash.toFixed(2)} ${gap.toFixed(2)}"
+                        stroke-dashoffset="${(-cumulativeOffset).toFixed(2)}"
+                        style="transition:stroke-dasharray 0.3s ease;"/>
+            `;
+            cumulativeOffset += dash;
+        });
+
+        chartBox.innerHTML = `
+            <svg viewBox="0 0 ${size} ${size}" width="100%" height="100%" style="transform:rotate(-90deg);">
+                <circle cx="${size / 2}" cy="${size / 2}" r="${radius}" fill="transparent" stroke="#f1f5f9" stroke-width="${strokeW}"/>
+                ${arcsHtml}
+            </svg>
+            <div class="payeh-donut-center-info">
+                <span class="payeh-donut-center-val">${faDigit(totalVal)}</span>
+                <span class="payeh-donut-center-label">${isHours ? "کل ساعات" : "کل تست‌ها"}</span>
+            </div>
+        `;
+
+        // Render Legend Items
+        subjects.forEach(item => {
+            const row = document.createElement("div");
+            row.className = "payeh-donut-legend-item";
+            row.innerHTML = `
+                <div class="payeh-donut-legend-left">
+                    <span class="payeh-donut-legend-dot" style="background:${item.color};"></span>
+                    <span class="payeh-donut-legend-name">${item.subject}</span>
+                </div>
+                <div class="payeh-donut-legend-right">
+                    <span class="payeh-donut-legend-val">${faDigit(item.value)} ${isHours ? "ساعت" : "تست"}</span>
+                    <span class="payeh-donut-legend-pct">${faDigit(item.percentage)}٪</span>
+                </div>
+            `;
+            legendBox.append(row);
+        });
+    };
+
+    // Performance Toolbar Listeners
+    document.querySelectorAll(".payeh-perf-interval-btn[data-interval]").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".payeh-perf-interval-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            perfInterval = btn.dataset.interval;
+            loadPerformanceView();
+        });
+    });
+
+    document.querySelectorAll(".payeh-perf-metric-btn[data-metric]").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".payeh-perf-metric-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            perfMetric = btn.dataset.metric;
+            loadPerformanceView();
+        });
+    });
+
+    /* ==========================================================================
+       SPA NAVIGATION ROUTER
+       ========================================================================== */
     const selectPage = (name) => {
         document.querySelectorAll(".payeh-student__nav-item[data-page]").forEach((item) => item.classList.toggle("active", item.dataset.page === name));
         if (pageTitle) pageTitle.textContent = titles[name] || titles.dashboard;
-        if (name === "consultant") document.getElementById("student-consultant-panel")?.scrollIntoView({ behavior: "smooth", block: "center" });
-        else window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // Hide all views
+        document.querySelectorAll(".payeh-student__view").forEach(v => {
+            v.classList.remove("active");
+            v.style.display = "none";
+        });
+
+        if (name === "chat") {
+            const v = document.getElementById("view-chat");
+            if (v) { v.classList.add("active"); v.style.display = "block"; }
+            loadChatView();
+        } else if (name === "ranking") {
+            const v = document.getElementById("view-ranking");
+            if (v) { v.classList.add("active"); v.style.display = "block"; }
+            loadRankingView();
+        } else if (name === "performance") {
+            const v = document.getElementById("view-performance");
+            if (v) { v.classList.add("active"); v.style.display = "block"; }
+            loadPerformanceView();
+        } else {
+            const v = document.getElementById("view-dashboard");
+            if (v) { v.classList.add("active"); v.style.display = "block"; }
+
+            if (name === "consultant") {
+                document.getElementById("student-consultant-panel")?.scrollIntoView({ behavior: "smooth", block: "center" });
+            } else if (name === "tasks" || name === "activities") {
+                document.getElementById("student-study-plan")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else if (name === "profile") {
+                document.getElementById("student-profile-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        }
         toggleStudentSidebar(false);
     };
 
@@ -40,13 +1003,11 @@ const initStudentApp = async () => {
     };
     window.toggleStudentSidebar = toggleStudentSidebar;
 
-    document.querySelectorAll('[data-page="consultant"]').forEach((item) => item.addEventListener("click", (event) => {
+    document.querySelectorAll("[data-page]").forEach((item) => item.addEventListener("click", (event) => {
         event.preventDefault();
-        history.replaceState(null, "", "#consultant");
-        selectPage("consultant");
-    }));
-    document.querySelectorAll(".payeh-student__nav-item[data-page]:not([data-page=consultant])").forEach((item) => item.addEventListener("click", (event) => {
-        event.preventDefault(); const name = item.dataset.page; history.replaceState(null, "", `#${name}`); selectPage(name);
+        const name = item.dataset.page;
+        history.replaceState(null, "", `#${name}`);
+        selectPage(name);
     }));
 
     const handleMenuToggle = (e) => {

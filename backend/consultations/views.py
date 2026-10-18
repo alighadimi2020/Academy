@@ -1183,5 +1183,391 @@ def study_report_edit(request, report_id):
     report.minutes = minutes
     report.notes = str(data.get("notes", report.notes))[:1000]
     report.manual_edits += 1
-    report.save(update_fields=("minutes", "notes", "manual_edits"))
-    return JsonResponse({"id": report.id, "minutes": report.minutes, "notes": report.notes, "manual_edits": report.manual_edits, "edits_remaining": 5 - report.manual_edits})
+    update_fields = ["minutes", "notes", "manual_edits"]
+    if "test_count" in data:
+        try:
+            report.test_count = max(0, min(5000, int(data.get("test_count", 0))))
+            update_fields.append("test_count")
+        except (ValueError, TypeError):
+            pass
+    report.save(update_fields=update_fields)
+    return JsonResponse({
+        "id": report.id,
+        "minutes": report.minutes,
+        "test_count": report.test_count,
+        "notes": report.notes,
+        "manual_edits": report.manual_edits,
+        "edits_remaining": 5 - report.manual_edits
+    })
+
+
+@csrf_protect
+def announcements(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return error("وارد حساب کاربری شوید.", 401)
+
+    from .models import AcademyAnnouncement
+
+    if request.method == "GET":
+        qs = AcademyAnnouncement.objects.select_related("author").order_by("-created_at")[:100]
+        rows = []
+        for a in qs:
+            author_title = "مدیر مجموعه"
+            if a.author.role in {"admin", "manager"}:
+                author_title = a.author.full_name or "مدیریت آکادمی پایه"
+            rows.append({
+                "id": a.id,
+                "author_id": a.author_id,
+                "author_name": author_title,
+                "title": a.title,
+                "body": a.body,
+                "image_url": a.image.url if a.image else None,
+                "created_at": a.created_at.isoformat(),
+            })
+        return JsonResponse({"results": rows})
+
+    if request.method == "POST":
+        if request.user.role not in MANAGER_ROLES and not request.user.is_staff:
+            return error("تنها مدیر مجموعه امکان ارسال پیام در کانال اطلاع‌رسانی را دارد.", 403)
+
+        title = ""
+        body = ""
+        upload = None
+        if request.content_type and request.content_type.startswith("application/json"):
+            try:
+                data = json.loads(request.body or b"{}")
+                title = str(data.get("title", "")).strip()[:250]
+                body = str(data.get("body", "")).strip()[:4000]
+            except Exception:
+                return error("درخواست نامعتبر است.", 400)
+        elif request.content_type and request.content_type.startswith("multipart/form-data"):
+            title = str(request.POST.get("title", "")).strip()[:250]
+            body = str(request.POST.get("body", "")).strip()[:4000]
+            upload = request.FILES.get("image")
+        else:
+            return error("نوع درخواست پشتیبانی نمی‌شود.", 415)
+
+        if not body:
+            return error("متن اطلاعیه الزامی است.", 400)
+
+        announcement = AcademyAnnouncement.objects.create(
+            author=request.user,
+            title=title,
+            body=body,
+        )
+        if upload:
+            try:
+                safe_img = _prepare_chat_image(upload)
+                announcement.image.save(safe_img.name, safe_img, save=True)
+            except Exception as e:
+                announcement.delete()
+                return error(str(e), 400)
+
+        return JsonResponse({
+            "id": announcement.id,
+            "author_name": request.user.full_name or "مدیر مجموعه",
+            "title": announcement.title,
+            "body": announcement.body,
+            "image_url": announcement.image.url if announcement.image else None,
+            "created_at": announcement.created_at.isoformat(),
+        }, status=201)
+
+    return error("روش درخواست پشتیبانی نمی‌شود.", 405)
+
+
+@require_GET
+def ranking_list(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return error("وارد حساب کاربری شوید.", 401)
+
+    from .study_models import StudyReport
+    from accounts.models import User
+    from django.db.models import Sum, Count
+
+    metric = request.GET.get("metric", "hours").strip().lower()
+    if metric not in {"hours", "tests", "avg_tests"}:
+        metric = "hours"
+
+    students = User.objects.filter(role="student", is_active=True)
+    report_stats = StudyReport.objects.values("student_id").annotate(
+        total_mins=Sum("minutes"),
+        total_tests=Sum("test_count"),
+        active_days=Count("study_date", distinct=True)
+    )
+    stats_by_student = {
+        s["student_id"]: {
+            "total_minutes": s["total_mins"] or 0,
+            "total_hours": round((s["total_mins"] or 0) / 60.0, 1),
+            "total_tests": s["total_tests"] or 0,
+            "active_days": s["active_days"] or 1,
+            "avg_tests": round((s["total_tests"] or 0) / max(s["active_days"] or 1, 1), 1),
+        }
+        for s in report_stats
+    }
+
+    grade_labels = dict(User.GRADE_CHOICES)
+    major_labels = dict(User.MAJOR_CHOICES)
+
+    ranked_items = []
+    for student in students:
+        st = stats_by_student.get(student.id, {
+            "total_minutes": 0,
+            "total_hours": 0.0,
+            "total_tests": 0,
+            "active_days": 1,
+            "avg_tests": 0.0,
+        })
+        if metric == "hours":
+            score = st["total_hours"]
+        elif metric == "tests":
+            score = st["total_tests"]
+        else:
+            score = st["avg_tests"]
+
+        display_name = student.full_name or f"دانش‌آموز {student.id}"
+        is_me = (student.id == request.user.id)
+
+        ranked_items.append({
+            "student_id": student.id,
+            "name": display_name,
+            "grade": grade_labels.get(student.grade, "ثبت نشده"),
+            "major": major_labels.get(student.major, ""),
+            "avatar_index": student.id % 8,
+            "total_hours": st["total_hours"],
+            "total_tests": st["total_tests"],
+            "avg_tests": st["avg_tests"],
+            "score": score,
+            "is_me": is_me,
+        })
+
+    ranked_items.sort(key=lambda x: (x["score"], x["total_hours"], x["total_tests"]), reverse=True)
+
+    my_rank_info = None
+    for index, item in enumerate(ranked_items, start=1):
+        item["rank"] = index
+        if item["is_me"]:
+            my_rank_info = item
+
+    total_count = len(ranked_items)
+    if not my_rank_info and request.user.role == "student":
+        my_rank_info = {
+            "rank": total_count + 1,
+            "student_id": request.user.id,
+            "name": request.user.full_name or "شما",
+            "grade": grade_labels.get(request.user.grade, ""),
+            "major": major_labels.get(request.user.major, ""),
+            "avatar_index": request.user.id % 8,
+            "total_hours": 0.0,
+            "total_tests": 0,
+            "avg_tests": 0.0,
+            "score": 0,
+            "is_me": True,
+        }
+
+    gap_to_next = None
+    if my_rank_info and my_rank_info["rank"] > 1 and len(ranked_items) >= my_rank_info["rank"]:
+        prev_student = ranked_items[my_rank_info["rank"] - 2]
+        diff = round(prev_student["score"] - my_rank_info["score"], 1)
+        gap_to_next = {
+            "target_rank": my_rank_info["rank"] - 1,
+            "points_needed": max(0.1, diff) if metric == "hours" else max(1, int(diff)),
+            "metric": metric,
+        }
+
+    return JsonResponse({
+        "metric": metric,
+        "total_students": total_count,
+        "my_stats": my_rank_info,
+        "gap_to_next": gap_to_next,
+        "top_three": ranked_items[:3],
+        "leaderboard": ranked_items[:50],
+    })
+
+
+@require_GET
+def student_performance(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return error("وارد حساب کاربری شوید.", 401)
+
+    from .study_models import StudyReport
+    from datetime import date, timedelta
+    from collections import defaultdict
+
+    student = request.user
+    if request.user.role in MANAGER_ROLES or request.user.role == "consultant":
+        student_id = request.GET.get("student_id", "").strip()
+        if student_id.isdigit():
+            from accounts.models import User
+            s = User.objects.filter(pk=int(student_id), role="student").first()
+            if s:
+                student = s
+
+    interval = request.GET.get("interval", "weekly").strip().lower()
+    metric = request.GET.get("metric", "hours").strip().lower()
+    if metric not in {"hours", "tests"}:
+        metric = "hours"
+
+    today = date.today()
+    if interval == "daily":
+        start_date = today - timedelta(days=6)
+    elif interval == "weekly":
+        start_date = today - timedelta(days=27)
+    elif interval == "monthly":
+        start_date = today - timedelta(days=29)
+    elif interval in {"3months", "quarterly"}:
+        interval = "3months"
+        start_date = today - timedelta(days=89)
+    elif interval in {"6months", "biannual"}:
+        interval = "6months"
+        start_date = today - timedelta(days=179)
+    else:
+        interval = "weekly"
+        start_date = today - timedelta(days=27)
+
+    reports = list(StudyReport.objects.filter(
+        student=student,
+        study_date__gte=start_date,
+        study_date__lte=today,
+    ).order_by("study_date"))
+
+    subject_map = defaultdict(lambda: {"minutes": 0, "tests": 0})
+    total_minutes = 0
+    total_tests = 0
+    active_days_set = set()
+
+    for r in reports:
+        subject_map[r.subject]["minutes"] += r.minutes
+        subject_map[r.subject]["tests"] += r.test_count
+        total_minutes += r.minutes
+        total_tests += r.test_count
+        active_days_set.add(r.study_date)
+
+    total_hours = round(total_minutes / 60.0, 1)
+    active_days_count = len(active_days_set) or 1
+    avg_daily_hours = round(total_hours / max(active_days_count, 1), 1)
+    avg_daily_tests = round(total_tests / max(active_days_count, 1), 1)
+
+    subject_breakdown = []
+    subject_palette = [
+        {"bg": "#6366f1", "name": "indigo"},
+        {"bg": "#10b981", "name": "emerald"},
+        {"bg": "#f59e0b", "name": "amber"},
+        {"bg": "#0ea5e9", "name": "sky"},
+        {"bg": "#ec4899", "name": "pink"},
+        {"bg": "#8b5cf6", "name": "violet"},
+        {"bg": "#14b8a6", "name": "teal"},
+        {"bg": "#f97316", "name": "orange"},
+    ]
+    sub_items = sorted(subject_map.items(), key=lambda kv: kv[1]["minutes" if metric == "hours" else "tests"], reverse=True)
+    palette_idx = 0
+    for subj, vals in sub_items:
+        val_hours = round(vals["minutes"] / 60.0, 1)
+        val_tests = vals["tests"]
+        cur_val = val_hours if metric == "hours" else val_tests
+        base_tot = total_hours if metric == "hours" else total_tests
+        pct = round((cur_val / base_tot * 100), 1) if base_tot > 0 else 0
+        color = subject_palette[palette_idx % len(subject_palette)]
+        palette_idx += 1
+        subject_breakdown.append({
+            "subject": subj,
+            "hours": val_hours,
+            "tests": val_tests,
+            "value": cur_val,
+            "percentage": pct,
+            "color": color["bg"],
+        })
+
+    timeline = []
+    def _jalali_day_name(d):
+        weekdays = ["دوشنبه", "سه‌شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه", "شنبه", "یکشنبه"]
+        return weekdays[d.weekday()]
+
+    if interval == "daily":
+        day_lookup = defaultdict(lambda: {"minutes": 0, "tests": 0})
+        for r in reports:
+            day_lookup[r.study_date]["minutes"] += r.minutes
+            day_lookup[r.study_date]["tests"] += r.test_count
+        for i in range(7):
+            d = start_date + timedelta(days=i)
+            st = day_lookup[d]
+            h = round(st["minutes"] / 60.0, 1)
+            t = st["tests"]
+            timeline.append({
+                "label": _jalali_day_name(d),
+                "date": d.isoformat(),
+                "hours": h,
+                "tests": t,
+                "value": h if metric == "hours" else t,
+            })
+    elif interval == "weekly":
+        for w in range(4):
+            w_start = start_date + timedelta(days=w * 7)
+            w_end = w_start + timedelta(days=6)
+            w_mins = sum(r.minutes for r in reports if w_start <= r.study_date <= w_end)
+            w_tests = sum(r.test_count for r in reports if w_start <= r.study_date <= w_end)
+            h = round(w_mins / 60.0, 1)
+            timeline.append({
+                "label": f"هفته {w + 1}",
+                "start": w_start.isoformat(),
+                "end": w_end.isoformat(),
+                "hours": h,
+                "tests": w_tests,
+                "value": h if metric == "hours" else w_tests,
+            })
+    elif interval == "monthly":
+        for p in range(6):
+            p_start = start_date + timedelta(days=p * 5)
+            p_end = p_start + timedelta(days=4)
+            p_mins = sum(r.minutes for r in reports if p_start <= r.study_date <= p_end)
+            p_tests = sum(r.test_count for r in reports if p_start <= r.study_date <= p_end)
+            h = round(p_mins / 60.0, 1)
+            timeline.append({
+                "label": f"بازه ۵ روزه {p + 1}",
+                "hours": h,
+                "tests": p_tests,
+                "value": h if metric == "hours" else p_tests,
+            })
+    elif interval == "3months":
+        for m in range(3):
+            m_start = start_date + timedelta(days=m * 30)
+            m_end = m_start + timedelta(days=29)
+            m_mins = sum(r.minutes for r in reports if m_start <= r.study_date <= m_end)
+            m_tests = sum(r.test_count for r in reports if m_start <= r.study_date <= m_end)
+            h = round(m_mins / 60.0, 1)
+            timeline.append({
+                "label": f"ماه {m + 1}",
+                "hours": h,
+                "tests": m_tests,
+                "value": h if metric == "hours" else m_tests,
+            })
+    else: # 6months
+        for m in range(6):
+            m_start = start_date + timedelta(days=m * 30)
+            m_end = m_start + timedelta(days=29)
+            m_mins = sum(r.minutes for r in reports if m_start <= r.study_date <= m_end)
+            m_tests = sum(r.test_count for r in reports if m_start <= r.study_date <= m_end)
+            h = round(m_mins / 60.0, 1)
+            timeline.append({
+                "label": f"ماه {m + 1}",
+                "hours": h,
+                "tests": m_tests,
+                "value": h if metric == "hours" else m_tests,
+            })
+
+    top_subject = sub_items[0][0] if sub_items else "ثبت نشده"
+
+    return JsonResponse({
+        "interval": interval,
+        "metric": metric,
+        "kpi": {
+            "total_hours": total_hours,
+            "total_tests": total_tests,
+            "active_days": active_days_count,
+            "avg_daily_hours": avg_daily_hours,
+            "avg_daily_tests": avg_daily_tests,
+            "top_subject": top_subject,
+        },
+        "timeline": timeline,
+        "subject_breakdown": subject_breakdown,
+    })
+

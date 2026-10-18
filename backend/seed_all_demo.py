@@ -1,4 +1,11 @@
+import os
+import sys
 import datetime
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+import django
+django.setup()
+
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -12,6 +19,7 @@ from consultations.models import (
     ConsultationPreference,
     ConsultantManagerConversation,
     ConsultationMessage,
+    AcademyAnnouncement,
 )
 from consultations.study_models import (
     StudySession,
@@ -240,21 +248,78 @@ def seed():
             StudySession(student=student, consultant=consultant, weekday=3, start_time=datetime.time(10, 0), end_time=datetime.time(11, 0), subject="فیزیک ۳", mode="test", test_count=20, planned_minutes=60, instructions="تست‌های نوسان و موج", color="sky"),
         ])
 
-        print("--- 6. Setting Study Timers, Reports and Feedbacks ---")
-        StudyTimer.objects.filter(student=student).delete()
-        StudyReport.objects.filter(student=student).delete()
-        StudyReportFeedback.objects.filter(student=student).delete()
+        print("--- 6. Setting Academy Announcements ---")
+        AcademyAnnouncement.objects.all().delete()
+        AcademyAnnouncement.objects.create(
+            author=manager,
+            title="برگزاری کارگاه تخصصی تکنیک‌های آزمون جامع",
+            body="داوطلبان گرامی آکادمی پایه، روز جمعه ساعت ۱۸ وبینار آنلاین تکنیک‌های مدیریت زمان و استراتژی بازگشت با حضور مشاوران ارشد مجموعه برگزار خواهد شد. لینک ورود در همین کانال منتشر می‌گردد.",
+        )
+        AcademyAnnouncement.objects.create(
+            author=manager,
+            title="به‌روزرسانی تقویم آزمون‌های آزمایشی آبان‌ماه",
+            body="برنامه بودجه‌بندی آزمون‌های مرحله‌ای نیم‌سال اول تحصیلی در پنل بارگذاری شد. لطفاً سرفصل‌های مطالعاتی هر هفته را با مشاور اختصاصی خود بررسی و تایید نمایید.",
+        )
+        AcademyAnnouncement.objects.create(
+            author=manager,
+            title="آغاز لیگ برتر مطالعه هفتگی پایه",
+            body="دانش‌آموزان عزیز، ساعت مطالعه و تعداد تست‌های ثبت‌شده شما به صورت خودکار در بخش رتبه‌بندی محاسبه می‌شود. برای کسب جایگاه برتر، گزارش‌های روزانه را به موقع ثبت کنید.",
+        )
+
+        print("--- 7. Setting Study Timers, Multi-Student Reports and Feedbacks ---")
+        StudyTimer.objects.all().delete()
+        StudyReport.objects.all().delete()
+        StudyReportFeedback.objects.all().delete()
 
         today = timezone.localdate()
-        # Today's completed timers
+
+        # Seed other students for realistic ranking
+        other_students_data = [
+            ("ali_rezaei", "علی رضایی", "12", "experimental", "male", 3100, 1420),
+            ("fatemeh_akbari", "فاطمه اکبری", "12", "mathematics", "female", 2850, 1310),
+            ("hossein_moradi", "حسین مرادی", "11", "experimental", "male", 2400, 1150),
+            ("zahra_ebrahimi", "زهرا ابراهیمی", "12", "humanities", "female", 1950, 890),
+            ("armin_rad", "آرمین راد", "10", "mathematics", "male", 1600, 720),
+            ("negar_soltani", "نگار سلطانی", "11", "experimental", "female", 1300, 610),
+        ]
+
+        for ph, fn, gr, mj, gen, total_m, total_t in other_students_data:
+            st_user, _ = User.objects.get_or_create(phone=ph, defaults={
+                "full_name": fn,
+                "role": "student",
+                "grade": gr,
+                "major": mj,
+                "gender": gen,
+                "is_active": True,
+            })
+            st_user.set_password("1234")
+            st_user.save()
+
+            # Distribute into 10 reports over the last 20 days
+            part_m = total_m // 10
+            part_t = total_t // 10
+            for day_offset in range(1, 11):
+                r_date = today - datetime.timedelta(days=day_offset * 2)
+                StudyReport.objects.create(
+                    student=st_user,
+                    consultant=consultant,
+                    study_date=r_date,
+                    subject="زیست‌شناسی ۳" if mj == "experimental" else "حسابان ۲",
+                    minutes=part_m,
+                    test_count=part_t,
+                    notes=f"مطالعه مبحثی و حل {part_t} تست جامع."
+                )
+
+        # Danesh's rich study reports over the past 45 days
         t1 = StudyTimer.objects.create(
             student=student,
             subject="زیست‌شناسی ۳",
             study_date=today,
             elapsed_seconds=90 * 60,
+            test_count=35,
             finished_at=timezone.now(),
             delivered_at=timezone.now(),
-            notes="فصل ۲ را با دقت خواندم و ۳۰ تست آموزشی حل کردم."
+            notes="فصل ۲ را با دقت خواندم و ۳۵ تست آموزشی حل کردم."
         )
         StudyReport.objects.create(
             timer=t1,
@@ -263,7 +328,8 @@ def seed():
             study_date=today,
             subject="زیست‌شناسی ۳",
             minutes=90,
-            notes="فصل ۲ را با دقت خواندم و ۳۰ تست آموزشی حل کردم."
+            test_count=35,
+            notes="فصل ۲ را با دقت خواندم و ۳۵ تست آموزشی حل کردم."
         )
 
         t2 = StudyTimer.objects.create(
@@ -271,6 +337,7 @@ def seed():
             subject="شیمی ۳",
             study_date=today,
             elapsed_seconds=75 * 60,
+            test_count=30,
             finished_at=timezone.now(),
             delivered_at=timezone.now(),
             notes="مسائل اسید و باز حل شد و درصد آزمونک ۸۲٪ شد."
@@ -282,28 +349,42 @@ def seed():
             study_date=today,
             subject="شیمی ۳",
             minutes=75,
+            test_count=30,
             notes="مسائل اسید و باز حل شد و درصد آزمونک ۸۲٪ شد."
         )
 
-        # Past days reports
-        past_records = [
-            (today - datetime.timedelta(days=1), "فیزیک ۳", 180, "حل ۶۰ تست حرکت‌شناسی و مرور جزوه استاد"),
-            (today - datetime.timedelta(days=1), "زیست‌شناسی ۳", 150, "مطالعه گفتار ۳ فصل ۱ دوازدهم"),
-            (today - datetime.timedelta(days=1), "ریاضی ۳", 90, "تست‌های ترکیب توابع"),
-            (today - datetime.timedelta(days=2), "شیمی ۳", 210, "مفاهیم سینتیک و تعادل‌ها"),
-            (today - datetime.timedelta(days=2), "زیست‌شناسی ۳", 180, "تست‌های تالیفی فصل ژنتیک"),
-            (today - datetime.timedelta(days=3), "فیزیک ۳", 150, "الکتریسیته ساکن و حل تیپ‌های پرتکرار"),
-            (today - datetime.timedelta(days=3), "شیمی ۳", 180, "استوکیومتری و واکنش‌های شیمیایی"),
-            (today - datetime.timedelta(days=3), "ریاضی ۳", 150, "حد و پیوستگی"),
+        # Danesh's historical reports
+        danesh_history = [
+            (1, "فیزیک ۳", 180, 60, "حل ۶۰ تست حرکت‌شناسی و مرور جزوه"),
+            (1, "زیست‌شناسی ۳", 150, 50, "مطالعه گفتار ۳ فصل ۱ دوازدهم"),
+            (1, "ریاضی ۳", 90, 30, "تست‌های ترکیب توابع"),
+            (2, "شیمی ۳", 210, 70, "مفاهیم سینتیک و تعادل‌ها"),
+            (2, "زیست‌شناسی ۳", 180, 55, "تست‌های تالیفی فصل ژنتیک"),
+            (3, "فیزیک ۳", 150, 45, "الکتریسیته ساکن و حل تیپ‌های پرتکرار"),
+            (3, "شیمی ۳", 180, 50, "استوکیومتری و واکنش‌های شیمیایی"),
+            (3, "ریاضی ۳", 150, 40, "حد و پیوستگی"),
+            (4, "زیست‌شناسی ۳", 240, 80, "مرور کل گیاهی و شکل‌های دهم"),
+            (5, "شیمی ۳", 180, 65, "آرایش الکترونی و جدول تناوبی"),
+            (6, "فیزیک ۳", 200, 60, "مغناطیس و القای الکترومغناطیسی"),
+            (7, "ریاضی ۳", 160, 45, "مثلثات و معادلات مثلثاتی"),
+            (9, "زیست‌شناسی ۳", 210, 70, "قلب و گردش خون انسان"),
+            (11, "فیزیک ۳", 180, 50, "دینامیک و قوانین نیوتون"),
+            (14, "شیمی ۳", 190, 60, "شیمی آلی و گروه‌های عاملی"),
+            (18, "ریاضی ۳", 150, 40, "تابع درجه دوم و سهمی"),
+            (22, "زیست‌شناسی ۳", 220, 75, "تنفس سلولی و فتوسنتز"),
+            (27, "شیمی ۳", 180, 55, "ترمودینامیک شیمیایی و آنتالپی"),
+            (35, "فیزیک ۳", 210, 65, "فشار و ویژگی‌های فیزیکی مواد"),
+            (42, "زیست‌شناسی ۳", 240, 80, "دستگاه گوارش و جذب مواد"),
         ]
 
-        for s_date, subj, mins, note in past_records:
+        for days_ago, subj, mins, tests, note in danesh_history:
             StudyReport.objects.create(
                 student=student,
                 consultant=consultant,
-                study_date=s_date,
+                study_date=today - datetime.timedelta(days=days_ago),
                 subject=subj,
                 minutes=mins,
+                test_count=tests,
                 notes=note
             )
 
@@ -316,7 +397,7 @@ def seed():
             source="web"
         )
 
-        print("--- 7. Setting High Quality Blog Posts & Images ---")
+        print("--- 8. Setting High Quality Blog Posts & Images ---")
         BlogPost.objects.all().delete()
 
         # Post 1

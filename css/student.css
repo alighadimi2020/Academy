@@ -1067,3 +1067,1503 @@ body.payeh-sidebar-locked {
 .student-feedbacks-empty { padding: 24px; text-align: center; color: #6f8074; font-size: 13px; }
 
 
+/* ==========================================================================
+   Payeh Student Dashboard SPA Views & New Modules
+   ========================================================================== */
+
+/* View Visibility & Animations */
+.payeh-student__view {
+    display: none;
+    animation: payehFadeIn 0.25s ease-out forwards;
+}
+
+.payeh-student__view.active {
+    display: block;
+}
+
+@keyframes payehFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   MODULE 1: CHAT & MESSENGER (Zanko Style RTL)
+   ========================================================================== */
+.payeh-chat-container {
+    display: flex;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    height: calc(100vh - 150px);
+    min-height: 580px;
+    max-height: 820px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Chat Sidebar (Right side in RTL) */
+.payeh-chat-sidebar {
+    width: 340px;
+    min-width: 300px;
+    max-width: 380px;
+    background: #f8fafc;
+    border-left: 1px solid #edf2f7;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+.payeh-chat-sidebar__top {
+    padding: 16px;
+    border-bottom: 1px solid #edf2f7;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.payeh-chat-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.payeh-chat-search__icon {
+    position: absolute;
+    right: 12px;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.payeh-chat-search input {
+    width: 100%;
+    padding: 10px 38px 10px 14px;
+    background: #f1f5f9;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font: inherit;
+    font-size: 13px;
+    color: #1e293b;
+    transition: all 0.2s ease;
+}
+
+.payeh-chat-search input:focus {
+    background: #ffffff;
+    border-color: #227b4c;
+    box-shadow: 0 0 0 3px rgba(34, 123, 76, 0.12);
+    outline: none;
+}
+
+.payeh-chat-tabs {
+    display: flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 10px;
+    gap: 4px;
+}
+
+.payeh-chat-tab {
+    flex: 1;
+    padding: 7px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+}
+
+.payeh-chat-tab:hover {
+    color: #1e293b;
+}
+
+.payeh-chat-tab.active {
+    background: #ffffff;
+    color: #227b4c;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.payeh-chat-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.payeh-chat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+    position: relative;
+    user-select: none;
+}
+
+.payeh-chat-item:hover {
+    background: #f1f5f9;
+}
+
+.payeh-chat-item.active {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.payeh-chat-item.active::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 4px;
+    background: #227b4c;
+    border-radius: 4px 0 0 4px;
+}
+
+.payeh-chat-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.payeh-chat-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.payeh-chat-avatar--channel {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+}
+
+.payeh-chat-avatar--consultant {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.payeh-chat-item__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.payeh-chat-item__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.payeh-chat-item__name {
+    font-size: 13px;
+    font-weight: 800;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.payeh-chat-item__time {
+    font-size: 11px;
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.payeh-chat-item__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.payeh-chat-item__snippet {
+    font-size: 12px;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.payeh-chat-badge {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.payeh-chat-badge--channel {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.payeh-chat-badge--consultant {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* Chat Main Screen */
+.payeh-chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    min-width: 0;
+    position: relative;
+}
+
+.payeh-chat-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 32px;
+    text-align: center;
+    color: #64748b;
+}
+
+.payeh-chat-empty-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    color: #94a3b8;
+}
+
+.payeh-chat-empty-icon svg {
+    width: 36px;
+    height: 36px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+}
+
+.payeh-chat-empty-state h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 8px;
+}
+
+.payeh-chat-empty-state p {
+    font-size: 13px;
+    line-height: 1.6;
+    max-width: 340px;
+    margin: 0;
+}
+
+.payeh-chat-active {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.payeh-chat-active__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid #edf2f7;
+    background: #ffffff;
+}
+
+.payeh-chat-active__user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.payeh-chat-back-mobile {
+    display: none;
+    border: none;
+    background: transparent;
+    padding: 6px;
+    cursor: pointer;
+    color: #475569;
+    border-radius: 8px;
+}
+
+.payeh-chat-back-mobile:hover {
+    background: #f1f5f9;
+}
+
+.payeh-chat-active__avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: #fff;
+    background: #227b4c;
+}
+
+.payeh-chat-active__meta h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.payeh-chat-active__meta span {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.payeh-chat-role-badge {
+    padding: 4px 10px;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* Stream & Bubbles */
+.payeh-chat-stream {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #f8fafc;
+}
+
+.payeh-chat-bubble {
+    max-width: 78%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.payeh-chat-bubble.is-mine {
+    align-self: flex-start;
+    background: #227b4c;
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+}
+
+.payeh-chat-bubble.is-other {
+    align-self: flex-end;
+    background: #ffffff;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 4px;
+}
+
+.payeh-chat-bubble__sender {
+    font-size: 11px;
+    font-weight: 800;
+    color: #059669;
+}
+
+.payeh-chat-bubble.is-mine .payeh-chat-bubble__sender {
+    color: #a7f3d0;
+}
+
+.payeh-chat-bubble__text {
+    font-size: 13px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.payeh-chat-bubble__image {
+    max-width: 100%;
+    max-height: 280px;
+    border-radius: 10px;
+    cursor: pointer;
+    object-fit: cover;
+    margin-top: 4px;
+}
+
+.payeh-chat-bubble__time {
+    font-size: 10px;
+    align-self: flex-end;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+.payeh-chat-bubble.is-mine .payeh-chat-bubble__time {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* Announcement Card in Stream */
+.payeh-announcement-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-right: 4px solid #8b5cf6;
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    max-width: 88%;
+    align-self: center;
+    width: 100%;
+}
+
+.payeh-announcement-card__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.payeh-announcement-card__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #7c3aed;
+    background: #f5f3ff;
+    padding: 3px 10px;
+    border-radius: 8px;
+}
+
+.payeh-announcement-card__time {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.payeh-announcement-card__title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.payeh-announcement-card__body {
+    font-size: 13px;
+    line-height: 1.85;
+    color: #334155;
+    white-space: pre-wrap;
+    margin: 0;
+}
+
+.payeh-announcement-card__image {
+    max-width: 100%;
+    max-height: 320px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-top: 6px;
+}
+
+/* Chat Input Bar */
+.payeh-chat-input-bar {
+    padding: 12px 18px;
+    border-top: 1px solid #edf2f7;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.payeh-chat-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.payeh-chat-attach-btn {
+    padding: 10px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.payeh-chat-attach-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.payeh-chat-form textarea {
+    flex: 1;
+    min-height: 42px;
+    max-height: 120px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    font: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #1e293b;
+    resize: none;
+    transition: all 0.2s ease;
+}
+
+.payeh-chat-form textarea:focus {
+    background: #ffffff;
+    border-color: #227b4c;
+    box-shadow: 0 0 0 3px rgba(34, 123, 76, 0.12);
+    outline: none;
+}
+
+.payeh-chat-send-btn {
+    padding: 11px 16px;
+    border: none;
+    border-radius: 12px;
+    background: #227b4c;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.payeh-chat-send-btn:hover {
+    background: #1b653e;
+}
+
+.payeh-chat-send-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+.payeh-chat-image-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.payeh-chat-image-preview img {
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.payeh-chat-image-preview span {
+    font-size: 12px;
+    color: #334155;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.payeh-chat-image-preview button {
+    border: none;
+    background: transparent;
+    color: #dc2626;
+    font-size: 18px;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.payeh-chat-quota-hint {
+    font-size: 11px;
+    color: #94a3b8;
+    padding-right: 4px;
+}
+
+/* Readonly Bar for Channel */
+.payeh-chat-readonly-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: #f8fafc;
+    border-top: 1px solid #edf2f7;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.payeh-chat-readonly-bar svg {
+    color: #94a3b8;
+}
+
+/* ==========================================================================
+   MODULE 2: STUDENT RANKING & LEAGUE (NO EMOJIS - Vector Cartoon Icons)
+   ========================================================================== */
+.payeh-ranking-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.payeh-ranking-header-card {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-radius: 20px;
+    padding: 24px 28px;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+}
+
+.payeh-badge-glow {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.payeh-ranking-header__content h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.payeh-ranking-header__content p {
+    margin: 0;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.payeh-ranking-filter-tabs {
+    display: flex;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.payeh-ranking-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.payeh-ranking-tab:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.payeh-ranking-tab.active {
+    background: #22c55e;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+/* 3D Podium Container */
+.payeh-podium-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 16px;
+    padding: 40px 16px 20px;
+    background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.payeh-podium-spot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 170px;
+    transition: transform 0.2s ease;
+}
+
+.payeh-podium-spot:hover {
+    transform: translateY(-4px);
+}
+
+.payeh-podium-character-wrap {
+    position: relative;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.payeh-podium-badge-svg {
+    position: absolute;
+    top: -14px;
+    z-index: 2;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.payeh-podium-avatar-card {
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 3px solid #e2e8f0;
+}
+
+.payeh-podium-spot--1 .payeh-podium-avatar-card {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2), 0 10px 24px rgba(245, 158, 11, 0.25);
+    width: 96px;
+    height: 96px;
+}
+
+.payeh-podium-spot--2 .payeh-podium-avatar-card {
+    border-color: #94a3b8;
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2), 0 8px 18px rgba(148, 163, 184, 0.2);
+}
+
+.payeh-podium-spot--3 .payeh-podium-avatar-card {
+    border-color: #d97706;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2), 0 8px 18px rgba(217, 119, 6, 0.2);
+}
+
+.payeh-podium-name {
+    font-size: 13px;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 6px 0 2px;
+    text-align: center;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.payeh-podium-score {
+    font-size: 12px;
+    font-weight: 700;
+    color: #227b4c;
+    background: #ffffff;
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.payeh-podium-pedestal {
+    width: 100%;
+    border-radius: 14px 14px 4px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 14px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.payeh-podium-pedestal-num {
+    font-size: 32px;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.payeh-podium-pedestal-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 4px;
+}
+
+.payeh-podium-spot--1 .payeh-podium-pedestal {
+    height: 150px;
+    background: linear-gradient(180deg, #f59e0b, #d97706);
+}
+
+.payeh-podium-spot--2 .payeh-podium-pedestal {
+    height: 115px;
+    background: linear-gradient(180deg, #94a3b8, #64748b);
+}
+
+.payeh-podium-spot--3 .payeh-podium-pedestal {
+    height: 85px;
+    background: linear-gradient(180deg, #d97706, #b45309);
+}
+
+/* My Position Card */
+.payeh-my-position-card {
+    background: #ffffff;
+    border: 1.5px solid #22c55e;
+    border-radius: 16px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.08);
+}
+
+.payeh-my-position-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.payeh-my-avatar-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #eafaf1;
+    border: 2px solid #22c55e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.payeh-my-position-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 4px;
+}
+
+.payeh-my-position-sub {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0;
+}
+
+.payeh-my-position-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.payeh-my-stat-pill {
+    padding: 8px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 90px;
+}
+
+.payeh-my-stat-label {
+    font-size: 10px;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.payeh-my-stat-val {
+    font-size: 14px;
+    font-weight: 900;
+    color: #1e293b;
+    margin-top: 2px;
+}
+
+.payeh-my-gap-badge {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+/* Leaderboard Table */
+.payeh-leaderboard-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.payeh-leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.payeh-leaderboard-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.payeh-leaderboard-sub {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.payeh-leaderboard-pill {
+    padding: 4px 12px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+}
+
+.payeh-leaderboard-table-scroll {
+    overflow-x: auto;
+}
+
+.payeh-leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: right;
+}
+
+.payeh-leaderboard-table th {
+    padding: 12px 14px;
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 800;
+    font-size: 12px;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.payeh-leaderboard-table td {
+    padding: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.payeh-leaderboard-table tr:hover td {
+    background: #f8fafc;
+}
+
+.payeh-leaderboard-table tr.is-me td {
+    background: #f0fdf4 !important;
+    font-weight: 800;
+}
+
+.payeh-rank-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 13px;
+}
+
+.payeh-rank-badge--1 {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.payeh-rank-badge--2 {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+.payeh-rank-badge--3 {
+    background: #ffedd5;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+
+.payeh-rank-badge--other {
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.payeh-student-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.payeh-student-mini-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+}
+
+.payeh-tag {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+/* ==========================================================================
+   MODULE 3: PERFORMANCE & ANALYTICS CHARTS (SVG Pure Responsive)
+   ========================================================================== */
+.payeh-perf-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.payeh-perf-header-card {
+    background: linear-gradient(135deg, #064e3b, #047857);
+    border-radius: 20px;
+    padding: 24px 28px;
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(6, 78, 59, 0.15);
+}
+
+.payeh-perf-header-card h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.payeh-perf-header-card p {
+    margin: 0;
+    font-size: 13px;
+    color: #a7f3d0;
+}
+
+/* KPI Grid */
+.payeh-perf-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.payeh-kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease;
+}
+
+.payeh-kpi-card:hover {
+    transform: translateY(-2px);
+}
+
+.payeh-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.payeh-kpi-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.payeh-kpi-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.payeh-kpi-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 2px;
+}
+
+.payeh-kpi-value {
+    font-size: 20px;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.payeh-kpi-unit {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-right: 4px;
+}
+
+/* Toolbar Controls */
+.payeh-perf-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 12px 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.payeh-perf-intervals {
+    display: flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 10px;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.payeh-perf-interval-btn {
+    padding: 7px 14px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.payeh-perf-interval-btn:hover {
+    color: #0f172a;
+}
+
+.payeh-perf-interval-btn.active {
+    background: #ffffff;
+    color: #227b4c;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.payeh-perf-metric-toggle {
+    display: flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 10px;
+    gap: 4px;
+}
+
+.payeh-perf-metric-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.payeh-perf-metric-btn:hover {
+    color: #0f172a;
+}
+
+.payeh-perf-metric-btn.active {
+    background: #227b4c;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(34, 123, 76, 0.25);
+}
+
+/* Charts Grid */
+.payeh-perf-charts-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 20px;
+}
+
+.payeh-perf-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+}
+
+.payeh-chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.payeh-chart-type-tag {
+    font-size: 11px;
+    font-weight: 800;
+    color: #059669;
+    background: #d1fae5;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 4px;
+}
+
+.payeh-chart-card-header h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.payeh-chart-status-pill {
+    padding: 4px 10px;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* SVG Line Chart */
+.payeh-svg-line-container {
+    width: 100%;
+    min-height: 280px;
+    position: relative;
+}
+
+.payeh-svg-chart {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.payeh-chart-tooltip {
+    position: absolute;
+    background: #0f172a;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transform: translate(-50%, -120%);
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+/* SVG Donut Chart */
+.payeh-donut-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.payeh-svg-donut-container {
+    width: 220px;
+    height: 220px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payeh-donut-center-info {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+}
+
+.payeh-donut-center-val {
+    font-size: 22px;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.1;
+}
+
+.payeh-donut-center-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.payeh-donut-legend-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding-left: 4px;
+}
+
+.payeh-donut-legend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: #f8fafc;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.payeh-donut-legend-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.payeh-donut-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.payeh-donut-legend-name {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.payeh-donut-legend-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.payeh-donut-legend-val {
+    color: #64748b;
+    font-weight: 600;
+}
+
+.payeh-donut-legend-pct {
+    font-weight: 800;
+    color: #0f172a;
+    min-width: 36px;
+    text-align: left;
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .payeh-perf-kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .payeh-perf-charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .payeh-chat-container {
+        height: calc(100vh - 120px);
+        min-height: 480px;
+    }
+    .payeh-chat-sidebar {
+        width: 100%;
+        max-width: none;
+    }
+    .payeh-chat-container.has-active-chat .payeh-chat-sidebar {
+        display: none;
+    }
+    .payeh-chat-container:not(.has-active-chat) .payeh-chat-main {
+        display: none;
+    }
+    .payeh-chat-back-mobile {
+        display: inline-flex;
+    }
+    .payeh-podium-container {
+        gap: 8px;
+        padding: 30px 8px 16px;
+    }
+    .payeh-podium-spot {
+        width: 110px;
+    }
+    .payeh-podium-avatar-card {
+        width: 64px;
+        height: 64px;
+    }
+    .payeh-podium-spot--1 .payeh-podium-avatar-card {
+        width: 76px;
+        height: 76px;
+    }
+    .payeh-podium-pedestal-num {
+        font-size: 24px;
+    }
+    .payeh-perf-kpis {
+        grid-template-columns: 1fr;
+    }
+    .payeh-perf-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

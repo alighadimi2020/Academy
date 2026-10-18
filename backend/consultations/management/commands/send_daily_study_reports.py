@@ -43,6 +43,7 @@ def deliver_pending_daily_reports():
                         "study_date": timer.study_date,
                         "subject": subject,
                         "minutes": (timer.elapsed_seconds + 30) // 60,
+                        "test_count": timer.test_count,
                         "notes": timer.notes,
                         "manual_edits": timer.manual_edits,
                     }

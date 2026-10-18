@@ -39,4 +39,8 @@ urlpatterns = [
     path("manager/applications/", registration_views.manager_consultant_applications, name="manager-consultant-applications"),
     path("manager/applications/<int:application_id>/decision/", registration_views.manager_decide_consultant_application, name="manager-decide-consultant-application"),
     path("manager/resumes/<str:filename>/", registration_views.manager_download_resume, name="manager-download-resume"),
+    # Announcements, Ranking, and Student Performance
+    path("announcements/", views.announcements, name="announcements"),
+    path("ranking/", views.ranking_list, name="ranking-list"),
+    path("student-performance/", views.student_performance, name="student-performance"),
 ]
