@@ -15,6 +15,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     const backTo1Btn = document.getElementById("reg-back-to-1");
 
     const numberFa = (v) => new Intl.NumberFormat("fa-IR").format(v);
+    const toPersianDate = (dateInput) => {
+        if (!dateInput) return "";
+        try {
+            const d = new Date(dateInput);
+            if (isNaN(d.getTime())) return String(dateInput);
+            return new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                timeZone: "Asia/Tehran",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }).format(d);
+        } catch {
+            return String(dateInput);
+        }
+    };
     const normalizeDigits = (val) => String(val || "").replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).trim();
 
     const attachNumericConverter = (input, maxLength = null) => {
@@ -560,7 +575,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     box.className = "payeh-status-card is-pending";
                     setStatusIcon("pending");
                     title.textContent = "درخواست شما در حال بررسی است";
-                    msg.textContent = `همکار گرامی جناب/سرکار ${data.full_name}، مدارک و رزومهٔ شما با شماره تماس ${data.phone} در تاریخ ${data.created_at} ثبت شده و در صف بررسی مدیران آکادمی است. پس از تأیید نهایی، دسترسی پنل مشاور شما فعال شده و پیامک اطلاع‌رسانی ارسال خواهد شد.`;
+                    msg.textContent = `همکار گرامی جناب/سرکار ${data.full_name}، مدارک و رزومهٔ شما با شماره تماس ${data.phone} در تاریخ ${toPersianDate(data.created_at)} ثبت شده و در صف بررسی مدیران آکادمی است. پس از تأیید نهایی، دسترسی پنل مشاور شما فعال شده و پیامک اطلاع‌رسانی ارسال خواهد شد.`;
                     reapplyBtn.style.display = "none";
                 } else if (status === "rejected") {
                     box.className = "payeh-status-card is-rejected";
@@ -571,7 +586,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         noteBox.style.display = "block";
                         noteBox.textContent = `توضیح مدیریت: ${data.decision_note}`;
                     }
-                    meta.textContent = `تاریخ بررسی: ${data.decided_at || "—"}`;
+                    meta.textContent = `تاریخ بررسی: ${toPersianDate(data.decided_at) || "—"}`;
                     reapplyBtn.style.display = "inline-block";
                     reapplyBtn.textContent = "ثبت درخواست جدید";
                     reapplyBtn.onclick = () => {
@@ -582,7 +597,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     setStatusIcon("approved");
                     title.textContent = "درخواست شما تأیید شد!";
                     msg.textContent = `تبریک! حساب مشاور شما با موفقیت تأیید و فعال گردید.`;
-                    meta.textContent = `تاریخ تأیید: ${data.decided_at || "—"}`;
+                    meta.textContent = `تاریخ تأیید: ${toPersianDate(data.decided_at) || "—"}`;
                     reapplyBtn.style.display = "inline-block";
                     reapplyBtn.textContent = "ورود به پنل مشاور";
                     reapplyBtn.onclick = () => location.assign("consultant.html");

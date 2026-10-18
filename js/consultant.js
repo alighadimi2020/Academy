@@ -1533,7 +1533,7 @@ const initConsultantApp = async () => {
             if (!res.ok) throw new Error(data.detail || "بررسی وضعیت تلگرام انجام نشد.");
 
             if (data.is_connected) {
-                const dateStr = data.connected_at ? new Date(data.connected_at).toLocaleDateString("fa-IR") : "";
+                const dateStr = data.connected_at ? formatJalaliDisplay(data.connected_at, "short") : "";
                 statusText.textContent = `متصل به تلگرام${dateStr ? ` (از تاریخ ${dateStr})` : ""} · گزارش‌های شبانه دانش‌آموزان به تلگرام شما ارسال می‌شوند.`;
                 connectBtn.style.display = "none";
                 if (testBtn) testBtn.style.display = "inline-flex";

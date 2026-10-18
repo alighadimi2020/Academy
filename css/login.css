@@ -39,15 +39,21 @@ body {
     margin: 0;
     background: var(--payeh-login-bg);
     color: var(--payeh-login-text);
-    font-family: "Vazirmatn", "Peyda", "Tahoma", sans-serif;
+    font-family: "Vazirmatn", "Vazir", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Tahoma", sans-serif !important;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
 
 body,
 button,
-input {
-    font-family: inherit;
+input,
+label,
+span,
+p,
+h1,
+h2,
+h3 {
+    font-family: "Vazirmatn", "Vazir", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Tahoma", sans-serif !important;
 }
 
 button,

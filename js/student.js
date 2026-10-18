@@ -18,6 +18,63 @@ const initStudentApp = async () => {
         return new Intl.NumberFormat("fa-IR").format(n);
     };
 
+    const toPersianDate = (dateInput, options = {}) => {
+        if (!dateInput) return "";
+        try {
+            let d;
+            if (typeof dateInput === "string" && dateInput.includes("-") && !dateInput.includes("T")) {
+                const parts = dateInput.split("-").map(Number);
+                d = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], 12, 0, 0));
+            } else {
+                d = new Date(dateInput);
+            }
+            if (isNaN(d.getTime())) return String(dateInput);
+            const defaultOpts = {
+                timeZone: "Asia/Tehran",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                ...options
+            };
+            return new Intl.DateTimeFormat("fa-IR-u-ca-persian", defaultOpts).format(d);
+        } catch {
+            return String(dateInput);
+        }
+    };
+
+    const toPersianDateTime = (dateInput) => {
+        if (!dateInput) return "";
+        try {
+            const d = new Date(dateInput);
+            if (isNaN(d.getTime())) return String(dateInput);
+            return new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                timeZone: "Asia/Tehran",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            }).format(d);
+        } catch {
+            return String(dateInput);
+        }
+    };
+
+    const toPersianTime = (dateInput) => {
+        if (!dateInput) return "";
+        try {
+            const d = new Date(dateInput);
+            if (isNaN(d.getTime())) return "";
+            return new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                timeZone: "Asia/Tehran",
+                hour: "2-digit",
+                minute: "2-digit"
+            }).format(d);
+        } catch {
+            return "";
+        }
+    };
+
     const getCsrfToken = async () => {
         const match = document.cookie.match(/csrftoken=([^;]+)/);
         if (match) return match[1];
@@ -114,7 +171,7 @@ const initStudentApp = async () => {
 
         const latestAnn = chatAnnouncements[0];
         const annSnippet = latestAnn ? (latestAnn.title || latestAnn.body.slice(0, 40)) : "اطلاعیه‌های رسمی آکادمی";
-        const annDate = latestAnn ? new Date(latestAnn.created_at).toLocaleDateString("fa-IR") : "";
+        const annDate = latestAnn ? toPersianDate(latestAnn.created_at, { month: "short", day: "numeric" }) : "";
 
         // 1. Channel Room Item
         if (chatActiveTab === "all" || chatActiveTab === "channels") {
@@ -273,7 +330,7 @@ const initStudentApp = async () => {
 
             const time = document.createElement("span");
             time.className = "payeh-announcement-card__time";
-            time.textContent = new Date(a.created_at).toLocaleDateString("fa-IR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+            time.textContent = toPersianDateTime(a.created_at);
 
             top.append(tag, time);
 
@@ -352,7 +409,7 @@ const initStudentApp = async () => {
 
                 const time = document.createElement("span");
                 time.className = "payeh-chat-bubble__time";
-                time.textContent = msg.created_at ? new Date(msg.created_at).toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" }) : "";
+                time.textContent = msg.created_at ? toPersianTime(msg.created_at) : "";
                 bubble.append(time);
 
                 stream.append(bubble);
@@ -1713,17 +1770,7 @@ const initStudentApp = async () => {
         const fa = new Intl.NumberFormat("fa-IR");
 
         const formatJalali = (dStr) => {
-            if (!dStr) return "";
-            try {
-                const parts = dStr.split("-");
-                if (parts.length === 3) {
-                    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-                    return d.toLocaleDateString("fa-IR", { month: "long", day: "numeric" });
-                }
-                return new Date(dStr).toLocaleDateString("fa-IR", { month: "long", day: "numeric" });
-            } catch {
-                return dStr;
-            }
+            return toPersianDate(dStr, { month: "long", day: "numeric" });
         };
 
         const createReportCard = (x) => {
@@ -1869,7 +1916,9 @@ const initStudentApp = async () => {
 
                 const meta = document.createElement("span");
                 meta.className = "student-feedback-meta";
-                meta.textContent = `مربوط به گزارش مطالعه ${item.study_date} · ${item.created_at}`;
+                const studyDateFa = toPersianDate(item.study_date);
+                const timeFa = toPersianTime(item.created_at);
+                meta.textContent = `مربوط به گزارش مطالعهٔ ${studyDateFa}${timeFa ? ` · ساعت ${timeFa}` : ""}`;
 
                 header.append(author, meta);
 

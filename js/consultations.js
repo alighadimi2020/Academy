@@ -9,6 +9,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     const history = document.getElementById("consultation-history");
     const fa = (number) => new Intl.NumberFormat("fa-IR").format(number);
     const price = (number) => `${new Intl.NumberFormat("fa-IR").format(number)} تومان`;
+    const toPersianDate = (dateInput) => {
+        if (!dateInput) return "";
+        try {
+            const d = new Date(dateInput);
+            if (isNaN(d.getTime())) return String(dateInput);
+            return new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                timeZone: "Asia/Tehran",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }).format(d);
+        } catch {
+            return String(dateInput);
+        }
+    };
     const make = (tag, cls, text) => { const el = document.createElement(tag); if (cls) el.className = cls; if (text !== undefined) el.textContent = text; return el; };
     const plans = { standard: "معمولی", vip: "VIP", super_vip: "Super VIP" };
     let consultants = [];
@@ -32,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const renderStatus = (item) => {
         statusRoot.hidden = false;
         statusRoot.className = `consultation-request-status${item.status === "approved" ? " is-approved" : item.status === "rejected" ? " is-rejected" : ""}`;
-        statusRoot.replaceChildren(make("h2", "", `وضعیت درخواست: ${item.status_label}`), make("p", "", `پلن ${item.plan_label} · ثبت ${new Date(item.created_at).toLocaleDateString("fa-IR")}`));
+        statusRoot.replaceChildren(make("h2", "", `وضعیت درخواست: ${item.status_label}`), make("p", "", `پلن ${item.plan_label} · ثبت ${toPersianDate(item.created_at)}`));
         const choices = make("div", "consultation-request-status__choices");
         item.preferences.forEach((choice, index) => choices.append(make("span", "", `${fa(index + 1)}. ${choice.consultant_name} · ${price(choice.quoted_price_toman)}`)));
         statusRoot.append(choices);

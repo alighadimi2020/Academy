@@ -15,6 +15,38 @@ const initManagerApp = async () => {
     };
     const make = (tag, className, text) => { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; };
     const numberFa = (value) => new Intl.NumberFormat("fa-IR").format(value);
+    const toPersianDate = (dateInput) => {
+        if (!dateInput) return "";
+        try {
+            const d = new Date(dateInput);
+            if (isNaN(d.getTime())) return String(dateInput);
+            return new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                timeZone: "Asia/Tehran",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }).format(d);
+        } catch {
+            return String(dateInput);
+        }
+    };
+    const toPersianDateTime = (dateInput) => {
+        if (!dateInput) return "";
+        try {
+            const d = new Date(dateInput);
+            if (isNaN(d.getTime())) return String(dateInput);
+            return new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                timeZone: "Asia/Tehran",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            }).format(d);
+        } catch {
+            return String(dateInput);
+        }
+    };
     const state = { students: [], consultants: [], applications: [], activeAppStatusFilter: "all" };
 
     const renderUsers = (role) => {
@@ -42,7 +74,7 @@ const initManagerApp = async () => {
             };
             addField("شماره موبایل", user.phone, true);
             if (isStudent) { addField("پایه تحصیلی", user.grade_label); addField("رشته", user.major_label); addField("شماره والد", user.parent_phone, true); }
-            else if (user.date_joined) addField("تاریخ عضویت", new Date(user.date_joined).toLocaleDateString("fa-IR"));
+            else if (user.date_joined) addField("تاریخ عضویت", toPersianDate(user.date_joined));
             card.append(fields);
             if (!isStudent) {
                 const actionRow = document.createElement("div");
@@ -84,7 +116,7 @@ const initManagerApp = async () => {
         message.textContent="در حال دریافت اتاق‌ها…";target.replaceChildren();
         try{const response=await fetch("/api/consultations/staff-conversations/",{credentials:"same-origin"});const data=await response.json();if(!response.ok)throw new Error(data.detail||"اتاق‌های گفتگو دریافت نشدند.");
             const rooms=data.results||[];message.textContent=rooms.length?`${numberFa(rooms.length)} اتاق گفتگو`:"هنوز مشاوری اتاق گفتگو با مدیر ایجاد نکرده است.";
-            rooms.forEach(room=>{const card=make("article","manager-chat-room");const avatar=make("span","manager-chat-room__avatar",(room.consultant_name||"م").trim().slice(0,1));const info=make("div","manager-chat-room__info");info.append(make("strong","",room.consultant_name),make("span","",room.last_message||"هنوز پیامی در این اتاق نیست."));const date=room.last_message_at?new Date(room.last_message_at).toLocaleString("fa-IR",{dateStyle:"short",timeStyle:"short"}):"گفتگوی جدید";info.append(make("small","",date));const link=document.createElement("a");link.href=`consultation-chat.html?staff=${encodeURIComponent(room.id)}`;link.textContent="بازکردن اتاق";card.append(avatar,info,link);target.append(card);});
+            rooms.forEach(room=>{const card=make("article","manager-chat-room");const avatar=make("span","manager-chat-room__avatar",(room.consultant_name||"م").trim().slice(0,1));const info=make("div","manager-chat-room__info");info.append(make("strong","",room.consultant_name),make("span","",room.last_message||"هنوز پیامی در این اتاق نیست."));const date=room.last_message_at?toPersianDateTime(room.last_message_at):"گفتگوی جدید";info.append(make("small","",date));const link=document.createElement("a");link.href=`consultation-chat.html?staff=${encodeURIComponent(room.id)}`;link.textContent="بازکردن اتاق";card.append(avatar,info,link);target.append(card);});
         }catch(error){message.textContent=error.message||"دریافت اتاق‌ها انجام نشد.";}
     };
 
@@ -188,7 +220,7 @@ const initManagerApp = async () => {
             addField("رتبه در سهمیه", app.quota_rank ? `رتبه ${numberFa(app.quota_rank)}` : "");
             addField("رشته و دانشگاه", [app.university_major, app.current_university].filter(Boolean).join(" - ") || "ثبت نشده");
             addField("سابقه مشاوره", app.experience_years ? `${numberFa(app.experience_years)} سال` : "بدون سابقه قبلی");
-            addField("تاریخ درخواست", app.created_at);
+            addField("تاریخ درخواست", toPersianDateTime(app.created_at));
 
             card.append(fields);
 

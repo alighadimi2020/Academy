@@ -10,6 +10,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         return node;
     };
 
+    const toPersianDate = (dateInput) => {
+        if (!dateInput) return "";
+        try {
+            const d = new Date(dateInput);
+            if (isNaN(d.getTime())) return String(dateInput);
+            return new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                timeZone: "Asia/Tehran",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }).format(d);
+        } catch {
+            return String(dateInput);
+        }
+    };
+
     try {
         const response = await fetch(`/api/blog/posts/${encodeURIComponent(id)}/`);
         const post = await response.json();
@@ -21,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const meta = make("div", "blog-detail__meta");
         meta.append(make("span", "", `نویسنده: ${post.author}`));
         meta.append(make("span", "", `${new Intl.NumberFormat("fa-IR").format(post.reading_minutes)} دقیقه مطالعه`));
-        if (post.published_at) meta.append(make("span", "", new Date(post.published_at).toLocaleDateString("fa-IR")));
+        if (post.published_at) meta.append(make("span", "", toPersianDate(post.published_at)));
         target.append(meta, make("p", "blog-detail__summary", post.summary));
         const appendImagesAfter = (sectionIndex) => {
             const images = post.images.filter((image) => Number(image.after_section || 0) === sectionIndex);
@@ -39,8 +55,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             const list = document.createElement("ol");
             post.sections.forEach((section, index) => {
                 const item = document.createElement("li");
+                const targetId = `blog-section-${index + 1}`;
                 const link = make("a", "", section.heading);
-                link.href = `#blog-section-${index + 1}`;
+                link.href = `#${targetId}`;
+                link.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const targetEl = document.getElementById(targetId);
+                    if (targetEl) {
+                        try {
+                            history.pushState(null, "", `#${targetId}`);
+                        } catch {}
+                        targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+                        targetEl.classList.add("is-target-highlight");
+                        setTimeout(() => targetEl.classList.remove("is-target-highlight"), 1600);
+                    }
+                });
                 item.append(link);
                 list.append(item);
             });
@@ -74,6 +103,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             target.append(sectionNode);
             appendImagesAfter(index + 1);
         });
+
+        if (window.location.hash) {
+            const targetId = window.location.hash.replace("#", "");
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                setTimeout(() => {
+                    targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+                    targetEl.classList.add("is-target-highlight");
+                    setTimeout(() => targetEl.classList.remove("is-target-highlight"), 1600);
+                }, 150);
+            }
+        }
 
         const me = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
         if (me.ok) {

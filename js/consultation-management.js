@@ -4,6 +4,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     const message = document.getElementById("consultation-manager-message");
     const fa = (value) => new Intl.NumberFormat("fa-IR").format(value);
     const toman = (value) => `${fa(value)} تومان`;
+    const toPersianDateTime = (dateInput) => {
+        if (!dateInput) return "";
+        try {
+            const d = new Date(dateInput);
+            if (isNaN(d.getTime())) return String(dateInput);
+            return new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                timeZone: "Asia/Tehran",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            }).format(d);
+        } catch {
+            return String(dateInput);
+        }
+    };
     const make = (tag, cls, text) => { const el = document.createElement(tag); if (cls) el.className = cls; if (text !== undefined) el.textContent = text; return el; };
     let overview;
     const status = (text, failed = false) => { message.textContent = text; message.className = `consultation-message${failed ? " is-error" : " is-success"}`; };
@@ -54,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         overview.pending_requests.forEach((item) => {
             const card = make("article", "consultation-request-card");
             card.append(make("h3", "", `${item.student_name} · ${item.student_grade}${item.student_major ? ` · ${item.student_major}` : ""}`));
-            card.append(make("p", "", `شماره: ${item.student_phone} · پلن درخواستی: ${item.plan_label} · ثبت: ${new Date(item.created_at).toLocaleString("fa-IR")}`));
+            card.append(make("p", "", `شماره: ${item.student_phone} · پلن درخواستی: ${item.plan_label} · ثبت: ${toPersianDateTime(item.created_at)}`));
             const preferences = make("div", "consultation-manager-card__meta", "اولویت‌های دانش‌آموز:"); card.append(preferences);
             const select = document.createElement("select"); select.setAttribute("aria-label", "مشاور برای تخصیص");
             item.preferences.forEach((choice, index) => {
