@@ -1037,27 +1037,19 @@ const initStudentApp = async () => {
     const studentSidebarClose = document.getElementById("studentSidebarClose");
 
     const toggleStudentSidebar = (force) => {
-        const isCurrentlyOpen = sidebar?.classList.contains("is-open") || sidebar?.classList.contains("open") || (sidebar && sidebar.style.right === "0px");
+        if (!sidebar) return;
+        const isCurrentlyOpen = sidebar.classList.contains("is-open") || sidebar.classList.contains("open");
         const willOpen = typeof force === "boolean" ? force : !isCurrentlyOpen;
-        sidebar?.classList.toggle("is-open", willOpen);
-        sidebar?.classList.toggle("open", willOpen);
-        studentSidebarOverlay?.classList.toggle("is-active", willOpen);
-        studentSidebarOverlay?.classList.toggle("active", willOpen);
-        document.body.classList.toggle("payeh-sidebar-locked", willOpen);
-        if (sidebar) {
-            if (window.innerWidth <= 1024) {
-                sidebar.style.right = willOpen ? "0px" : "-320px";
-                sidebar.style.transform = "none";
-            } else {
-                sidebar.style.right = "";
-                sidebar.style.transform = "";
-            }
-        }
+
+        sidebar.classList.toggle("is-open", willOpen);
+        sidebar.classList.toggle("open", willOpen);
+
         if (studentSidebarOverlay) {
-            studentSidebarOverlay.style.display = willOpen ? "block" : "none";
-            studentSidebarOverlay.style.opacity = willOpen ? "1" : "0";
-            studentSidebarOverlay.style.pointerEvents = willOpen ? "auto" : "none";
+            studentSidebarOverlay.classList.toggle("is-active", willOpen);
+            studentSidebarOverlay.classList.toggle("active", willOpen);
         }
+
+        document.body.classList.toggle("payeh-sidebar-locked", willOpen);
     };
     window.toggleStudentSidebar = toggleStudentSidebar;
 
@@ -1066,45 +1058,47 @@ const initStudentApp = async () => {
         const name = item.dataset.page;
         history.replaceState(null, "", `#${name}`);
         selectPage(name);
+        toggleStudentSidebar(false);
     }));
 
+    let lastMenuToggle = 0;
     const handleMenuToggle = (e) => {
+        const now = Date.now();
+        if (now - lastMenuToggle < 300) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            return;
+        }
+        lastMenuToggle = now;
         if (e) {
             e.stopPropagation();
-            if (e.cancelable) e.preventDefault();
         }
         toggleStudentSidebar();
     };
 
     menuButton?.addEventListener("click", handleMenuToggle);
-    menuButton?.addEventListener("touchend", handleMenuToggle);
 
-    const handleClose = (e) => {
-        if (e) {
-            e.stopPropagation();
-            if (e.cancelable) e.preventDefault();
-        }
+    studentSidebarClose?.addEventListener("click", (e) => {
+        if (e) e.stopPropagation();
         toggleStudentSidebar(false);
-    };
+    });
 
-    studentSidebarClose?.addEventListener("click", handleClose);
-    studentSidebarClose?.addEventListener("touchend", handleClose);
-
-    studentSidebarOverlay?.addEventListener("click", () => toggleStudentSidebar(false));
-    studentSidebarOverlay?.addEventListener("touchend", (e) => {
-        if (e.cancelable) e.preventDefault();
+    studentSidebarOverlay?.addEventListener("click", (e) => {
+        if (e) e.stopPropagation();
         toggleStudentSidebar(false);
     });
 
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && (sidebar?.classList.contains("is-open") || sidebar?.classList.contains("open"))) {
+        if (e.key === "Escape") {
             toggleStudentSidebar(false);
         }
     });
 
     document.addEventListener("click", (e) => {
         if (window.innerWidth <= 1024) {
-            if (sidebar && (sidebar.classList.contains("is-open") || sidebar.classList.contains("open") || sidebar.style.right === "0px")) {
+            if (sidebar && (sidebar.classList.contains("is-open") || sidebar.classList.contains("open"))) {
                 if (!sidebar.contains(e.target) && !menuButton?.contains(e.target)) {
                     toggleStudentSidebar(false);
                 }

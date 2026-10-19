@@ -4,6 +4,9 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
 }
 
 body {
@@ -11,6 +14,10 @@ body {
     background: #f6f7f5;
     color: #202321;
     font-family: "Vazirmatn", "Peyda", "Tahoma", sans-serif;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    -webkit-text-size-adjust: 100%;
 }
 
 button,
@@ -29,8 +36,12 @@ a {
 
 .payeh-student {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     background: #f6f7f5;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 .payeh-student__sidebar {
@@ -209,6 +220,8 @@ a {
     width: calc(100% - 270px);
     margin-right: 270px;
     min-height: 100vh;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .payeh-student__header {
@@ -301,11 +314,20 @@ body.payeh-sidebar-locked {
 
 .payeh-student__content {
     padding: 34px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.payeh-student__view {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .payeh-student__dashboard {
     max-width: 1450px;
     margin: 0 auto;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .payeh-student__hero {
@@ -781,14 +803,17 @@ body.payeh-sidebar-locked {
         right: -320px !important;
         top: 0 !important;
         bottom: 0 !important;
-        width: 280px !important;
-        max-width: 85vw !important;
+        width: 285px !important;
+        max-width: 82vw !important;
         height: 100vh !important;
         height: 100dvh !important;
         transform: none !important;
-        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        z-index: 10000 !important;
-        box-shadow: -10px 0 35px rgba(0, 0, 0, 0.25) !important;
+        transition: right 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        z-index: 100000 !important;
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2) !important;
+        background: #ffffff !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
     }
 
     .payeh-student__sidebar.open,
@@ -801,10 +826,10 @@ body.payeh-sidebar-locked {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(15, 23, 42, 0.5);
+        background: rgba(15, 23, 42, 0.55);
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
-        z-index: 9999;
+        z-index: 99999 !important;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.25s ease;
@@ -846,19 +871,36 @@ body.payeh-sidebar-locked {
         display: flex !important;
         align-items: center;
         justify-content: center;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
         border: none;
+        border-radius: 12px;
+        background: #f0f3f0;
         outline: none;
         color: #1a1a1a !important;
+        cursor: pointer;
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
     }
 
     .payeh-student__menu svg {
         pointer-events: none;
+        width: 22px;
+        height: 22px;
     }
 
     .payeh-student__header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        height: 64px;
         padding: 0 18px;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid #eff1ee;
     }
 
     .payeh-student__header-profile {
@@ -866,100 +908,177 @@ body.payeh-sidebar-locked {
     }
 
     .payeh-student__content {
-        padding: 18px;
+        padding: 18px 16px;
     }
 
     .payeh-student__hero {
-        padding: 28px;
+        padding: 24px 20px;
     }
 
     .payeh-student__hero-orbit {
-        width: 170px;
-        height: 170px;
+        width: 150px;
+        height: 150px;
         margin-left: 0;
     }
 
     .payeh-student__hero-orbit::before {
-        width: 130px;
-        height: 130px;
+        width: 110px;
+        height: 110px;
     }
 
     .payeh-student__hero-orbit::after {
-        width: 165px;
-        height: 165px;
+        width: 145px;
+        height: 145px;
     }
 
 }
 
-@media (max-width: 620px) {
+@media (max-width: 640px) {
 
     .payeh-student__header {
-        height: 76px;
+        height: 58px;
+        padding: 0 12px;
     }
 
     .payeh-student__header h1 {
-        font-size: 18px;
+        font-size: 15px;
+        margin: 0;
     }
 
     .payeh-student__header-right > div > span {
         font-size: 10px;
     }
 
+    .payeh-student__content {
+        padding: 12px 10px;
+    }
+
     .payeh-student__hero {
-        min-height: 210px;
-        padding: 25px 22px;
+        min-height: auto;
+        padding: 18px 14px;
+        border-radius: 16px;
     }
 
     .payeh-student__hero h2 {
-        font-size: 24px;
+        font-size: 18px;
+        line-height: 1.4;
     }
 
     .payeh-student__hero p {
-        max-width: 220px;
-        line-height: 1.8;
+        max-width: 100%;
+        font-size: 11.5px;
+        line-height: 1.6;
+        margin: 6px 0 14px;
     }
 
     .payeh-student__hero-orbit {
         display: none;
     }
 
+    .payeh-student__hero-action {
+        width: 100%;
+        justify-content: center;
+        height: 42px;
+    }
+
     .payeh-student__stats {
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        gap: 8px;
+        margin-top: 12px;
     }
 
     .payeh-student__stat {
-        min-height: 84px;
-        padding: 14px;
+        min-height: auto;
+        padding: 10px;
+        border-radius: 14px;
+        gap: 8px;
     }
 
     .payeh-student__stat-icon {
-        width: 38px;
-        height: 38px;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
     }
 
     .payeh-student__stat span {
-        font-size: 9px;
+        font-size: 9.5px;
     }
 
     .payeh-student__stat strong {
-        font-size: 18px;
+        font-size: 16px;
     }
 
     .payeh-student__card {
-        padding: 18px;
+        padding: 14px 12px;
+        border-radius: 16px;
+    }
+
+    .payeh-student__progress-message {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .payeh-student__progress-message-icon {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+    }
+
+    .payeh-student__progress-message strong {
+        font-size: 12px;
+    }
+
+    .payeh-student__progress-message span {
+        font-size: 10.5px;
+    }
+
+    .student-consultation-link {
+        display: block;
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
     }
 
 }
 
-@media (max-width: 400px) {
+@media (max-width: 380px) {
 
-    .payeh-student__stats {
-        grid-template-columns: 1fr;
+    .payeh-student__content {
+        padding: 10px 8px;
+    }
+
+    .payeh-student__header {
+        padding: 0 8px;
+    }
+
+    .payeh-student__header h1 {
+        font-size: 14px;
     }
 
     .payeh-student__hero {
-        border-radius: 21px;
+        padding: 14px 12px;
+    }
+
+    .payeh-student__hero h2 {
+        font-size: 16px;
+    }
+
+    .payeh-student__stats {
+        gap: 6px;
+    }
+
+    .payeh-student__stat {
+        padding: 8px;
+        gap: 6px;
+    }
+
+    .payeh-student__stat-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    .payeh-student__stat strong {
+        font-size: 14px;
     }
 
 }
@@ -978,10 +1097,10 @@ body.payeh-sidebar-locked {
 .student-consultation-summary { margin-top:12px; color:#263a2f; font-size:12px; line-height:1.9; }
 .student-consultation-summary p { margin:7px 0; }
 .student-assigned-chat { display:inline-flex; margin:7px 0; padding:8px 12px; border-radius:9px; background:#e8f5ed; color:#176543; font-size:11px; font-weight:800; }
-.study-plan-panel{margin:22px 0;border:1px solid #e7ece8}.study-plan-badge{padding:7px 11px;border-radius:20px;background:#edf6ef;color:#31724e;font-size:11px;font-weight:800}.study-week-grid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin-top:18px}.study-day{min-width:0;padding:13px;border:1px solid #edf0ed;border-radius:16px;background:#fbfcfa}.study-day h4{margin:0 0 10px;font-size:13px;color:#353c37}.study-day.is-today{border-color:#74b990;background:#f4faf6}.study-session{display:grid;gap:5px;margin:8px 0;padding:12px;border-radius:12px;background:var(--session-color,#e0f4e9);color:#28332c;font-size:11px;line-height:1.7}.study-session strong{font-size:14px}.study-session small{color:#59625b}.study-day-empty,.study-empty{font-size:11px;color:#9a9e99}.study-now{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;padding:16px 20px;border-radius:16px;background:linear-gradient(110deg,#193d2b,#2c6849);color:#fff}.study-now[hidden]{display:none}.study-now-label{opacity:.78;font-size:11px}.study-now strong{font-size:16px}.study-countdown{margin-right:auto;font-size:13px;font-variant-numeric:tabular-nums}.study-start{border:0;border-radius:10px;padding:10px 15px;background:#fff;color:#19422e;font:inherit;font-size:11px;font-weight:800;cursor:pointer}.study-start:disabled{opacity:.72;cursor:default}
+.study-plan-panel{margin:22px 0;border:1px solid #e7ece8;min-width:0;max-width:100%;overflow:hidden;}.study-plan-badge{padding:7px 11px;border-radius:20px;background:#edf6ef;color:#31724e;font-size:11px;font-weight:800}.study-week-grid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin-top:18px}.study-day{min-width:0;padding:13px;border:1px solid #edf0ed;border-radius:16px;background:#fbfcfa}.study-day h4{margin:0 0 10px;font-size:13px;color:#353c37}.study-day.is-today{border-color:#74b990;background:#f4faf6}.study-session{display:grid;gap:5px;margin:8px 0;padding:12px;border-radius:12px;background:var(--session-color,#e0f4e9);color:#28332c;font-size:11px;line-height:1.7}.study-session strong{font-size:14px}.study-session small{color:#59625b}.study-day-empty,.study-empty{font-size:11px;color:#9a9e99}.study-now{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;padding:16px 20px;border-radius:16px;background:linear-gradient(110deg,#193d2b,#2c6849);color:#fff}.study-now[hidden]{display:none}.study-now-label{opacity:.78;font-size:11px}.study-now strong{font-size:16px}.study-countdown{margin-right:auto;font-size:13px;font-variant-numeric:tabular-nums}.study-start{border:0;border-radius:10px;padding:10px 15px;background:#fff;color:#19422e;font:inherit;font-size:11px;font-weight:800;cursor:pointer}.study-start:disabled{opacity:.72;cursor:default}
 @media(max-width:900px){.study-week-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.study-week-grid{grid-template-columns:1fr}.study-now{align-items:flex-start;flex-direction:column}.study-countdown{margin-right:0}}
 /* Larger weekly timetable cards */
-#study-week{overflow-x:auto;padding:4px 2px 14px}.study-week-grid{width:max-content;min-width:100%;grid-template-columns:repeat(7,minmax(205px,1fr));gap:14px;margin-top:20px}.study-day{min-height:158px;padding:16px;border-radius:18px}.study-day h4{font-size:16px;margin-bottom:14px}.study-session{gap:8px;margin:10px 0;padding:16px;border-radius:15px;font-size:13px;line-height:1.8}.study-session-time{font-size:15px;font-weight:800;direction:ltr;text-align:right;color:#3f5748}.study-session strong{font-size:19px}.study-session small{font-size:12px;line-height:1.8}.study-day-empty{font-size:12px}.study-now{min-height:96px;padding:20px 24px}.study-now strong{font-size:20px}.study-now-label{font-size:13px}.study-countdown{font-size:17px}.study-start{min-height:46px;padding:12px 18px;font-size:13px}.study-reminder-status{width:100%;font-size:12px;line-height:1.8;color:#e4f3e8}
+#study-week{min-width:0;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 2px 14px}.study-week-grid{width:max-content;min-width:100%;grid-template-columns:repeat(7,minmax(205px,1fr));gap:14px;margin-top:20px}.study-day{min-height:158px;padding:16px;border-radius:18px}.study-day h4{font-size:16px;margin-bottom:14px}.study-session{gap:8px;margin:10px 0;padding:16px;border-radius:15px;font-size:13px;line-height:1.8}.study-session-time{font-size:15px;font-weight:800;direction:ltr;text-align:right;color:#3f5748}.study-session strong{font-size:19px}.study-session small{font-size:12px;line-height:1.8}.study-day-empty{font-size:12px}.study-now{min-height:96px;padding:20px 24px}.study-now strong{font-size:20px}.study-now-label{font-size:13px}.study-countdown{font-size:17px}.study-start{min-height:46px;padding:12px 18px;font-size:13px}.study-reminder-status{width:100%;font-size:12px;line-height:1.8;color:#e4f3e8}
 @media(max-width:900px){.study-week-grid{grid-template-columns:repeat(7,minmax(205px,1fr))}}@media(max-width:520px){.study-week-grid{grid-template-columns:repeat(7,minmax(205px,1fr))}.study-now{align-items:flex-start;flex-direction:column}.study-countdown{margin-right:0}}
 .study-stop{min-height:42px;padding:10px 16px;border:1px solid rgba(255,255,255,.4);border-radius:10px;background:rgba(255,255,255,.12);color:#fff;font:inherit;font-size:12px;font-weight:800;cursor:pointer}.study-stop[hidden]{display:none}
 .study-subject-select,.study-notes{padding:11px 13px;border:1px solid rgba(255,255,255,.3);border-radius:10px;background:#fff;color:#24382b;font:inherit;font-size:13px}.study-notes{width:min(100%,440px);min-height:70px;resize:vertical}.study-report-history{display:grid;gap:5px;width:100%;padding-top:10px;border-top:1px solid rgba(255,255,255,.18);font-size:12px}.study-report-history p{margin:0;line-height:1.8;color:#e4f3e8}
@@ -2539,47 +2658,311 @@ body.payeh-sidebar-locked {
 }
 
 @media (max-width: 768px) {
+    /* Chat Messenger Mobile View */
     .payeh-chat-container {
-        height: calc(100vh - 120px);
-        min-height: 480px;
+        height: calc(100vh - 100px);
+        height: calc(100dvh - 84px);
+        min-height: 440px;
+        max-height: none;
+        border-radius: 16px;
     }
     .payeh-chat-sidebar {
         width: 100%;
         max-width: none;
+        min-width: 0;
     }
     .payeh-chat-container.has-active-chat .payeh-chat-sidebar {
-        display: none;
+        display: none !important;
     }
     .payeh-chat-container:not(.has-active-chat) .payeh-chat-main {
-        display: none;
+        display: none !important;
     }
     .payeh-chat-back-mobile {
-        display: inline-flex;
+        display: inline-flex !important;
+    }
+    .payeh-chat-stream {
+        padding: 14px 12px;
+        gap: 12px;
+    }
+    .payeh-chat-bubble {
+        max-width: 88%;
+        padding: 10px 14px;
+    }
+    .payeh-chat-input-bar {
+        padding: 10px 12px;
+    }
+
+    /* Podium & Ranking Mobile */
+    .payeh-ranking-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 18px 14px;
+        border-radius: 16px;
+        gap: 12px;
+    }
+    .payeh-ranking-filter-tabs {
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 3px;
+    }
+    .payeh-ranking-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 7px 6px;
+        font-size: 11px;
+        white-space: nowrap;
     }
     .payeh-podium-container {
-        gap: 8px;
-        padding: 30px 8px 16px;
+        gap: 6px;
+        padding: 24px 6px 14px;
+        border-radius: 16px;
     }
     .payeh-podium-spot {
-        width: 110px;
+        width: 96px;
+    }
+    .payeh-podium-spot--1 {
+        width: 106px;
     }
     .payeh-podium-avatar-card {
-        width: 64px;
-        height: 64px;
+        width: 52px;
+        height: 52px;
     }
     .payeh-podium-spot--1 .payeh-podium-avatar-card {
-        width: 76px;
-        height: 76px;
+        width: 66px;
+        height: 66px;
+    }
+    .payeh-podium-name {
+        font-size: 11px;
+        max-width: 88px;
+    }
+    .payeh-podium-score {
+        font-size: 10.5px;
+        padding: 2px 6px;
     }
     .payeh-podium-pedestal-num {
-        font-size: 24px;
+        font-size: 20px;
     }
+    .payeh-leaderboard-card {
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+        padding: 16px 12px;
+        border-radius: 16px;
+    }
+    .payeh-leaderboard-table-scroll {
+        max-width: 100%;
+        -webkit-overflow-scrolling: touch;
+    }
+    .payeh-leaderboard-table th,
+    .payeh-leaderboard-table td {
+        padding: 10px 10px;
+        font-size: 12px;
+    }
+
+    /* Performance Analytics Mobile */
     .payeh-perf-kpis {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+    .payeh-kpi-card {
+        padding: 12px 10px;
+        border-radius: 14px;
+    }
+    .payeh-kpi-value {
+        font-size: 17px;
     }
     .payeh-perf-toolbar {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 14px;
+    }
+    .payeh-perf-intervals {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        padding: 3px;
+    }
+    .payeh-perf-interval-btn {
+        flex: 1;
+        padding: 6px 8px;
+        font-size: 11px;
+        text-align: center;
+        white-space: nowrap;
+    }
+    .payeh-perf-metric-toggle {
+        width: 100%;
+        padding: 3px;
+    }
+    .payeh-perf-metric-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+    .payeh-perf-charts-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+    .payeh-perf-card {
+        padding: 16px 12px;
+        border-radius: 16px;
+    }
+    .payeh-donut-wrapper {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
+
+    /* Study Plan Panel & Timetable Mobile */
+    .study-plan-panel {
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+        padding: 14px 12px;
+        border-radius: 16px;
+        margin: 14px 0;
+    }
+    #study-week {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 4px 0 10px;
+        max-width: 100%;
+    }
+    .study-week-grid {
+        gap: 8px;
+        grid-template-columns: repeat(7, minmax(170px, 1fr)) !important;
+    }
+    .study-day {
+        min-height: 140px;
+        padding: 12px;
+        border-radius: 14px;
+    }
+    .study-session {
+        padding: 10px;
+        border-radius: 10px;
+    }
+    .study-now {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 14px;
+        border-radius: 14px;
+    }
+    .study-now strong {
+        font-size: 16px;
+    }
+    .study-countdown {
+        margin-right: 0;
+        font-size: 14px;
+    }
+    .study-start {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Today Multi-box Study Section Mobile */
+    .study-today-section {
+        padding: 14px 12px;
+        border-radius: 16px;
+        margin-top: 14px;
+    }
+    .study-today-topbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .study-today-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .study-boxes-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    .study-box-card {
+        padding: 14px 12px;
+        border-radius: 14px;
+    }
+    .study-box-actions {
+        flex-direction: column;
+    }
+    .study-box-btn {
+        width: 100%;
+    }
+
+    /* Glass Past Reports Rail Mobile */
+    .student-glass-reports-container {
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+    }
+    .student-glass-reports-rail {
+        -webkit-overflow-scrolling: touch;
+        gap: 10px;
+        padding: 6px 2px 14px 2px;
+    }
+    .student-glass-report-card {
+        min-width: 230px;
+        max-width: 250px;
+        padding: 14px 14px;
+        border-radius: 16px;
+    }
+    .student-glass-more-card {
+        min-width: 130px;
+        padding: 16px 12px;
+        border-radius: 16px;
+    }
+    .student-glass-modal-backdrop {
+        padding: 10px;
+    }
+    .student-glass-modal-dialog {
+        max-height: 90vh;
+        border-radius: 20px;
+    }
+    .student-glass-modal-header {
+        padding: 14px 16px;
+    }
+    .student-glass-modal-body {
+        padding: 14px;
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 380px) {
+    .payeh-podium-spot {
+        width: 82px;
+    }
+    .payeh-podium-spot--1 {
+        width: 92px;
+    }
+    .payeh-podium-avatar-card {
+        width: 44px;
+        height: 44px;
+    }
+    .payeh-podium-spot--1 .payeh-podium-avatar-card {
+        width: 54px;
+        height: 54px;
+    }
+    .payeh-podium-name {
+        font-size: 10px;
+        max-width: 78px;
+    }
+    .payeh-podium-score {
+        font-size: 9px;
+        padding: 1px 4px;
+    }
+    .payeh-podium-pedestal-num {
+        font-size: 17px;
+    }
+    .payeh-perf-kpis {
+        grid-template-columns: 1fr;
     }
 }
 
