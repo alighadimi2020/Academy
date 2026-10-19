@@ -1144,51 +1144,142 @@ const initStudentApp = async () => {
             ];
             const allAvailableSubjects = Array.from(new Set([...planSubjects, ...curriculumSubjects]));
 
+            const formatDuration = (mins) => {
+                if (!mins || mins <= 0) return "تعیین‌نشده";
+                const h = Math.floor(mins / 60);
+                const m = mins % 60;
+                if (h > 0 && m > 0) return `${fa.format(h)} ساعت و ${fa.format(m)} دقیقه`;
+                if (h > 0) return `${fa.format(h)} ساعت`;
+                return `${fa.format(m)} دقیقه`;
+            };
+
             // Render weekly calendar
             week.replaceChildren();
             if (!sessions.length) {
-                const empty = document.createElement("p");
+                const empty = document.createElement("div");
                 empty.className = "study-empty";
-                empty.textContent = "هنوز برنامه‌ای از طرف مشاورت ثبت نشده است.";
+                empty.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" style="opacity:0.4;margin-bottom:8px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    <p style="margin:0;">هنوز برنامه‌ای از طرف مشاورت ثبت نشده است.</p>
+                `;
                 week.replaceChildren(empty);
             } else {
                 const grid = document.createElement("div");
                 grid.className = "study-week-grid";
-                const palette = { mint: "#dff2e6", blue: "#e2efff", peach: "#ffeadc", lavender: "#efe8ff", rose: "#ffe5eb", yellow: "#fff3c9" };
+                const palette = {
+                    mint: "#22c55e",
+                    blue: "#3b82f6",
+                    peach: "#f97316",
+                    lavender: "#8b5cf6",
+                    rose: "#ec4899",
+                    yellow: "#eab308"
+                };
+
                 names.forEach((day, index) => {
                     const col = document.createElement("section");
                     col.className = `study-day${index === today ? " is-today" : ""}`;
+                    col.id = `study-day-${index}`;
+
+                    // Header
+                    const dayHeader = document.createElement("div");
+                    dayHeader.className = "study-day-header";
+
                     const h = document.createElement("h4");
-                    h.textContent = `${day}${index === today ? " · امروز" : ""}`;
-                    col.append(h);
+                    h.textContent = day;
+                    dayHeader.append(h);
+
+                    if (index === today) {
+                        const todayTag = document.createElement("span");
+                        todayTag.className = "study-day-today-tag";
+                        todayTag.textContent = "امروز";
+                        dayHeader.append(todayTag);
+                    }
+                    col.append(dayHeader);
+
                     const rows = sessions.filter(x => x.weekday === index);
                     if (!rows.length) {
-                        const empty = document.createElement("span");
+                        const empty = document.createElement("div");
                         empty.className = "study-day-empty";
-                        empty.textContent = "برنامه‌ای ثبت نشده";
+                        empty.innerHTML = `
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" style="opacity:0.35;margin-bottom:4px;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            <span>برنامه‌ای ثبت نشده</span>
+                        `;
                         col.append(empty);
+                    } else {
+                        const sessionsWrap = document.createElement("div");
+                        sessionsWrap.className = "study-day-sessions-wrap";
+
+                        rows.forEach(item => {
+                            const card = document.createElement("article");
+                            card.className = "study-session";
+                            const accentColor = palette[item.color] || palette.mint;
+                            card.style.setProperty("--session-color", accentColor);
+
+                            // Row 1: Title & Mode badge
+                            const headRow = document.createElement("div");
+                            headRow.className = "study-session__header";
+
+                            const title = document.createElement("strong");
+                            title.className = "study-session__title";
+                            title.textContent = item.subject;
+
+                            const modeBadge = document.createElement("span");
+                            modeBadge.className = "study-session__mode-badge";
+                            modeBadge.textContent = item.mode === "test" 
+                                ? `حل تست (${fa.format(item.test_count || 0)} تست)`
+                                : item.mode === "written" 
+                                    ? "حل تشریحی" 
+                                    : "مطالعهٔ درس‌نامه";
+
+                            headRow.append(title, modeBadge);
+
+                            // Row 2: Required Time badge (زمان مورد نیاز)
+                            const metaRow = document.createElement("div");
+                            metaRow.className = "study-session__meta";
+
+                            const timeBadge = document.createElement("span");
+                            timeBadge.className = "study-session__time-badge";
+                            timeBadge.innerHTML = `
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span>زمان مورد نیاز: ${formatDuration(item.planned_minutes)}</span>
+                            `;
+                            metaRow.append(timeBadge);
+
+                            card.append(headRow, metaRow);
+
+                            // Row 3: Instructions / Topics
+                            if (item.instructions && item.instructions.trim()) {
+                                const instructions = document.createElement("div");
+                                instructions.className = "study-session__instructions";
+                                instructions.textContent = item.instructions.trim();
+                                card.append(instructions);
+                            }
+
+                            sessionsWrap.append(card);
+                        });
+
+                        col.append(sessionsWrap);
                     }
-                    rows.forEach(item => {
-                        const card = document.createElement("article");
-                        card.className = "study-session";
-                        card.style.setProperty("--session-color", palette[item.color] || palette.mint);
-                        const title = document.createElement("strong");
-                        title.textContent = item.subject;
-                        const duration = document.createElement("span");
-                        duration.textContent = `سهمیه: ${fa.format(Math.floor(item.planned_minutes / 60))} ساعت و ${fa.format(item.planned_minutes % 60)} دقیقه`;
-                        const task = document.createElement("span");
-                        task.textContent = item.mode === "test" ? `حل تست · ${fa.format(item.test_count)} تست` : item.mode === "written" ? "حل تشریحی" : "مطالعهٔ درس‌نامه";
-                        card.append(title, duration, task);
-                        if (item.instructions) {
-                            const note = document.createElement("small");
-                            note.textContent = item.instructions;
-                            card.append(note);
-                        }
-                        col.append(card);
-                    });
                     grid.append(col);
                 });
                 week.append(grid);
+
+                // Auto-scroll to today smoothly without layout displacement
+                const todayCol = grid.querySelector(".study-day.is-today");
+                if (todayCol) {
+                    setTimeout(() => {
+                        todayCol.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                    }, 120);
+                }
             }
 
             const csrf = async () => (await fetch("/api/auth/csrf/", { credentials: "same-origin" })).json().then(x => x.csrfToken);
@@ -1440,7 +1531,13 @@ const initStudentApp = async () => {
                     if (timer.is_planned && timer.planned_minutes) {
                         const quotaHint = document.createElement("div");
                         quotaHint.className = "study-box-quota-hint";
-                        quotaHint.textContent = `سهمیه امروز: ${fa.format(Math.floor(timer.planned_minutes / 60))} ساعت و ${fa.format(timer.planned_minutes % 60)} دقیقه`;
+                        quotaHint.innerHTML = `
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span>زمان مورد نیاز: ${formatDuration(timer.planned_minutes)}</span>
+                        `;
                         card.append(quotaHint);
                     }
 
@@ -1565,7 +1662,7 @@ const initStudentApp = async () => {
 
                     const quotaSpan = document.createElement("span");
                     quotaSpan.className = "study-manual-quota";
-                    quotaSpan.textContent = `(سهمیه: ${fa.format(timer.edits_remaining ?? 5)} از ۵ بار)`;
+                    quotaSpan.textContent = `(فرصت ویرایش: ${fa.format(timer.edits_remaining ?? 5)} از ۵ بار)`;
 
                     manualHeader.append(manualTitle, quotaSpan);
                     manualSection.append(manualHeader);
