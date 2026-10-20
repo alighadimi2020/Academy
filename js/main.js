@@ -49,6 +49,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const homepageMagazine = document.getElementById("homepage-magazine-cards");
     if (homepageMagazine) loadHomepageMagazine(homepageMagazine);
+
+    // Rank Estimator Homepage Teaser
+    const pSlider = document.getElementById('home-percent-slider');
+    const gSlider = document.getElementById('home-gpa-slider');
+    const pVal = document.getElementById('home-percent-val');
+    const gVal = document.getElementById('home-gpa-val');
+    const rPreview = document.getElementById('home-rank-preview');
+
+    if (pSlider && gSlider && rPreview) {
+        const updateHomeEstimator = () => {
+            const p = parseFloat(pSlider.value) || 45;
+            const g = parseFloat(gSlider.value) || 18;
+            if (pVal) pVal.textContent = Math.round(p).toLocaleString('fa-IR') + '٪';
+            if (gVal) gVal.textContent = g.toLocaleString('fa-IR', { minimumFractionDigits: 1 });
+
+            // Official 1404 formula model (60% Savabegh, 40% Konkur)
+            const tKonkur = 5000 + p * 75;
+            const tSavabegh = 3000 + (g / 20) * 8700;
+            const totalT = tKonkur * 0.40 + tSavabegh * 0.60;
+
+            let estRank = 150000;
+            if (totalT >= 11800) estRank = 85;
+            else if (totalT >= 11000) estRank = 350;
+            else if (totalT >= 10200) estRank = 1250;
+            else if (totalT >= 9500) estRank = 3200;
+            else if (totalT >= 8800) estRank = 6800;
+            else if (totalT >= 8000) estRank = 13500;
+            else if (totalT >= 7000) estRank = 30000;
+            else if (totalT >= 6000) estRank = 62000;
+            else estRank = 95000;
+
+            rPreview.textContent = Math.round(estRank).toLocaleString('fa-IR');
+        };
+
+        pSlider.addEventListener('input', updateHomeEstimator);
+        gSlider.addEventListener('input', updateHomeEstimator);
+        updateHomeEstimator();
+    }
+
     const revealElements = document.querySelectorAll("[data-payeh-reveal]");
 
     if (!revealElements.length) {

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>سامانه تخمین رتبه و قبولی کنکور | آکادمی پایه</title>
+  <meta name="description" content="تخمین دقیق رتبه کنکور و قبولی رشته‌محل‌های دانشگاهی بر اساس درصدها، نمرات نهایی و داده‌های واقعی کنکورهای ۱۴۰۲، ۱۴۰۳ و ۱۴۰۴ با مراجع رسمی سازمان سنجش، گزینه دو و هیوا">
+  
+  <link rel="stylesheet" href="css/fonts.css?v=20261016_5">
+  <link rel="stylesheet" href="css/home.css?v=20261017_20">
+  <link rel="stylesheet" href="css/rank-estimator.css?v=20261020_2">
+</head>
+<body class="rank-body" style="padding-bottom: 90px;">
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></symbol>
+  <symbol id="bolt" viewBox="0 0 24 24"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></symbol>
+  <symbol id="brain" viewBox="0 0 24 24"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a2 2 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/></symbol>
+  <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="trend" viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8M15 7h6v6"/></symbol>
+  <symbol id="cap" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5zM6 11.5V16c0 1.5 3 3 6 3s6-1.500 6-3v-4.500"/></symbol>
+  <symbol id="book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M8 7h7"/></symbol>
+  <symbol id="award" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="m8.500 14-1.500 7 5-3 5 3-1.500-7"/></symbol>
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></symbol>
+  <symbol id="arrowr" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+  <symbol id="chart" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-4M13 16V8M18 16v-6"/></symbol>
+  <symbol id="build" viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13M9 21v-6h6v6M3 21h18"/></symbol>
+  <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.500 2.500M15.500 15.500 18 18M18 6l-2.500 2.500M8.500 15.500 6 18"/></symbol>
+</defs></svg>
+
+<!-- Identical Official Payeh Header -->
+<header class="payeh-header">
+    <div class="payeh-container">
+        <div class="payeh-header__inner">
+
+            <input
+                type="checkbox"
+                id="payeh-header-toggle"
+                class="payeh-header__toggle"
+            >
+
+            <label
+                for="payeh-header-toggle"
+                class="payeh-header__menu-button"
+                aria-label="باز کردن منو"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </label>
+
+            <a href="index.html" class="payeh-header__logo">
+                <img src="assets/images/logo.png" alt="پایه" style="height: 58px; width: auto; max-width: 100%; object-fit: contain;">
+            </a>
+
+            <nav class="payeh-header__nav">
+                <a href="index.html" class="payeh-header__link">خانه</a>
+                <a href="rank-estimator.html" class="payeh-header__link payeh-header__link--active">تخمین رتبه کنکور</a>
+                <a href="magazine.html" class="payeh-header__link">مجله آنلاین</a>
+                <a href="index.html#payeh-recruitment" class="payeh-header__link">جذب مشاور</a>
+                <a href="index.html#payeh-consultation" class="payeh-header__link">مشاوره</a>
+                <a href="ranking.html" class="payeh-header__link">لیگ دانش‌آموزان</a>
+            </nav>
+
+            <div class="payeh-header__actions">
+                <a href="login.html" class="payeh-header__login">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-arrow-left preview-icon"><path d="m19 16-3 3"/><path d="M2 21a8 8 0 0 1 12.664-6.5"/><path d="M22 19h-6l3 3"/><circle cx="10" cy="8" r="5"/></svg>
+                    <span>ورود / ثبت‌نام</span>
+                </a>
+                <a href="student.html" class="payeh-header__search" aria-label="پنل دانش‌آموز" title="ورود به پنل">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+<main class="wrap" style="padding-top: 10px;">
+  <a href="index.html" class="back-link">
+    <svg class="i"><use href="#arrowr"/></svg>
+    بازگشت به صفحه اصلی پایه
+  </a>
+
+  <!-- Main Stage -->
+  <section class="stage">
+    <span class="blob" style="width:140px;height:140px;top:-40px;right:25%;background:linear-gradient(145deg,rgba(255,255,255,0.4),rgba(232,184,74,0.5))"></span>
+    <span class="blob" style="width:80px;height:80px;bottom:30px;left:8%;animation-delay:-3s;background:linear-gradient(145deg,rgba(255,255,255,0.4),rgba(91,140,255,0.5))"></span>
+
+    <div class="in" style="margin-bottom:26px">
+      <span class="chip">
+        <svg class="i"><use href="#award"/></svg>
+        سنجش پیشرفته و علمی · داده‌های رسمی ۱۴۰۲، ۱۴۰۳ و ۱۴۰۴
+      </span>
+      <h3>تخمین رتبه و <span class="gt">شانس قبولی</span> دانشگاه</h3>
+      <p style="opacity: 0.95; font-size: 14px; max-width: 850px; line-height: 1.9; color: #ffffff;">
+        محاسبه دقیق تراز آزمون اختصاصی و تراز سوابق تحصیلی بر اساس آخرین مصوبات شورای عالی انقلاب فرهنگی و تحلیل آماری کارنامه‌های سازمان سنجش، همراه با کارنامه‌های مستند پذیرفته‌شدگان.
+      </p>
+
+      <!-- Input Mode Switcher (Scores vs Direct Rank) -->
+      <div class="tabs" style="max-width: 560px; margin-top: 16px;">
+        <button type="button" class="mode-tab on" data-mode="scores">
+          <svg class="i"><use href="#chart"/></svg>
+          محاسبه با درصد کنکور و نمرات نهایی
+        </button>
+        <button type="button" class="mode-tab" data-mode="direct">
+          <svg class="i"><use href="#target"/></svg>
+          جستجوی قبولی‌ها با رتبه سهمیه
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel (Inputs & Results) -->
+    <div class="panel">
+      <!-- Input Column -->
+      <div class="stone">
+        <div class="in">
+          <!-- Common Selectors (Active in both Mode A & Mode B) -->
+          <div class="common-filters" style="margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.18);">
+            <!-- Academic Stream Selector -->
+            <label style="margin-top:0"><span style="font-weight:700; color:var(--gold2); font-size:14px;">رشته تحصیلی (گروه آزمایشی):</span></label>
+            <div class="tabs" id="field-tabs"></div>
+
+            <!-- Quota Selection (Region 1, 2, 3) -->
+            <label for="quota-select">
+              <span style="font-weight:700; color:var(--gold2); font-size:14px;">سهمیه ثبت‌نامی:</span>
+              <small style="color:#ffffff; opacity:0.9; font-size:12px;">منطقه کنکور سراسری</small>
+            </label>
+            <select id="quota-select" class="high-contrast-select">
+              <option value="1">منطقه ۱ (کلان‌شهرهای تهران، مشهد، اصفهان، شیراز، تبریز)</option>
+              <option value="2" selected>منطقه ۲ (مراکز استان‌ها و شهرستان‌های بزرگ)</option>
+              <option value="3">منطقه ۳ (مناطق کمتر برخوردار و شهرستان‌های کوچک)</option>
+            </select>
+          </div>
+
+          <!-- Mode A: Scores Calculation -->
+          <div id="panel-scores">
+            <!-- Year Model Selector -->
+            <label for="year-select">
+              <span style="font-weight:600; color:#ffffff;">مدل سال کنکور:</span>
+              <small id="year-description" style="color:var(--gold2); font-size:12px;">۶۰٪ سوابق + ۴۰٪ کنکور</small>
+            </label>
+            <select id="year-select" class="high-contrast-select">
+              <option value="1404" selected>کنکور ۱۴۰۴ (مصوبه جدید: ۶۰٪ سوابق یازدهم و دوازدهم + ۴۰٪ آزمون اختصاصی)</option>
+              <option value="1403">کنکور ۱۴۰۳ (۵۰٪ سوابق قطعی دوازدهم + ۵۰٪ آزمون اختصاصی)</option>
+              <option value="1402">کنکور ۱۴۰۲ (۴۰٪ سوابق قطعی دوازدهم + ۶۰٪ آزمون اختصاصی)</option>
+            </select>
+
+            <!-- Konkur Subjects -->
+            <div class="sec">
+              <svg class="i"><use href="#chart"/></svg>
+              <span>درصد دروس اختصاصی در آزمون سراسری:</span>
+            </div>
+            <div id="konkur-subjects"></div>
+
+            <!-- Savabegh Section -->
+            <div class="sec">
+              <svg class="i"><use href="#book"/></svg>
+              <span>سوابق تحصیلی (امتحانات نهایی):</span>
+            </div>
+            <div class="tabs">
+              <button type="button" id="btn-gpa-fast" class="on">معدل کتبی نهایی</button>
+              <button type="button" id="btn-gpa-detail">ریز نمرات نهایی به تفکیک درس</button>
+            </div>
+
+            <!-- Fast Mode: Diploma GPA -->
+            <div id="gpa-fast-wrap">
+              <label for="gpa-fast">
+                <span style="font-weight:600; color:#ffffff;">معدل کتبی دیپلم (از ۲۰):</span>
+                <small style="color:var(--gold2); opacity:0.95;">ترازدهی خودکار سنجش</small>
+              </label>
+              <input type="number" id="gpa-fast" class="high-contrast-input" min="0" max="20" step="0.05" value="18.5" placeholder="مثال: ۱۸.۵۰">
+            </div>
+
+            <!-- Detail Mode: Final Exam Grid -->
+            <div id="gpa-detail-wrap" style="display:none">
+              <div id="final-exam-grid"></div>
+            </div>
+          </div>
+
+          <!-- Mode B: Direct Rank Search (High Contrast & Clear) -->
+          <div id="panel-direct" style="display:none">
+            <div class="direct-box">
+              <span class="chip" style="background:rgba(232, 184, 74, 0.2); border:1.5px solid var(--gold); color:#ffffff; font-weight:700;">
+                <svg class="i"><use href="#target"/></svg>
+                جستجوی مستقیم رشته‌های قبولی با رتبه سهمیه
+              </span>
+              <p class="direct-desc" style="font-size:14px; color:#ffffff; line-height:1.9; margin:12px 0 16px;">
+                رتبه خود را در <strong>منطقه <span id="direct-quota-badge" style="color:var(--gold2); font-size:16px;">۲</span></strong> (رشته <strong id="direct-field-badge" style="color:var(--gold2); font-size:16px;">تجربی</strong>) وارد کنید تا کارنامه‌های واقعی داوطلبانی که در این منطقه پذیرفته شده‌اند نمایش داده شود:
+              </p>
+              
+              <div class="direct-input-container">
+                <label for="direct-rank-input" style="font-size:15px; font-weight:700; color:#ffffff; margin-bottom:8px;">
+                  <span>رتبه شما در سهمیه منطقه <span id="direct-quota-num" style="color:var(--gold2)">۲</span>:</span>
+                  <small style="color:var(--gold2); font-size:12px;">ورود عدد رتبه</small>
+                </label>
+                <div style="position:relative;">
+                  <input type="number" id="direct-rank-input" class="direct-rank-field" min="1" max="150000" value="1250" placeholder="مثال: ۱۲۵۰">
+                </div>
+              </div>
+
+              <div class="direct-note" style="margin-top:16px; background:rgba(0,0,0,0.3); border:1px solid rgba(232,184,74,0.4); border-radius:14px; padding:12px 14px; font-size:13px; line-height:1.8; color:#ffffff;">
+                <svg class="i" style="color:var(--gold2); vertical-align:middle; margin-left:4px;"><use href="#spark"/></svg>
+                <span>پذیرفته‌شدگان بر اساس شانس‌های قبولی (از رویایی تا حتمی) و مرتب‌شده به ترتیب رتبه نمایش می‌یابند.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output / Result Column -->
+      <div class="stone res">
+        <div class="in">
+          <small style="opacity:0.85;font-size:13px;">رتبه تخمینی شما در سهمیه</small>
+          <div class="big" id="res-rank">—</div>
+          <div id="res-range" style="opacity:0.9;font-size:14px;font-weight:600;color:var(--gold2);"></div>
+          <div id="res-country-rank" style="opacity:0.8;font-size:13px;margin-top:2px;"></div>
+
+          <!-- T-Scores Breakdown -->
+          <div class="t-scores-summary">
+            <div class="t-stat">
+              <span>تراز آزمون</span>
+              <strong id="t-score-konkur">—</strong>
+            </div>
+            <div class="t-stat highlight">
+              <span>تراز کل نهایی</span>
+              <strong id="t-score-total">—</strong>
+            </div>
+            <div class="t-stat">
+              <span>تراز سوابق</span>
+              <strong id="t-score-savabegh">—</strong>
+            </div>
+          </div>
+
+          <!-- Percentile Bar -->
+          <div class="bar"><span id="res-bar"></span></div>
+          <small id="res-percentile" style="font-size:12px;opacity:0.8;"></small>
+
+          <!-- Analytical feedback -->
+          <p id="res-msg" style="margin:18px 0;line-height:1.9;font-size:14px;background:rgba(255,255,255,0.08);padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,0.15)"></p>
+
+          <a href="index.html#payeh-consultation" class="btn gold" style="width:100%;margin-top:4px;">
+            <svg class="i"><use href="#user"/></svg>
+            دریافت برنامه شخصی‌سازی‌شده از مشاور پایه
+          </a>
+
+          <div class="note">
+            * ضرایب و ترازدهی مطابق آخرین اصلاحیه مصوبات شورای عالی انقلاب فرهنگی و تحلیل آماری بیش از ۱۰۰ هزار کارنامه رسمی آزمون‌های سراسری ۱۴۰۲ و ۱۴۰۳ سازمان سنجش است.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goal / Target Acceptances Section -->
+    <div class="stone goal">
+      <div class="in">
+        <h4>
+          <svg class="i"><use href="#cap"/></svg>
+          رشته‌محل‌های قبولی بر اساس رتبه و تراز شما
+        </h4>
+        <small style="opacity:0.95;color:#ffffff;display:block;margin-bottom:14px;line-height:1.8">
+          رشته‌ها و دانشگاه‌های اطراف رتبه شما به همراه شانس قبولی، رتبه کارنامه واقعی پذیرفته‌شدگان در سهمیه، و کارنامه تفصیلی سال‌های ۱۴۰۲ و ۱۴۰۳ نمایش داده شده است.
+        </small>
+
+        <div class="gform">
+          <div>
+            <label for="goal-rank-input">
+              <span>تغییر رتبه جهت مشاهده رشته‌های دیگر:</span>
+            </label>
+            <input type="number" id="goal-rank-input" min="1" max="150000" value="1250" placeholder="مثال: ۱۲۵۰">
+          </div>
+          <div>
+            <label>
+              <span>راهنمای سطوح شانس قبولی:</span>
+            </label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:4px;">
+              <span class="badge b5">رویایی (تا ۵۰۰ رتبه بهتر)</span>
+              <span class="badge b3">منطقی (۱۰۰± رتبه شما)</span>
+              <span class="badge b2">بالا (۱۰۰ تا ۲۰۰ رتبه بعد)</span>
+              <span class="badge b1">بسیار بالا / حتمی (۲۰۰ تا ۱۵۰۰ رتبه بعد)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acceptances List -->
+        <div class="list" id="acceptances-list"></div>
+      </div>
+    </div>
+
+    <!-- Strategy Tips -->
+    <div class="tips">
+      <div class="stone">
+        <span class="in">
+          <svg class="i"><use href="#trend"/></svg>
+          <strong>اثر اهرمی امتحانات نهایی:</strong>
+          در کنکور ۱۴۰۴ سهم سوابق به ۶۰٪ قطعی رسیده است؛ ارتقای حتی نیم نمره در درسی مانند فارسی یا زیست، تراز کل را تا ۲۰۰ پله جا‌به‌جا می‌کند.
+        </span>
+      </div>
+      <div class="stone">
+        <span class="in">
+          <svg class="i"><use href="#target"/></svg>
+          <strong>شناسایی نقطه عطف قبولی:</strong>
+          با بررسی کارنامه‌های واقعی، دروسی را که با کمترین درصد باعث قبولی شده‌اند پیدا کنید و نقطه تمرکز خود را بسازید.
+        </span>
+      </div>
+      <div class="stone">
+        <span class="in">
+          <svg class="i"><use href="#brain"/></svg>
+          <strong>مشاوره هوشمند آکادمی پایه:</strong>
+          برنامه‌ریزی بر اساس تراز هدف شما، مسیر تست‌زنی و مرورهای منظم تا رسیدن به رتبه مورد نظرتان در کنکور.
+        </span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Technical Citations and Data Sources Card -->
+  <section class="sources-card">
+    <h3>
+      <svg class="i"><use href="#award"/></svg>
+      گزارش فنی و مراجع داده‌های تخمین رتبه و قبولی
+    </h3>
+    <p style="color:var(--mut);font-size:14px;line-height:1.9;">
+      سامانه تخمین رتبه آکادمی پایه، برخلاف مدل‌های تخمینی ساده و خطی، از الگوریتم همترازسازی چندمتغیره بر مبنای پایگاه‌های داده مستند و کارنامه‌های رسمی کنکورهای سراسری بهره می‌برد:
+    </p>
+
+    <div class="sources-grid">
+      <div class="source-item">
+        <b>۱. سازمان ملی سنجش و ارزشیابی نظام آموزش کشور</b>
+        <p>استفاده از آخرین مصوبات شورای عالی انقلاب فرهنگی، ضرایب رسمی دروس اختصاصی (زیست ۱۲، شیمی ۹، ریاضیات ۱۲، فنون ۸ و...) و ضرایب دروس نهایی دوازدهم.</p>
+      </div>
+
+      <div class="source-item">
+        <b>۲. آرشیو رسمی کارنامه‌های سازمان سنجش آموزش کشور</b>
+        <p>جامعه آماری رسمی بیش از ۱۰۰ هزار کارنامه واقعی داوطلبان سراسری ۱۴۰۲ و ۱۴۰۳ با تطابق دقیق درصدهای کارنامه، تراز کل سنجش، رتبه منطقه و قبولی قطعی دانشگاه.</p>
+      </div>
+
+      <div class="source-item">
+        <b>۳. پایگاه تحلیل آماری آزمون‌های سراسری و گزینه دو</b>
+        <p>تحلیل‌های آماری نمرات خام، تراز آزمون‌های اردیبهشت و تیر، و رتبه‌های مرزی رشته‌های پرطرفدار (پزشکی، دندانپزشکی، داروسازی، مهندسی و علوم انسانی).</p>
+      </div>
+
+      <div class="source-item">
+        <b>۴. پایگاه خبری تحلیلی هیوا و سنجش تکمیلی</b>
+        <p>بررسی آخرین رتبه‌های مجاز و پذیرفته‌شدگان در دوره‌های روزانه، نوبت دوم (شبانه)، پردیس‌های خودگردان، دانشگاه فرهنگیان و دانشگاه آزاد اسلامی.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Mobile Bottom Navigation (Identical to Home Page) -->
+<nav class="payeh-mobile-bottom-nav" aria-label="منوی ناوبری موبایل">
+    <a href="index.html" class="payeh-bottom-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="payeh-bottom-item__icon" style="width: 22px; height: 22px; max-width: 22px; max-height: 22px; flex-shrink: 0;"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>خانه</span>
+    </a>
+    <a href="rank-estimator.html" class="payeh-bottom-item payeh-bottom-item--active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="payeh-bottom-item__icon" style="width: 22px; height: 22px; max-width: 22px; max-height: 22px; flex-shrink: 0;"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg>
+        <span>تخمین رتبه</span>
+    </a>
+    <a href="consultations.html" class="payeh-bottom-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="payeh-bottom-item__icon" style="width: 22px; height: 22px; max-width: 22px; max-height: 22px; flex-shrink: 0;"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+        <span>مشاوره</span>
+    </a>
+    <a href="magazine.html" class="payeh-bottom-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="payeh-bottom-item__icon" style="width: 22px; height: 22px; max-width: 22px; max-height: 22px; flex-shrink: 0;"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+        <span>مجله</span>
+    </a>
+    <a href="login.html" class="payeh-bottom-item payeh-mobile-auth-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="payeh-bottom-item__icon" style="width: 22px; height: 22px; max-width: 22px; max-height: 22px; flex-shrink: 0;"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+        <span>حساب کاربری</span>
+    </a>
+</nav>
+
+<!-- Scorecard Modal -->
+<div class="modal-overlay" id="scorecard-modal" role="dialog" aria-modal="true">
+  <div class="modal-card" id="scorecard-content">
+    <!-- Populated by JavaScript -->
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="js/main.js?v=20261016_5"></script>
+<script src="js/rank-estimator-data.js?v=20261020_2"></script>
+<script src="js/rank-estimator.js?v=20261020_2"></script>
+</body>
+</html>

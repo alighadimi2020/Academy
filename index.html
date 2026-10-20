@@ -10,6 +10,7 @@
     <title>پایه | آکادمی مشاوره تحصیلی</title>
     <link rel="stylesheet" href="css/fonts.css?v=20261016_5">
     <link rel="stylesheet" href="css/home.css?v=20261017_20">
+    <link rel="stylesheet" href="css/rank-estimator.css?v=20261020_1">
 </head>
 
 <body>
@@ -40,6 +41,7 @@
 
                 <nav class="payeh-header__nav">
                     <a href="#" class="payeh-header__link payeh-header__link--active">خانه</a>
+                    <a href="rank-estimator.html" class="payeh-header__link">تخمین رتبه کنکور</a>
                     <a href="magazine.html" class="payeh-header__link">مجله آنلاین</a>
                     <a href="#payeh-recruitment" class="payeh-header__link">جذب مشاور</a>
                     <a href="#" class="payeh-header__link">مشاوره</a>
@@ -152,6 +154,96 @@
     </div>
 
 </section>
+
+<!-- Rank Estimator Teaser Section -->
+<section class="payeh-rank-teaser" style="padding: 10px 0 30px;">
+    <div class="payeh-container">
+        <div class="stage">
+            <span class="blob" style="width:110px;height:110px;top:20px;left:6%;background:linear-gradient(145deg,rgba(255,255,255,0.4),rgba(232,184,74,0.5));box-shadow:inset 0 -8px 16px rgba(7,20,61,0.4)"></span>
+            <span class="blob" style="width:64px;height:64px;bottom:30px;left:42%;animation-delay:-3s;background:linear-gradient(145deg,rgba(255,255,255,0.4),rgba(91,140,255,0.5))"></span>
+            
+            <div class="stage-grid">
+                <div>
+                    <span class="chip">
+                        <svg class="i" style="width:1.15em;height:1.15em;stroke:currentColor;fill:none;stroke-width:1.6;vertical-align:-0.2em;"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/></svg>
+                        هوش مصنوعی و داده‌های رسمی سنجش · کنکور ۱۴۰۲، ۱۴۰۳ و ۱۴۰۴
+                    </span>
+                    <h3 style="font-size:32px;font-weight:800;line-height:1.4;margin:8px 0 12px;">رتبه‌ات رو <span class="gt">همین الان</span> بسنج، قبولی هدفت رو ببین</h3>
+                    <p style="opacity:.85;margin:12px 0 24px;line-height:2;font-size:15px;">
+                        درصد تقریبی و معدلت رو تنظیم کن؛ تراز اختصاصی، تراز سوابق نهایی، رتبه سهمیه و کشوری، به همراه کارنامه‌های واقعی قبول‌شدگان رسمی کنکور سراسری رو مشاهده کن.
+                    </p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <a href="rank-estimator.html" class="btn gold">
+                            ورود به سامانه جامع تخمین رتبه و قبولی
+                            <svg class="i" style="width:1.15em;height:1.15em;stroke:currentColor;fill:none;stroke-width:1.6;vertical-align:-0.2em;"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="stone">
+                    <div class="in" style="text-align:center">
+                        <small style="opacity:.85;font-size:13px;">تخمین سریع با میانگین درصد کنکور</small>
+                        <div class="big" id="home-rank-preview">۱,۸۵۰</div>
+                        <small style="opacity:.8;font-size:12px;">رتبه تقریبی در سهمیه منطقه ۲</small>
+                        
+                        <div style="margin-top:16px;">
+                            <label style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+                                <span>میانگین درصد دروس اختصاصی:</span>
+                                <b id="home-percent-val" style="color:var(--gold2)">۴۵٪</b>
+                            </label>
+                            <input type="range" id="home-percent-slider" min="0" max="100" value="45" style="width:100%;accent-color:var(--gold);height:6px;cursor:pointer;">
+                        </div>
+
+                        <div style="margin-top:12px;">
+                            <label style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+                                <span>معدل کتبی نهایی دیپلم:</span>
+                                <b id="home-gpa-val" style="color:var(--gold2)">۱۸.۰</b>
+                            </label>
+                            <input type="range" id="home-gpa-slider" min="10" max="20" step="0.5" value="18" style="width:100%;accent-color:var(--gold);height:6px;cursor:pointer;">
+                        </div>
+
+                        <a href="rank-estimator.html" class="btn" style="width:100%;margin-top:16px;font-size:13px;padding:10px 16px;">
+                            محاسبه تخصصی با ریزدرصدها و رشته‌محل‌ها
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 Feature Cards -->
+        <div class="feats">
+            <div class="feat">
+                <div class="ic">
+                    <svg class="i" style="width:1.2em;height:1.2em;stroke:currentColor;fill:none;stroke-width:1.6;"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>
+                </div>
+                <b>نتیجه و تحلیل فوری</b>
+                <small>بدون نیاز به ثبت‌نام و کاملاً رایگان</small>
+            </div>
+            <div class="feat">
+                <div class="ic">
+                    <svg class="i" style="width:1.2em;height:1.2em;stroke:currentColor;fill:none;stroke-width:1.6;"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a2 2 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/></svg>
+                </div>
+                <b>داده‌های واقعی و مستند</b>
+                <small>آمار پایگاه ملی سنجش، گزینه دو و هیوا</small>
+            </div>
+            <div class="feat">
+                <div class="ic">
+                    <svg class="i" style="width:1.2em;height:1.2em;stroke:currentColor;fill:none;stroke-width:1.6;"><path d="m2 9 10-5 10 5-10 5zM6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/></svg>
+                </div>
+                <b>کارنامه واقعی داوطلبان</b>
+                <small>مشاهده درصدها و تراز پذیرفته‌شدگان</small>
+            </div>
+            <div class="feat">
+                <div class="ic">
+                    <svg class="i" style="width:1.2em;height:1.2em;stroke:currentColor;fill:none;stroke-width:1.6;"><path d="m3 17 6-6 4 4 8-8M15 7h6v6"/></svg>
+                </div>
+                <b>تفکیک ۵ سطح شانس قبولی</b>
+                <small>از بسیار بالا تا مرزی و رویایی</small>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!--service bar-->
 <section class="payeh-advantages" id="payeh-advantages">
     <div class="payeh-container">
