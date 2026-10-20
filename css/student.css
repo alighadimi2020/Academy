@@ -3661,3 +3661,359 @@ body.payeh-sidebar-locked {
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
     gap: 16px;
 }
+
+/* ========================================================
+   STUDENT PROFILE VIEW & INCOMPLETE BANNER
+======================================================== */
+
+.payeh-student__notice-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1.5px solid #fde68a;
+    border-radius: 18px;
+    padding: 16px 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 15px rgba(217, 119, 6, 0.08);
+    animation: fadeIn 0.3s ease;
+}
+
+.payeh-student__notice-banner .notice-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #fde68a;
+    color: #b45309;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payeh-student__notice-banner .notice-text {
+    flex: 1;
+}
+
+.payeh-student__notice-banner .notice-text strong {
+    display: block;
+    font-size: 14.5px;
+    color: #92400e;
+    margin-bottom: 3px;
+    font-weight: 800;
+}
+
+.payeh-student__notice-banner .notice-text p {
+    margin: 0;
+    font-size: 13px;
+    color: #b45309;
+    line-height: 1.6;
+}
+
+.payeh-student__notice-banner .notice-btn {
+    padding: 9px 18px;
+    background: #d97706;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+    border-radius: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+}
+
+.payeh-student__notice-banner .notice-btn:hover {
+    background: #b45309;
+    transform: translateY(-1px);
+}
+
+/* Profile Wrapper */
+.payeh-profile-wrapper {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 40px;
+}
+
+/* Profile Header Card */
+.payeh-profile-header-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 26px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.payeh-profile-user-group {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.payeh-profile-avatar-large {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #227b4c, #165e38);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(34, 123, 76, 0.3);
+    flex-shrink: 0;
+}
+
+.payeh-profile-info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.payeh-profile-name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.payeh-profile-name-row h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.payeh-badge-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.payeh-profile-phone {
+    margin: 0;
+    font-size: 13.5px;
+    color: #64748b;
+    direction: ltr;
+    text-align: right;
+    font-family: inherit;
+}
+
+/* Completion Box */
+.payeh-profile-completion-box {
+    width: 280px;
+    background: #f8fafc;
+    border: 1px solid #edf2f7;
+    border-radius: 16px;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.completion-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: #475569;
+}
+
+.completion-top strong {
+    color: #227b4c;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.completion-bar-track {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.completion-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #227b4c);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+
+.completion-hint {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+/* Profile Form Card */
+.payeh-profile-form-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 32px 36px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.payeh-profile-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #edf2f7;
+    margin-bottom: 20px;
+}
+
+.payeh-profile-section-title svg {
+    color: #227b4c;
+    stroke-width: 2.2;
+}
+
+.payeh-profile-section-title h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.payeh-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 24px;
+}
+
+.payeh-profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.payeh-profile-field label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.payeh-profile-field input,
+.payeh-profile-field select {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border-radius: 12px;
+    border: 1.5px solid #cbd5e1;
+    background: #f8fafc;
+    font-family: inherit;
+    font-size: 14px;
+    color: #0f172a;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.payeh-profile-field input:focus,
+.payeh-profile-field select:focus {
+    background: #ffffff;
+    border-color: #227b4c;
+    box-shadow: 0 0 0 3px rgba(34, 123, 76, 0.12);
+}
+
+.payeh-profile-error {
+    font-size: 11.5px;
+    color: #dc2626;
+    min-height: 16px;
+}
+
+.payeh-profile-actions {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #edf2f7;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.payeh-profile-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    background: #227b4c;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 800;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 10px rgba(34, 123, 76, 0.28);
+}
+
+.payeh-profile-submit-btn:hover {
+    background: #1b653e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(34, 123, 76, 0.38);
+}
+
+.payeh-profile-submit-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.payeh-profile-save-status {
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.payeh-profile-save-status.is-success {
+    color: #15803d;
+}
+
+.payeh-profile-save-status.is-error {
+    color: #dc2626;
+}
+
+@media (max-width: 768px) {
+    .payeh-student__notice-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .payeh-student__notice-banner .notice-btn {
+        width: 100%;
+        text-align: center;
+    }
+    .payeh-profile-header-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+    }
+    .payeh-profile-completion-box {
+        width: 100%;
+    }
+    .payeh-profile-form-card {
+        padding: 22px 18px;
+    }
+    .payeh-profile-grid {
+        grid-template-columns: 1fr;
+    }
+    .payeh-profile-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .payeh-profile-submit-btn {
+        justify-content: center;
+        width: 100%;
+    }
+}
+

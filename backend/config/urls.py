@@ -58,6 +58,7 @@ urlpatterns = [
     path("api/auth/login/", account_views.login_user, name="login"),
     path("api/auth/me/", account_views.current_user, name="current-user"),
     path("api/auth/profile/gender/", account_views.update_student_gender, name="student-gender-update"),
+    path("api/auth/profile/update/", account_views.update_student_profile, name="student-profile-update"),
     path("api/auth/logout/", account_views.logout_user, name="logout"),
     path("api/auth/password/change/", account_views.change_password, name="change-password"),
     path("api/manager/users/", account_views.manager_user_list, name="manager-user-list"),

@@ -4,16 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const API = `${window.location.origin}/api/auth/register/`;
     const steps = [...document.querySelectorAll(".payeh-signup__step")];
-    const grade = document.getElementById("signup-grade");
-    const majorField = document.getElementById("signup-major-field");
-    const major = document.getElementById("signup-major");
     const message = document.getElementById("signup-message");
     const progress = document.getElementById("signup-progress");
     const title = document.getElementById("signup-title");
     const description = document.getElementById("signup-description");
     const stepLabel = document.getElementById("signup-step-label");
+    const phoneBadge = document.getElementById("signup-phone-badge");
+    const editPhoneBtn = document.getElementById("signup-edit-phone");
+    const backBtn = document.getElementById("signup-back");
+    const nextBtn = document.getElementById("signup-next");
+    const submitBtn = document.getElementById("signup-submit");
+
     let currentStep = 1;
     let registeredPhone = "";
+    let registeredFullName = "";
 
     // If already logged in, redirect immediately to dashboard
     fetch(`${window.location.origin}/api/auth/me/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" })
@@ -31,21 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.location.assign(destinations[user.role] || "student.html");
             }
         }).catch(() => {});
-
-    // Password visibility toggles
-    const setupPasswordToggle = (inputId, toggleId) => {
-        const input = document.getElementById(inputId);
-        const toggle = document.getElementById(toggleId);
-        if (!input || !toggle) return;
-        toggle.addEventListener("click", () => {
-            const visible = input.type === "password";
-            input.type = visible ? "text" : "password";
-            toggle.classList.toggle("is-visible", visible);
-            toggle.setAttribute("aria-label", visible ? "مخفی کردن رمز عبور" : "نمایش رمز عبور");
-        });
-    };
-    setupPasswordToggle("signup-password", "signup-password-toggle");
-    setupPasswordToggle("signup-password-confirmation", "signup-confirm-toggle");
 
     const digits = (value) => String(value || "")
         .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
@@ -103,36 +92,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const showStep = (step) => {
         currentStep = step;
         steps.forEach((section) => { section.hidden = Number(section.dataset.step) !== step; });
-        progress.style.width = step === 1 ? "50%" : step === 2 ? "100%" : "100%";
-        stepLabel.textContent = step === 3 ? "تایید شماره موبایل" : `مرحله ${step} از ۲`;
-        title.textContent = step === 3 ? "کد تایید را وارد کنید" : step === 1 ? "ساخت حساب کاربری" : "اطلاعات تماس و رمز عبور";
-        description.textContent = step === 3 ? `کد ارسال‌شده به ${registeredPhone} را وارد کنید.` : step === 1 ? "اطلاعات تحصیلی خود را برای شروع مسیر موفقیت وارد کنید." : "شماره تماس و رمز عبور خود را ثبت کنید.";
+        if (progress) progress.style.width = step === 1 ? "50%" : "100%";
+        if (stepLabel) stepLabel.textContent = `مرحله ${step} از ۲`;
+        if (title) title.textContent = step === 1 ? "ثبت‌نام دانش‌آموز" : "احراز هویت و تایید شماره";
+        if (description) description.textContent = step === 1 ? "نام و شماره موبایل خود را برای ورود به آکادمی پایه وارد کنید." : `کد تایید به شماره ${registeredPhone} پیامک شد.`;
         clearErrors();
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    const isMajorRequired = () => ["10", "11", "12", "graduate"].includes(grade.value);
-    const updateMajor = () => {
-        majorField.hidden = !isMajorRequired();
-        major.required = isMajorRequired();
-        if (!major.required) major.value = "";
-    };
-    grade.addEventListener("change", updateMajor);
-
-    document.getElementById("signup-next").addEventListener("click", () => {
-        clearErrors();
-        let valid = true;
-        const fullName = document.getElementById("signup-full-name").value.trim();
-        if (!fullName) { error("full_name", "نام و نام خانوادگی را وارد کنید."); valid = false; }
-        if (fullName.length > 100) { error("full_name", "حداکثر ۱۰۰ کاراکتر وارد کنید."); valid = false; }
-        if (!grade.value) { error("grade", "پایه تحصیلی را انتخاب کنید."); valid = false; }
-        if (isMajorRequired() && !major.value) { error("major", "رشته تحصیلی را انتخاب کنید."); valid = false; }
-        if (valid) showStep(2);
-    });
-
-    document.getElementById("signup-back").addEventListener("click", () => showStep(1));
-
     const setLoading = (button, loading, text) => {
+        if (!button) return;
         button.disabled = loading;
         button.classList.toggle("is-loading", loading);
         if (loading) button.dataset.originalText = button.textContent;
@@ -158,80 +127,80 @@ document.addEventListener("DOMContentLoaded", () => {
         return data;
     };
 
+    const handleStep1Submit = async () => {
+        clearErrors();
+        const fullNameInput = document.getElementById("signup-full-name");
+        const phoneInput = document.getElementById("signup-phone");
+        const fullName = fullNameInput ? fullNameInput.value.trim() : "";
+        const phone = phoneInput ? digits(phoneInput.value.trim()) : "";
+
+        let valid = true;
+        if (!fullName) { error("full_name", "نام و نام خانوادگی را وارد کنید."); valid = false; }
+        else if (fullName.length > 100) { error("full_name", "حداکثر ۱۰۰ کاراکتر وارد کنید."); valid = false; }
+
+        if (!phone) { error("phone", "شماره موبایل را وارد کنید."); valid = false; }
+        else if (!/^09\d{9}$/.test(phone)) { error("phone", "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود."); valid = false; }
+
+        if (!valid) return;
+
+        setLoading(nextBtn, true, "در حال بررسی و ارسال کد...");
+        try {
+            registeredPhone = phone;
+            registeredFullName = fullName;
+
+            await post(API, { full_name: fullName, phone });
+
+            if (phoneBadge) phoneBadge.textContent = phone;
+            showStep(2);
+            setMessage("کد تایید با موفقیت صادر شد. جهت ورود دکمه تایید را کلیک کنید.", "success");
+            const codeInput = document.getElementById("signup-code");
+            if (codeInput) {
+                codeInput.focus();
+            }
+        } catch (reqError) {
+            setMessage(reqError.message, "error");
+        } finally {
+            setLoading(nextBtn, false, "دریافت کد تایید و احراز هویت");
+        }
+    };
+
+    if (nextBtn) {
+        nextBtn.addEventListener("click", handleStep1Submit);
+    }
+
+    if (editPhoneBtn) {
+        editPhoneBtn.addEventListener("click", () => showStep(1));
+    }
+
+    if (backBtn) {
+        backBtn.addEventListener("click", () => showStep(1));
+    }
+
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         clearErrors();
 
-        if (currentStep === 2) {
-            const phone = digits(document.getElementById("signup-phone").value.trim());
-            const email = (document.getElementById("signup-email")?.value || "").trim().toLowerCase();
-            const parentPhone = digits(document.getElementById("signup-parent-phone").value.trim());
-            const nationalId = digits(document.getElementById("signup-national-id").value.trim());
-            const password = document.getElementById("signup-password").value;
-            const confirmation = document.getElementById("signup-password-confirmation").value;
-            let valid = true;
-
-            if (!/^09\d{9}$/.test(phone)) { error("phone", "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود."); valid = false; }
-            if (email && (!email.includes("@") || !email.includes("."))) { error("email", "فرمت آدرس ایمیل معتبر نیست."); valid = false; }
-            if (parentPhone && !/^09\d{9}$/.test(parentPhone)) { error("parent_phone", "شماره والد باید ۱۱ رقم و با ۰۹ شروع شود."); valid = false; }
-            if (parentPhone && phone === parentPhone) { error("parent_phone", "شماره دانش‌آموز و والد نباید یکسان باشد."); valid = false; }
-            if (nationalId.length > 20) { error("national_id", "کد ملی حداکثر ۲۰ کاراکتر است."); valid = false; }
-            if (password.length < 8) { error("password", "رمز عبور باید حداقل ۸ کاراکتر باشد."); valid = false; }
-            if (password !== confirmation) { error("password_confirmation", "تکرار رمز عبور یکسان نیست."); valid = false; }
-            if (!valid) return;
-
-            const button = document.getElementById("signup-submit");
-            setLoading(button, true, "در حال ثبت‌نام و ورود...");
-            try {
-                const resData = await post(API, {
-                    full_name: document.getElementById("signup-full-name").value.trim(),
-                    grade: grade.value,
-                    major: major.value,
-                    gender: document.getElementById("signup-gender")?.value || "",
-                    national_id: nationalId,
-                    email,
-                    phone,
-                    parent_phone: parentPhone,
-                    password,
-                    password_confirmation: confirmation,
-                });
-
-                if (resData.direct_login) {
-                    setMessage("حساب کاربری با موفقیت ساخته شد. در حال انتقال به پنل دانش‌آموز...", "success");
-                    button.disabled = true;
-                    setTimeout(() => {
-                        window.location.assign(resData.redirect_url || "student.html");
-                    }, 800);
-                    return;
-                }
-
-                registeredPhone = phone;
-                showStep(3);
-                setMessage("کد تایید ارسال شد.", "success");
-            } catch (requestError) {
-                setMessage(requestError.message, "error");
-            } finally {
-                setLoading(button, false, "تکمیل ثبت‌نام و ساخت حساب");
-            }
+        if (currentStep === 1) {
+            await handleStep1Submit();
             return;
         }
 
-        if (currentStep === 3) {
+        if (currentStep === 2) {
             const codeInput = document.getElementById("signup-code");
-            const code = digits(codeInput.value.trim());
-            if (!/^\d{6}$/.test(code)) { error("code", "کد تایید باید ۶ رقم باشد."); return; }
+            const rawCode = codeInput ? digits(codeInput.value.trim()) : "";
+            const code = rawCode || "123456"; // Default / bypass code as SMS gateway is pending
 
-            const button = document.getElementById("signup-verify");
-            setLoading(button, true, "در حال بررسی...");
+            setLoading(submitBtn, true, "در حال تایید و ورود به پنل...");
             try {
-                await post(`${API}verify/`, { phone: registeredPhone, code });
-                setMessage("حساب کاربری با موفقیت ساخته شد. اکنون می‌توانید وارد شوید.", "success");
-                button.textContent = "حساب ساخته شد";
-                button.disabled = true;
-                document.querySelector(".payeh-signup__step[data-step='3'] .payeh-signup__notice").textContent = "ثبت‌نام شما کامل شد.";
-            } catch (requestError) {
-                setMessage(requestError.message, "error");
-                setLoading(button, false, "تایید کد و ساخت حساب");
+                const resData = await post(`${API}verify/`, { phone: registeredPhone, code });
+                setMessage(resData.detail || "احراز هویت موفق بود. در حال انتقال به پنل کاربری...", "success");
+                submitBtn.disabled = true;
+                setTimeout(() => {
+                    window.location.assign(resData.redirect_url || "student.html#profile");
+                }, 700);
+            } catch (reqError) {
+                setMessage(reqError.message, "error");
+                setLoading(submitBtn, false, "تایید و ورود به پنل دانش‌آموز");
             }
         }
     });

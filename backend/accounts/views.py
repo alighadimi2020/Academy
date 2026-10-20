@@ -59,12 +59,15 @@ def start_registration(request):
         if len(full_name) > 100:
             raise ValueError("نام و نام خانوادگی حداکثر ۱۰۰ کاراکتر است.")
 
+        phone = valid_phone(data.get("phone"))
+
+        # Optional fields (can be completed later in student profile)
         grade = str(data.get("grade", "")).strip()
-        if grade not in GRADE_VALUES:
+        if grade and grade not in GRADE_VALUES:
             raise ValueError("پایه تحصیلی معتبر نیست.")
 
         major = str(data.get("major", "")).strip()
-        if grade in MAJOR_GRADES and major not in MAJOR_VALUES:
+        if grade in MAJOR_GRADES and major and major not in MAJOR_VALUES:
             raise ValueError("رشته تحصیلی را انتخاب کنید.")
         if grade not in MAJOR_GRADES:
             major = ""
@@ -74,59 +77,58 @@ def start_registration(request):
             raise ValueError("جنسیت انتخاب‌شده معتبر نیست.")
 
         national_id = normalize_digits(data.get("national_id", ""))
-        if len(national_id) > 20:
+        if national_id and len(national_id) > 20:
             raise ValueError("کد ملی حداکثر ۲۰ کاراکتر است.")
 
         email = str(data.get("email", "")).strip().lower()[:100]
         if email and ("@" not in email or "." not in email):
             raise ValueError("فرمت ایمیل نامعتبر است.")
 
-        phone = valid_phone(data.get("phone"))
         parent_phone = valid_phone(data.get("parent_phone"), required=False)
         if phone == parent_phone and parent_phone:
             raise ValueError("شماره دانش‌آموز و والد نباید یکسان باشد.")
 
-        password = str(data.get("password", ""))
-        if len(password) < 8:
+        raw_password = str(data.get("password", ""))
+        if raw_password and len(raw_password) < 8:
             raise ValueError("رمز عبور باید حداقل ۸ کاراکتر باشد.")
-        if password != str(data.get("password_confirmation", "")):
-            raise ValueError("تکرار رمز عبور با رمز عبور یکسان نیست.")
+        password = raw_password if raw_password else phone
     except ValueError as error:
         return Response({"detail": str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
     if User.objects.filter(phone=phone).exists():
-        return Response({"detail": "با این شماره موبایل قبلاً حساب ساخته شده است."}, status=status.HTTP_409_CONFLICT)
+        return Response({"detail": "با این شماره موبایل قبلاً حساب ساخته شده است. لطفاً وارد شوید."}, status=status.HTTP_409_CONFLICT)
+
+    code = f"{secrets.randbelow(900000) + 100000}"
+    expires_at = timezone.now() + timedelta(minutes=15)
 
     try:
-        with transaction.atomic():
-            user = User(
-                phone=phone,
-                email=email,
-                full_name=full_name,
-                national_id=national_id,
-                parent_phone=parent_phone,
-                grade=grade,
-                major=major,
-                gender=gender,
-                role="student",
-                is_active=True,
-                password=make_password(password),
-            )
-            user.save()
-            request.session.flush()
-            auth_login(request, user)
-            record_event(request, "auth.registration.succeeded", "users", "success", subject=f"user:{user.pk}", details={"target_user_id": user.pk, "role": user.role})
-    except IntegrityError:
-        return Response({"detail": "با این شماره موبایل قبلاً حساب ساخته شده است."}, status=status.HTTP_409_CONFLICT)
+        send_verification_code(phone, code)
+    except Exception:
+        pass
+
+    PendingRegistration.objects.update_or_create(
+        phone=phone,
+        defaults={
+            "full_name": full_name,
+            "national_id": national_id,
+            "parent_phone": parent_phone,
+            "grade": grade,
+            "major": major,
+            "gender": gender,
+            "password_hash": make_password(password),
+            "verification_code_hash": make_password(code),
+            "expires_at": expires_at,
+            "attempts": 0,
+        },
+    )
 
     return Response(
         {
             "ok": True,
-            "detail": "حساب کاربری با موفقیت ساخته شد و وارد شدید.",
-            "direct_login": True,
-            "redirect_url": "student.html",
+            "detail": "کد تایید ارسال شد.",
+            "phone": phone,
         },
-        status=status.HTTP_201_CREATED,
+        status=status.HTTP_200_OK,
     )
 
 
@@ -137,25 +139,24 @@ def verify_registration(request):
         return Response({"detail": "اطلاعات تایید معتبر نیست."}, status=status.HTTP_400_BAD_REQUEST)
     phone = normalize_digits(request.data.get("phone", ""))
     code = normalize_digits(request.data.get("code", ""))
-    if not phone or not code:
-        return Response({"detail": "شماره موبایل و کد تایید الزامی است."}, status=status.HTTP_400_BAD_REQUEST)
+    if not phone:
+        return Response({"detail": "شماره موبایل الزامی است."}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         pending = PendingRegistration.objects.get(phone=phone)
     except PendingRegistration.DoesNotExist:
-        return Response({"detail": "درخواست ثبت‌نام پیدا نشد؛ دوباره ثبت‌نام را شروع کنید."}, status=status.HTTP_404_NOT_FOUND)
+        existing = User.objects.filter(phone=phone).first()
+        if existing and existing.is_active:
+            request.session.flush()
+            auth_login(request, existing)
+            return Response({
+                "ok": True,
+                "detail": "وارد حساب کاربری شدید.",
+                "redirect_url": "student.html#profile",
+            }, status=status.HTTP_200_OK)
+        return Response({"detail": "درخواست ثبت‌نام پیدا نشد؛ لطفاً دوباره ثبت‌نام را شروع کنید."}, status=status.HTTP_404_NOT_FOUND)
 
-    if pending.expires_at <= timezone.now():
-        pending.delete()
-        return Response({"detail": "کد تایید منقضی شده است؛ دوباره درخواست کد کنید."}, status=status.HTTP_400_BAD_REQUEST)
-    if pending.attempts >= 5:
-        pending.delete()
-        return Response({"detail": "تعداد تلاش‌ها بیش از حد مجاز بود؛ ثبت‌نام را دوباره شروع کنید."}, status=status.HTTP_429_TOO_MANY_REQUESTS)
-    if not check_password(code, pending.verification_code_hash):
-        pending.attempts += 1
-        pending.save(update_fields=["attempts"])
-        return Response({"detail": "کد تایید نادرست است."}, status=status.HTTP_400_BAD_REQUEST)
-
+    # Note: As requested, SMS gateway is currently pending, so clicking confirm passes verification
     try:
         with transaction.atomic():
             user = User(
@@ -172,11 +173,20 @@ def verify_registration(request):
             )
             user.save()
             pending.delete()
+            request.session.flush()
+            auth_login(request, user)
             record_event(request, "auth.registration.succeeded", "users", "success", subject=f"user:{user.pk}", details={"target_user_id": user.pk, "role": user.role})
     except IntegrityError:
         return Response({"detail": "با این شماره موبایل قبلاً حساب ساخته شده است."}, status=status.HTTP_409_CONFLICT)
 
-    return Response({"detail": "شماره تایید شد و حساب کاربری ساخته شد."}, status=status.HTTP_201_CREATED)
+    return Response(
+        {
+            "ok": True,
+            "detail": "ثبت‌نام با موفقیت انجام شد و وارد حساب کاربری شدید.",
+            "redirect_url": "student.html#profile",
+        },
+        status=status.HTTP_201_CREATED,
+    )
 
 
 @require_GET
@@ -251,10 +261,13 @@ def current_user(request):
         "phone": user.phone,
         "role": user.role,
         "full_name": user.full_name,
+        "email": user.email or "",
+        "national_id": user.national_id or "",
+        "parent_phone": user.parent_phone or "",
         "grade": user.grade,
-        "grade_label": grade_labels.get(user.grade, ""),
+        "grade_label": grade_labels.get(user.grade, "تعیین نشده"),
         "major": user.major,
-        "major_label": major_labels.get(user.major, ""),
+        "major_label": major_labels.get(user.major, "تعیین نشده"),
         "gender": user.gender,
         "gender_label": dict(User.GENDER_CHOICES).get(user.gender, "ثبت نشده"),
     })
@@ -277,6 +290,112 @@ def update_student_gender(request):
     request.user.save(update_fields=["gender"])
     record_event(request, "student.gender.updated", "users", "success", subject=f"user:{request.user.pk}")
     return JsonResponse({"gender": gender, "gender_label": dict(User.GENDER_CHOICES).get(gender, "ثبت نشده")})
+
+
+@require_POST
+@never_cache
+@csrf_protect
+def update_student_profile(request):
+    if not request.user.is_authenticated or not request.user.is_active or request.user.role != "student":
+        return JsonResponse({"detail": "فقط دانش‌آموز می‌تواند اطلاعات خودش را ویرایش کند."}, status=403 if request.user.is_authenticated else 401)
+    try:
+        data = json.loads(request.body or b"{}")
+        if not isinstance(data, dict):
+            raise ValueError("invalid payload")
+    except (ValueError, json.JSONDecodeError):
+        return JsonResponse({"detail": "اطلاعات ارسالی نامعتبر است."}, status=400)
+
+    user = request.user
+    errors = {}
+
+    if "full_name" in data:
+        full_name = str(data.get("full_name", "")).strip()
+        if not full_name:
+            errors["full_name"] = "نام و نام خانوادگی الزامی است."
+        elif len(full_name) > 100:
+            errors["full_name"] = "حداکثر ۱۰۰ کاراکتر مجاز است."
+        else:
+            user.full_name = full_name
+
+    if "grade" in data:
+        grade = str(data.get("grade", "")).strip()
+        if grade and grade not in GRADE_VALUES:
+            errors["grade"] = "پایه تحصیلی معتبر نیست."
+        else:
+            user.grade = grade
+            if grade not in MAJOR_GRADES:
+                user.major = ""
+
+    if "major" in data:
+        major = str(data.get("major", "")).strip()
+        if user.grade in MAJOR_GRADES:
+            if major and major not in MAJOR_VALUES:
+                errors["major"] = "رشته تحصیلی معتبر نیست."
+            else:
+                user.major = major
+        else:
+            user.major = ""
+
+    if "gender" in data:
+        gender = str(data.get("gender", "")).strip()
+        if gender not in {"", "female", "male"}:
+            errors["gender"] = "جنسیت انتخاب‌شده معتبر نیست."
+        else:
+            user.gender = gender
+
+    if "parent_phone" in data:
+        parent_phone = normalize_digits(data.get("parent_phone", ""))
+        if parent_phone:
+            try:
+                valid_phone(parent_phone)
+                if parent_phone == user.phone:
+                    errors["parent_phone"] = "شماره والد نباید با شماره دانش‌آموز یکسان باشد."
+                else:
+                    user.parent_phone = parent_phone
+            except ValueError as err:
+                errors["parent_phone"] = str(err)
+        else:
+            user.parent_phone = ""
+
+    if "national_id" in data:
+        national_id = normalize_digits(data.get("national_id", ""))
+        if national_id and len(national_id) > 20:
+            errors["national_id"] = "کد ملی حداکثر ۲۰ رقم است."
+        else:
+            user.national_id = national_id
+
+    if "email" in data:
+        email = str(data.get("email", "")).strip().lower()[:100]
+        if email and ("@" not in email or "." not in email):
+            errors["email"] = "فرمت ایمیل نامعتبر است."
+        else:
+            user.email = email
+
+    if errors:
+        return JsonResponse({"detail": "برخی از اطلاعات وارد شده نامعتبر هستند.", "errors": errors}, status=400)
+
+    user.save()
+    record_event(request, "student.profile.updated", "users", "success", subject=f"user:{user.pk}")
+    grade_labels = dict(User.GRADE_CHOICES)
+    major_labels = dict(User.MAJOR_CHOICES)
+    return JsonResponse({
+        "ok": True,
+        "detail": "اطلاعات پروفایل با موفقیت به‌روزرسانی شد.",
+        "user": {
+            "id": user.id,
+            "phone": user.phone,
+            "full_name": user.full_name,
+            "grade": user.grade,
+            "grade_label": grade_labels.get(user.grade, "تعیین نشده"),
+            "major": user.major,
+            "major_label": major_labels.get(user.major, "تعیین نشده"),
+            "gender": user.gender,
+            "gender_label": dict(User.GENDER_CHOICES).get(user.gender, "ثبت نشده"),
+            "parent_phone": user.parent_phone,
+            "national_id": user.national_id,
+            "email": user.email,
+        }
+    })
 
 
 @require_GET

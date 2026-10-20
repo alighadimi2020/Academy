@@ -49,7 +49,7 @@ class User(AbstractUser):
     full_name = models.CharField(max_length=100, verbose_name="نام و نام خانوادگی")
     national_id = models.CharField(max_length=20, blank=True, verbose_name="کد ملی")
     parent_phone = models.CharField(max_length=11, blank=True, verbose_name="شماره والد")
-    grade = models.CharField(max_length=10, choices=GRADE_CHOICES, verbose_name="پایه تحصیلی")
+    grade = models.CharField(max_length=10, choices=GRADE_CHOICES, blank=True, verbose_name="پایه تحصیلی")
     major = models.CharField(max_length=20, choices=MAJOR_CHOICES, blank=True, verbose_name="رشته تحصیلی")
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, verbose_name="جنسیت")
 
@@ -76,7 +76,7 @@ class PendingRegistration(models.Model):
     full_name = models.CharField(max_length=100)
     national_id = models.CharField(max_length=20, blank=True)
     parent_phone = models.CharField(max_length=11, blank=True)
-    grade = models.CharField(max_length=10)
+    grade = models.CharField(max_length=10, blank=True)
     major = models.CharField(max_length=20, blank=True)
     gender = models.CharField(max_length=10, blank=True)
     password_hash = models.CharField(max_length=128)

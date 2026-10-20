@@ -1016,6 +1016,11 @@ const initStudentApp = async () => {
             const v = document.getElementById("view-performance");
             if (v) { v.classList.add("active"); v.style.display = "block"; }
             loadPerformanceView();
+        } else if (name === "profile") {
+            const v = document.getElementById("view-profile");
+            if (v) { v.classList.add("active"); v.style.display = "block"; }
+            loadProfileView();
+            window.scrollTo({ top: 0, behavior: "smooth" });
         } else {
             const v = document.getElementById("view-dashboard");
             if (v) { v.classList.add("active"); v.style.display = "block"; }
@@ -1024,13 +1029,219 @@ const initStudentApp = async () => {
                 document.getElementById("student-consultant-panel")?.scrollIntoView({ behavior: "smooth", block: "center" });
             } else if (name === "tasks" || name === "activities") {
                 document.getElementById("student-study-plan")?.scrollIntoView({ behavior: "smooth", block: "start" });
-            } else if (name === "profile") {
-                document.getElementById("student-profile-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
             } else {
                 window.scrollTo({ top: 0, behavior: "smooth" });
             }
         }
         toggleStudentSidebar(false);
+    };
+
+    let currentUserData = null;
+
+    const updateProfileUI = (data) => {
+        if (!data) return;
+        currentUserData = data;
+        const name = data.full_name || "دانش‌آموز";
+        const phone = data.phone || "";
+        const grade = data.grade || "";
+        const major = data.major || "";
+        const gender = data.gender || "";
+
+        // Header & Sidebar
+        ["student-sidebar-name", "student-account-name", "profile-card-name"].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = name;
+        });
+        const subtitle = document.getElementById("student-header-subtitle");
+        if (subtitle) subtitle.textContent = `پنل شخصی ${name}`;
+        const greeting = document.getElementById("student-greeting");
+        if (greeting) greeting.textContent = `سلام ${name} 👋`;
+
+        // Card phone & badge
+        const cardPhone = document.getElementById("profile-card-phone");
+        if (cardPhone) cardPhone.textContent = phone;
+
+        const gradeBadge = document.getElementById("profile-card-grade-badge");
+        if (gradeBadge) {
+            gradeBadge.textContent = data.grade_label ? `${data.grade_label}${data.major_label ? ` - ${data.major_label}` : ""}` : "پایه تعیین‌نشده";
+            gradeBadge.className = data.grade ? "payeh-badge-pill" : "payeh-badge-pill is-warning";
+        }
+
+        // Incomplete banner on dashboard
+        const banner = document.getElementById("student-incomplete-banner");
+        if (banner) {
+            banner.style.display = (!grade) ? "flex" : "none";
+        }
+
+        // Completion percent calculation
+        let completed = 0;
+        let total = 4;
+        if (name && name !== "دانش‌آموز") completed++;
+        if (phone) completed++;
+        if (grade) {
+            completed++;
+            if (["10", "11", "12", "graduate"].includes(grade)) {
+                total++;
+                if (major) completed++;
+            }
+        }
+        if (gender) completed++;
+
+        const pct = Math.round((completed / total) * 100);
+        const pctEl = document.getElementById("profile-completion-percent");
+        const fillEl = document.getElementById("profile-completion-fill");
+        const hintEl = document.getElementById("profile-completion-hint");
+        if (pctEl) pctEl.textContent = `${new Intl.NumberFormat("fa-IR").format(pct)}٪`;
+        if (fillEl) fillEl.style.width = `${pct}%`;
+        if (hintEl) {
+            if (!grade) {
+                hintEl.textContent = "لطفاً پایه تحصیلی خود را انتخاب کنید";
+                hintEl.style.color = "#dc2626";
+            } else if (["10", "11", "12", "graduate"].includes(grade) && !major) {
+                hintEl.textContent = "لطفاً رشته تحصیلی خود را انتخاب کنید";
+                hintEl.style.color = "#d97706";
+            } else if (pct === 100) {
+                hintEl.textContent = "مشخصات شما ۱۰۰٪ تکمیل است ✓";
+                hintEl.style.color = "#15803d";
+            } else {
+                hintEl.textContent = "مشخصات تحصیلی ثبت شده است";
+                hintEl.style.color = "#64748b";
+            }
+        }
+
+        // Populate Form Fields
+        const fFullName = document.getElementById("profile-full-name");
+        if (fFullName) fFullName.value = data.full_name || "";
+
+        const fPhone = document.getElementById("profile-phone");
+        if (fPhone) fPhone.value = data.phone || "";
+
+        const fGrade = document.getElementById("profile-grade");
+        if (fGrade) fGrade.value = data.grade || "";
+
+        const majorGroup = document.getElementById("profile-major-group");
+        const fMajor = document.getElementById("profile-major");
+        const isUpperGrade = ["10", "11", "12", "graduate"].includes(data.grade);
+        if (majorGroup) majorGroup.style.display = isUpperGrade ? "flex" : "none";
+        if (fMajor) fMajor.value = data.major || "";
+
+        const fGender = document.getElementById("profile-gender");
+        if (fGender) fGender.value = data.gender || "";
+
+        const fParentPhone = document.getElementById("profile-parent-phone");
+        if (fParentPhone) fParentPhone.value = data.parent_phone || "";
+
+        const fNationalId = document.getElementById("profile-national-id");
+        if (fNationalId) fNationalId.value = data.national_id || "";
+
+        const fEmail = document.getElementById("profile-email");
+        if (fEmail) fEmail.value = data.email || "";
+    };
+
+    let profileFormInitialized = false;
+    const loadProfileView = () => {
+        if (currentUserData) {
+            updateProfileUI(currentUserData);
+        }
+        if (profileFormInitialized) return;
+        profileFormInitialized = true;
+
+        const gradeSelect = document.getElementById("profile-grade");
+        const majorGroup = document.getElementById("profile-major-group");
+        const majorSelect = document.getElementById("profile-major");
+
+        if (gradeSelect) {
+            gradeSelect.addEventListener("change", () => {
+                const showMajor = ["10", "11", "12", "graduate"].includes(gradeSelect.value);
+                if (majorGroup) majorGroup.style.display = showMajor ? "flex" : "none";
+                if (!showMajor && majorSelect) majorSelect.value = "";
+            });
+        }
+
+        const profileForm = document.getElementById("student-profile-form");
+        const statusEl = document.getElementById("profile-save-status");
+        const submitBtn = document.getElementById("profile-save-btn");
+
+        if (profileForm) {
+            profileForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                document.querySelectorAll(".payeh-profile-error").forEach(el => el.textContent = "");
+                if (statusEl) { statusEl.textContent = ""; statusEl.className = "payeh-profile-save-status"; }
+
+                const grade = gradeSelect ? gradeSelect.value : "";
+                const major = majorSelect ? majorSelect.value : "";
+                const fullName = document.getElementById("profile-full-name")?.value.trim() || "";
+                const gender = document.getElementById("profile-gender")?.value || "";
+                const parentPhone = document.getElementById("profile-parent-phone")?.value.trim() || "";
+                const nationalId = document.getElementById("profile-national-id")?.value.trim() || "";
+                const email = document.getElementById("profile-email")?.value.trim() || "";
+
+                let hasError = false;
+                if (!fullName) {
+                    const err = document.getElementById("err-profile-full-name");
+                    if (err) err.textContent = "نام و نام خانوادگی الزامی است.";
+                    hasError = true;
+                }
+                if (!grade) {
+                    const err = document.getElementById("err-profile-grade");
+                    if (err) err.textContent = "پایه تحصیلی الزامی است.";
+                    hasError = true;
+                }
+                if (["10", "11", "12", "graduate"].includes(grade) && !major) {
+                    const err = document.getElementById("err-profile-major");
+                    if (err) err.textContent = "رشته تحصیلی الزامی است.";
+                    hasError = true;
+                }
+                if (hasError) return;
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `<span>در حال ذخیره...</span>`;
+                }
+
+                try {
+                    const csrfToken = await getCsrfToken();
+                    const res = await fetch("/api/auth/profile/update/", {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken,
+                        },
+                        body: JSON.stringify({
+                            full_name: fullName,
+                            grade,
+                            major,
+                            gender,
+                            parent_phone: parentPhone,
+                            national_id: nationalId,
+                            email,
+                        }),
+                    });
+                    const resData = await res.json();
+                    if (!res.ok) {
+                        throw new Error(resData.detail || "ذخیره اطلاعات انجام نشد.");
+                    }
+                    if (statusEl) {
+                        statusEl.textContent = "✓ اطلاعات پروفایل با موفقیت به‌روزرسانی شد.";
+                        statusEl.className = "payeh-profile-save-status is-success";
+                    }
+                    if (resData.user) {
+                        updateProfileUI(resData.user);
+                    }
+                } catch (err) {
+                    if (statusEl) {
+                        statusEl.textContent = err.message || "خطا در برقراری ارتباط.";
+                        statusEl.className = "payeh-profile-save-status is-error";
+                    }
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>ذخیره تغییرات مشخصات</span>`;
+                    }
+                }
+            });
+        }
     };
 
     const studentSidebarOverlay = document.getElementById("studentSidebarOverlay");
@@ -2035,6 +2246,8 @@ const initStudentApp = async () => {
         const me = await meResponse.json();
         currentUserId = me.id;
         if (me.role !== "student") { location.assign(me.role === "consultant" ? "consultant.html" : "manager.html"); return; }
+        currentUserData = me;
+        updateProfileUI(me);
         const name = me.full_name || "دانش‌آموز";
         loadStudyPlan();
         loadStudyFeedbacks();
