@@ -245,6 +245,9 @@
     if (qBadge) qBadge.textContent = fa(state.quota);
     if (qNum) qNum.textContent = fa(state.quota);
     if (fBadge) fBadge.textContent = state.field;
+    document.querySelectorAll('.direct-q-btn').forEach(btn => {
+      btn.classList.toggle('on', btn.getAttribute('data-quota') === String(state.quota));
+    });
   }
 
   // --- UI Builders ---
@@ -529,11 +532,11 @@
               <b>${item.major} · ${item.university}</b>
               <span class="${badgeClass}">${item.type}</span>
             </div>
-            <div class="item-details" style="color: #ffffff; opacity: 0.95;">
+            <div class="item-details">
               <span>کد سنجش: <code class="code">${item.code}</code></span>
               <span>شهر: <strong>${item.city}</strong></span>
-              <span style="color: var(--gold2); font-weight: 700;">
-                رتبه کارنامه قبولی در منطقه ${fa(state.quota)}: <strong>${fa(admittedRank)}</strong>
+              <span class="quota-rank-pill">
+                رتبه در سهمیه منطقه ${fa(state.quota)}: <strong>${fa(admittedRank)}</strong>
               </span>
               <span class="year-pill">کنکور <strong>${student.year}</strong></span>
               <span>تراز کل: <strong>${fa(student.totalTScore)}</strong></span>
@@ -772,6 +775,18 @@
         calculate();
       });
     }
+
+    // Direct mode quick quota switcher buttons
+    document.querySelectorAll('.direct-q-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.quota = btn.getAttribute('data-quota');
+        if (quotaSelect) quotaSelect.value = state.quota;
+        const quotaLabel = document.getElementById('direct-quota-label');
+        if (quotaLabel) quotaLabel.textContent = fa(state.quota);
+        updateDirectPanelBadges();
+        calculate();
+      });
+    });
 
     // Year Selector
     const yearSelect = document.getElementById('year-select');
