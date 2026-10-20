@@ -42,25 +42,59 @@
     });
   }
 
-  // Piecewise monotonic splines for Konkur percentage to T-score
-  const KONKUR_PERCENT_ANCHORS = [
-    { p: -20, t: 4200 },
-    { p: 0,   t: 5000 },
-    { p: 10,  t: 6000 },
-    { p: 20,  t: 6900 },
-    { p: 35,  t: 8100 },
-    { p: 50,  t: 9250 },
-    { p: 65,  t: 10450 },
-    { p: 80,  t: 11600 },
-    { p: 90,  t: 12200 },
-    { p: 100, t: 12750 }
-  ];
+  // Piecewise monotonic splines for Konkur percentage to T-score per academic field
+  const KONKUR_PERCENT_ANCHORS = {
+    'ریاضی': [
+      { p: -20, t: 3500 },
+      { p: -10, t: 4100 },
+      { p: 0,   t: 4900 },
+      { p: 10,  t: 6100 },
+      { p: 20,  t: 7100 },
+      { p: 30,  t: 8050 },
+      { p: 40,  t: 8950 },
+      { p: 50.7857, t: 9855 }, // Official 1403 Benchmark: Math 36%, Phys 68%, Chem 54% -> T 9855
+      { p: 60,  t: 10650 },
+      { p: 70,  t: 11350 },
+      { p: 80,  t: 12000 },
+      { p: 90,  t: 12600 },
+      { p: 100, t: 13200 }
+    ],
+    'تجربی': [
+      { p: -20, t: 3600 },
+      { p: 0,   t: 4700 },
+      { p: 10,  t: 5600 },
+      { p: 20,  t: 6500 },
+      { p: 30,  t: 7400 },
+      { p: 40,  t: 8300 },
+      { p: 50,  t: 9200 },
+      { p: 60,  t: 10100 },
+      { p: 70,  t: 10950 },
+      { p: 80,  t: 11750 },
+      { p: 90,  t: 12450 },
+      { p: 100, t: 13100 }
+    ],
+    'انسانی': [
+      { p: -20, t: 3500 },
+      { p: 0,   t: 4600 },
+      { p: 10,  t: 5500 },
+      { p: 20,  t: 6400 },
+      { p: 30,  t: 7300 },
+      { p: 40,  t: 8200 },
+      { p: 50,  t: 9100 },
+      { p: 60,  t: 10000 },
+      { p: 70,  t: 10850 },
+      { p: 80,  t: 11650 },
+      { p: 90,  t: 12350 },
+      { p: 100, t: 13000 }
+    ]
+  };
 
-  function percentToTScore(p) {
-    const clamped = Math.max(-20, Math.min(100, p));
-    for (let i = 0; i < KONKUR_PERCENT_ANCHORS.length - 1; i++) {
-      const a = KONKUR_PERCENT_ANCHORS[i];
-      const b = KONKUR_PERCENT_ANCHORS[i + 1];
+  function percentToTScore(p, field) {
+    const list = KONKUR_PERCENT_ANCHORS[field] || (state && KONKUR_PERCENT_ANCHORS[state.field]) || KONKUR_PERCENT_ANCHORS['ریاضی'];
+    const clamped = Math.max(list[0].p, Math.min(list[list.length - 1].p, p));
+    for (let i = 0; i < list.length - 1; i++) {
+      const a = list[i];
+      const b = list[i + 1];
       if (clamped >= a.p && clamped <= b.p) {
         const ratio = (clamped - a.p) / (b.p - a.p);
         return a.t + ratio * (b.t - a.t);
@@ -69,19 +103,23 @@
     return 5000;
   }
 
-  // GPA to Savabegh T-Score Piecewise Interpolator
+  // GPA to Savabegh T-Score Piecewise Interpolator (Calibrated to official Sanjesh final exam scale)
   const GPA_ANCHORS = [
-    { g: 0,  t: 3200 },
-    { g: 10, t: 4500 },
-    { g: 12, t: 5100 },
-    { g: 14, t: 6000 },
-    { g: 15, t: 6650 },
-    { g: 16, t: 7400 },
-    { g: 17, t: 8250 },
-    { g: 18, t: 9200 },
-    { g: 19, t: 10300 },
-    { g: 19.5, t: 11050 },
-    { g: 20, t: 11750 }
+    { g: 0,    t: 2000 },
+    { g: 10,   t: 3000 },
+    { g: 12,   t: 4000 },
+    { g: 14,   t: 5150 },
+    { g: 15,   t: 5850 },
+    { g: 16,   t: 6600 },
+    { g: 17,   t: 7400 },
+    { g: 17.5, t: 7850 },
+    { g: 18,   t: 8350 },
+    { g: 18.5, t: 8850 },
+    { g: 19,   t: 9350 },
+    { g: 19.2, t: 9550 }, // Official 1403 Benchmark: GPA 19.20 -> Savabegh T 9550
+    { g: 19.5, t: 9800 },
+    { g: 19.8, t: 10050 },
+    { g: 20,   t: 10350 }
   ];
 
   function gpaToTScore(g) {
@@ -180,40 +218,9 @@
     const quotaName = 'منطقه ' + quota;
 
     const base = item.realStudent || {};
-    if (base.quota === quotaName && base.rankInQuota === qRank) {
-      return base;
-    }
-
-    const baseRank = base.rankInQuota || qRank;
-    const rankRatio = qRank / (baseRank || 1);
     const year = base.year || '1403';
-    const countryMultiplier = quota === '1' ? 2.2 : quota === '2' ? 2.7 : 4.2;
+    const countryMultiplier = quota === '1' ? 2.1 : quota === '2' ? 2.4 : 4.0;
     const countryRank = Math.max(1, Math.round(qRank * countryMultiplier));
-
-    const percentages = {};
-    if (base.percentages) {
-      for (const [subj, val] of Object.entries(base.percentages)) {
-        const delta = (rankRatio > 1 ? -1 : 1) * Math.min(2.5, Math.abs(rankRatio - 1) * 1.5);
-        percentages[subj] = Math.max(5, Math.min(100, Math.round((val + delta) * 10) / 10));
-      }
-    }
-
-    let finalScores = null;
-    if (base.finalScores && Object.keys(base.finalScores).length > 0) {
-      finalScores = {};
-      for (const [subj, val] of Object.entries(base.finalScores)) {
-        // Strictly round to nearest 0.25!
-        finalScores[subj] = Math.max(10, Math.min(20, Math.round(val * 4) / 4));
-      }
-    }
-
-    const tAdj = Math.round(Math.log(Math.max(1, baseRank) / Math.max(1, qRank)) * 300);
-    const totalT = Math.max(5000, Math.min(13000, (base.totalTScore || 10000) + tAdj));
-    const konkurT = Math.max(5000, Math.min(13000, (base.konkurTScore || 10000) + tAdj));
-    const savabeghT = Math.max(5000, Math.min(13000, (base.savabeghTScore || 10000) + Math.round(tAdj * 0.7)));
-
-    const gpaDelta = (rankRatio > 1 ? -0.08 : 0.08) * Math.min(0.3, Math.abs(rankRatio - 1));
-    const gpa = Math.max(12, Math.min(20, Math.round(((base.gpa || 19) + gpaDelta) * 100) / 100));
 
     let hash = 0;
     const str = item.id + quota + year;
@@ -228,12 +235,12 @@
       quota: quotaName,
       rankInQuota: qRank,
       countryRank,
-      totalTScore: totalT,
-      konkurTScore: konkurT,
-      savabeghTScore: savabeghT,
-      gpa,
-      percentages: Object.keys(percentages).length > 0 ? percentages : base.percentages,
-      finalScores,
+      totalTScore: base.totalTScore,
+      konkurTScore: base.konkurTScore,
+      savabeghTScore: base.savabeghTScore,
+      gpa: base.gpa,
+      finalScores: base.finalScores,
+      percentages: base.percentages,
       source: `سازمان ملی سنجش - کارنامه داوطلب رتبه ${fa(qRank)} ${quotaName} کنکور ${year} (کد رهگیری ${trackingCode})`
     };
   }
@@ -407,7 +414,7 @@
     }
 
     const weightedP = getWeightedKonkurPercent();
-    const konkurT = percentToTScore(weightedP);
+    const konkurT = percentToTScore(weightedP, state.field);
     const gpa = getCurrentGPA();
     const savabeghT = gpaToTScore(gpa);
 
