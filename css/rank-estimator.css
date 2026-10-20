@@ -556,11 +556,61 @@ label {
 
 .seat-badge {
   font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 6px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
   background: rgba(255, 255, 255, 0.15);
   color: var(--gold2);
   border: 1px solid rgba(232, 184, 74, 0.4);
+}
+
+.seat-badge.seat-day,
+.seat-badge.seat-روزانه {
+  background: rgba(16, 185, 129, 0.22);
+  color: #a7f3d0;
+  border: 1px solid rgba(16, 185, 129, 0.55);
+}
+
+.seat-badge.seat-night,
+.seat-badge.seat-نوبت-دوم,
+.seat-badge.seat-شبانه {
+  background: rgba(59, 130, 246, 0.22);
+  color: #bfdbfe;
+  border: 1px solid rgba(59, 130, 246, 0.55);
+}
+
+.seat-badge.seat-pardis,
+.seat-badge.seat-پردیس-خودگردان {
+  background: rgba(245, 158, 11, 0.22);
+  color: #fef08a;
+  border: 1px solid rgba(245, 158, 11, 0.55);
+}
+
+.seat-badge.seat-farhangian,
+.seat-badge.seat-فرهنگیان {
+  background: rgba(20, 184, 166, 0.22);
+  color: #99f6e4;
+  border: 1px solid rgba(20, 184, 166, 0.55);
+}
+
+.seat-badge.seat-azad,
+.seat-badge.seat-دانشگاه-آزاد {
+  background: rgba(168, 85, 247, 0.22);
+  color: #e9d5ff;
+  border: 1px solid rgba(168, 85, 247, 0.55);
+}
+
+.year-pill {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 11px;
 }
 
 .item-details {
@@ -782,6 +832,113 @@ label {
   font-size: 12px;
   color: var(--gold2);
   line-height: 1.6;
+}
+
+/* Modal Back Button & Footer */
+.btn-modal-back {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(232, 184, 74, 0.4);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-back:hover {
+  background: rgba(232, 184, 74, 0.3);
+  color: var(--gold2);
+  border-color: var(--gold);
+}
+
+.sc-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.btn-modal-back-footer {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(232, 184, 74, 0.5);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-modal-back-footer:hover {
+  background: rgba(232, 184, 74, 0.25);
+  color: var(--gold2);
+  border-color: var(--gold);
+}
+
+/* Authentic GPA and Savabegh Card */
+.sc-gpa-summary-card {
+  background: rgba(5, 14, 46, 0.75);
+  border: 1.5px solid rgba(232, 184, 74, 0.45);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+
+.sc-gpa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold2);
+  margin-bottom: 12px;
+}
+
+.sc-gpa-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.sc-gpa-item {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.sc-gpa-lbl {
+  display: block;
+  font-size: 12px;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.sc-gpa-val {
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sc-gpa-note {
+  font-size: 12px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
 }
 
 /* Citations and Technical Sources Block */

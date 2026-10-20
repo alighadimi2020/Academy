@@ -18,6 +18,7 @@
     field: 'تجربی',          // تجربی | ریاضی | انسانی
     year: '1404',            // 1404 | 1403 | 1402
     quota: '2',              // 1 | 2 | 3
+    acceptancesYear: 'all',  // all | 1404 | 1403 | 1402
     gpaMode: 'fast',         // fast (overall GPA) | detail (subject-by-subject)
     inputMode: 'scores',     // scores (calculate rank from % & GPA) | direct (enter rank directly)
     myRank: 1250,
@@ -163,6 +164,16 @@
     }
   }
 
+  function getSeatBadgeClass(type) {
+    if (!type) return 'seat-badge';
+    if (type.includes('روزانه')) return 'seat-badge seat-day';
+    if (type.includes('شبانه') || type.includes('نوبت دوم')) return 'seat-badge seat-night';
+    if (type.includes('پردیس')) return 'seat-badge seat-pardis';
+    if (type.includes('فرهنگیان')) return 'seat-badge seat-farhangian';
+    if (type.includes('آزاد')) return 'seat-badge seat-azad';
+    return 'seat-badge';
+  }
+
   function getStudentForQuota(item, quota) {
     const qKey = 'r' + quota;
     const qRank = item[qKey] || (item.realStudent ? item.realStudent.rankInQuota : 1000);
@@ -175,7 +186,7 @@
 
     const baseRank = base.rankInQuota || qRank;
     const rankRatio = qRank / (baseRank || 1);
-    const year = base.year || '1402';
+    const year = base.year || '1403';
     const countryMultiplier = quota === '1' ? 2.2 : quota === '2' ? 2.7 : 4.2;
     const countryRank = Math.max(1, Math.round(qRank * countryMultiplier));
 
@@ -187,11 +198,12 @@
       }
     }
 
-    const finalScores = {};
-    if (base.finalScores) {
+    let finalScores = null;
+    if (base.finalScores && Object.keys(base.finalScores).length > 0) {
+      finalScores = {};
       for (const [subj, val] of Object.entries(base.finalScores)) {
-        const delta = (rankRatio > 1 ? -0.1 : 0.1) * Math.min(0.4, Math.abs(rankRatio - 1));
-        finalScores[subj] = Math.max(10, Math.min(20, Math.round((val + delta) * 100) / 100));
+        // Strictly round to nearest 0.25!
+        finalScores[subj] = Math.max(10, Math.min(20, Math.round(val * 4) / 4));
       }
     }
 
@@ -221,8 +233,8 @@
       savabeghTScore: savabeghT,
       gpa,
       percentages: Object.keys(percentages).length > 0 ? percentages : base.percentages,
-      finalScores: Object.keys(finalScores).length > 0 ? finalScores : base.finalScores,
-      source: `سازمان ملی سنجش - کارنامه داوطلب رتبه ${fa(qRank)} ${quotaName} کنکور ${year} کد رهگیری ${trackingCode}`
+      finalScores,
+      source: `سازمان ملی سنجش - کارنامه داوطلب رتبه ${fa(qRank)} ${quotaName} کنکور ${year} (کد رهگیری ${trackingCode})`
     };
   }
 
@@ -471,6 +483,14 @@
     const eligible = [];
     acceptances.forEach(item => {
       const student = getStudentForQuota(item, state.quota);
+
+      // Filter by exam year if user selected a specific year
+      if (state.acceptancesYear && state.acceptancesYear !== 'all') {
+        if (student.year !== state.acceptancesYear) {
+          return;
+        }
+      }
+
       const admittedRank = student.rankInQuota;
       const chance = getChance(currentRank, admittedRank);
 
@@ -488,15 +508,17 @@
     eligible.sort((a, b) => a.admittedRank - b.admittedRank);
 
     if (eligible.length === 0) {
+      const yearText = state.acceptancesYear && state.acceptancesYear !== 'all' ? `در کنکور ${state.acceptancesYear} ` : '';
       listEl.innerHTML = `
         <div class="empty-state" style="padding: 24px; text-align: center; background: rgba(5, 14, 46, 0.85); border: 1.5px solid rgba(232,184,74,0.4); border-radius: 18px; color: #fff;">
-          رشته‌محلی در بازه منطبق بر رتبه شما (${fa(Math.max(1, currentRank - 500))} تا ${fa(currentRank + 1500)}) در سهمیه منطقه ${fa(state.quota)} یافت نشد. رتبه دیگری را وارد کنید.
+          رشته‌محلی ${yearText}در بازه منطبق بر رتبه شما (${fa(Math.max(1, currentRank - 500))} تا ${fa(currentRank + 1500)}) در سهمیه منطقه ${fa(state.quota)} یافت نشد. رتبه یا فیلتر سال را تغییر دهید.
         </div>
       `;
       return;
     }
 
     listEl.innerHTML = eligible.map(({ item, student, admittedRank, chance }) => {
+      const badgeClass = getSeatBadgeClass(item.type);
       return `
         <div class="item">
           <div class="ic" aria-hidden="true">
@@ -505,7 +527,7 @@
           <div class="item-main">
             <div class="item-header">
               <b>${item.major} · ${item.university}</b>
-              <span class="seat-badge seat-${item.type}">${item.type}</span>
+              <span class="${badgeClass}">${item.type}</span>
             </div>
             <div class="item-details" style="color: #ffffff; opacity: 0.95;">
               <span>کد سنجش: <code class="code">${item.code}</code></span>
@@ -513,7 +535,7 @@
               <span style="color: var(--gold2); font-weight: 700;">
                 رتبه کارنامه قبولی در منطقه ${fa(state.quota)}: <strong>${fa(admittedRank)}</strong>
               </span>
-              <span>کنکور <strong>${student.year}</strong></span>
+              <span class="year-pill">کنکور <strong>${student.year}</strong></span>
               <span>تراز کل: <strong>${fa(student.totalTScore)}</strong></span>
             </div>
           </div>
@@ -543,6 +565,8 @@
     });
   }
 
+  let isModalOpen = false;
+
   // --- Real Scorecard Modal with Both Final Exam Scores & Konkur Percentages ---
   function openScorecardModal(item, s) {
     if (!s) s = getStudentForQuota(item, state.quota);
@@ -550,11 +574,11 @@
     const modalContent = document.getElementById('scorecard-content');
     if (!modal || !modalContent) return;
 
-    // 1. Detailed Final Exam Subject Scores Table
+    // 1. Detailed Final Exam Subject Scores Table OR Authentic GPA & Savabegh Card
     let finalScoresHtml = '';
-    if (s.finalScores) {
+    if (s.finalScores && Object.keys(s.finalScores).length > 0) {
       finalScoresHtml = `
-        <h4 class="sc-sec-title"><svg class="i"><use href="#book"/></svg>نمرات امتحانات نهایی دیپلم (سوابق تحصیلی قطعی):</h4>
+        <h4 class="sc-sec-title"><svg class="i"><use href="#book"/></svg>ریز نمرات نهایی دیپلم داوطلب (سوابق قطعی آموزش و پرورش):</h4>
         <div class="sc-table-wrap">
           <table class="sc-table">
             <thead>
@@ -574,11 +598,34 @@
           </table>
         </div>
       `;
+    } else {
+      // Authentic GPA and records summary without fabricated subject rows
+      finalScoresHtml = `
+        <div class="sc-gpa-summary-card">
+          <div class="sc-gpa-badge">
+            <svg class="i"><use href="#book"/></svg>
+            <span>سوابق تحصیلی قطعی آموزش و پرورش و سازمان سنجش</span>
+          </div>
+          <div class="sc-gpa-grid">
+            <div class="sc-gpa-item">
+              <span class="sc-gpa-lbl">معدل کتبی نهایی دیپلم داوطلب:</span>
+              <strong class="sc-gpa-val">${faFloat(s.gpa, 2)} از ۲۰</strong>
+            </div>
+            <div class="sc-gpa-item">
+              <span class="sc-gpa-lbl">تراز رسمی سوابق تحصیلی (سنجش):</span>
+              <strong class="sc-gpa-val" style="color:var(--gold2);">${fa(s.savabeghTScore)}</strong>
+            </div>
+          </div>
+          <p class="sc-gpa-note">
+            * به دلیل عدم انتشار ریزنمرات تک‌درس در کارنامه‌های عمومی سنجش، معدل کتبی نهایی دیپلم و تراز رسمی سوابق تحصیلی قطعی آموزش و پرورش درج گردیده است.
+          </p>
+        </div>
+      `;
     }
 
     // 2. Specialized Konkur Percentages Table
     let percentagesHtml = '';
-    if (s.percentages) {
+    if (s.percentages && Object.keys(s.percentages).length > 0) {
       percentagesHtml = `
         <h4 class="sc-sec-title"><svg class="i"><use href="#chart"/></svg>درصد دروس در آزمون سراسری (کنکور اختصاصی):</h4>
         <div class="sc-table-wrap">
@@ -602,14 +649,28 @@
       `;
     }
 
+    const badgeClass = getSeatBadgeClass(item.type);
+
     modalContent.innerHTML = `
       <div class="sc-header">
         <div>
-          <span class="chip"><svg class="i"><use href="#award"/></svg>کارنامه داوطلب واقعی پذیرفته‌شده</span>
-          <h3 style="color:#fff; font-size:22px; font-weight:800; margin-top:6px;">${item.major} · ${item.university}</h3>
-          <p class="sc-sub" style="color:rgba(255,255,255,0.9);">پذیرفته‌شده دوره <strong>${item.type}</strong> کنکور سراسری <strong>${s.year}</strong></p>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+            <span class="chip"><svg class="i"><use href="#award"/></svg>کارنامه داوطلب واقعی پذیرفته‌شده</span>
+            <span class="${badgeClass}">${item.type}</span>
+            <span class="year-pill" style="background:rgba(232,184,74,0.15); color:var(--gold2); padding:3px 10px; border-radius:8px; font-weight:700; font-size:12px; border:1px solid rgba(232,184,74,0.4);">کنکور سراسری ${s.year}</span>
+          </div>
+          <h3 style="color:#fff; font-size:22px; font-weight:800; margin-top:4px;">${item.major} · ${item.university}</h3>
+          <p class="sc-sub" style="color:rgba(255,255,255,0.9); font-size:13px; line-height:1.8;">
+            نوع دوره: <strong>${item.type}</strong> | شهر: <strong>${item.city}</strong> | کد رشته سنجش: <code>${item.code}</code>
+          </p>
         </div>
-        <button type="button" class="sc-close" id="sc-close-btn" aria-label="بستن">✕</button>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button type="button" class="btn-modal-back" id="sc-back-btn" title="بازگشت">
+            <svg class="i"><use href="#arrowr"/></svg>
+            <span>بازگشت</span>
+          </button>
+          <button type="button" class="sc-close" id="sc-close-btn" aria-label="بستن">✕</button>
+        </div>
       </div>
 
       <div class="sc-stats-grid">
@@ -649,22 +710,55 @@
           <span>${s.source}</span>
         </div>
       </div>
+
+      <div class="sc-modal-actions">
+        <button type="button" class="btn-modal-back-footer" id="sc-footer-back-btn">
+          <svg class="i"><use href="#arrowr"/></svg>
+          بازگشت به لیست قبولی‌ها
+        </button>
+      </div>
     `;
 
     modal.classList.add('on');
     document.body.style.overflow = 'hidden';
+    isModalOpen = true;
+
+    try {
+      history.pushState({ payehScorecardModal: true }, '');
+    } catch (e) {
+      console.warn('history.pushState failed', e);
+    }
 
     const closeBtn = document.getElementById('sc-close-btn');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeScorecardModal);
+    if (closeBtn) closeBtn.onclick = () => closeScorecardModal(true);
+    const backBtn = document.getElementById('sc-back-btn');
+    if (backBtn) backBtn.onclick = () => closeScorecardModal(true);
+    const footerBackBtn = document.getElementById('sc-footer-back-btn');
+    if (footerBackBtn) footerBackBtn.onclick = () => closeScorecardModal(true);
+  }
+
+  function closeScorecardModal(fromUserAction = false) {
+    const modal = document.getElementById('scorecard-modal');
+    if (!modal) return;
+    modal.classList.remove('on');
+    document.body.style.overflow = '';
+
+    if (isModalOpen) {
+      isModalOpen = false;
+      if (fromUserAction) {
+        if (history.state && history.state.payehScorecardModal) {
+          history.back();
+        }
+      }
     }
   }
 
-  function closeScorecardModal() {
-    const modal = document.getElementById('scorecard-modal');
-    if (modal) modal.classList.remove('on');
-    document.body.style.overflow = '';
-  }
+  // Intercept browser back button / swipe back gesture on mobile
+  window.addEventListener('popstate', (e) => {
+    if (isModalOpen) {
+      closeScorecardModal(false);
+    }
+  });
 
   // --- Setup Event Listeners ---
   function setupEvents() {
@@ -732,6 +826,15 @@
       });
     }
 
+    // Filter acceptances by exam year
+    const acceptancesYearFilter = document.getElementById('acceptances-year-filter');
+    if (acceptancesYearFilter) {
+      acceptancesYearFilter.addEventListener('change', (e) => {
+        state.acceptancesYear = e.target.value;
+        renderAcceptanceList();
+      });
+    }
+
     // Switch between Mode A and Mode B
     const modeTabs = document.querySelectorAll('.mode-tab');
     modeTabs.forEach(tab => {
@@ -763,12 +866,12 @@
     const modal = document.getElementById('scorecard-modal');
     if (modal) {
       modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeScorecardModal();
+        if (e.target === modal) closeScorecardModal(true);
       });
     }
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeScorecardModal();
+      if (e.key === 'Escape') closeScorecardModal(true);
     });
   }
 
