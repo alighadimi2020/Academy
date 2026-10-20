@@ -48,6 +48,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         attachButton.title = remainingImages < 1 ? "سهمیهٔ روزانهٔ تصویر تمام شده است" : "پیوست تصویر";
         sendButton.disabled = data.remaining_today < 1;
     };
+    let renderedMessageIds = [];
+    let isInitialLoad = true;
+
+    function isNearBottom(threshold = 120) {
+        if (!target) return true;
+        return target.scrollHeight - target.scrollTop - target.clientHeight <= threshold;
+    }
+
+    function scrollToBottom(smooth = false) {
+        if (!target) return;
+        if (smooth) {
+            target.scrollTo({ top: target.scrollHeight, behavior: "smooth" });
+        } else {
+            target.scrollTop = target.scrollHeight;
+        }
+    }
+
     const showSelectedImage = (file) => {
         if (previewUrl) URL.revokeObjectURL(previewUrl);
         preview.replaceChildren();
@@ -56,8 +73,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         img.src = previewUrl;
         img.alt = "پیش‌نمایش تصویر پیوست‌شده";
         const info = make("span", "chat-image-preview__name", `${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} مگابایت`);
-        const remove = make("button", "chat-image-preview__remove", "حذف تصویر پیوست‌شده");
+        const remove = make("button", "chat-image-preview__remove", "×");
         remove.type = "button";
+        remove.setAttribute("aria-label", "حذف تصویر پیوست‌شده");
+        remove.title = "حذف تصویر پیوست‌شده";
         remove.addEventListener("click", clearSelectedImage);
         preview.append(img, info, remove);
         preview.hidden = false;
@@ -77,35 +96,86 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    const loadMessages = async (scrollToBottom = false) => {
+    const renderBubble = (item) => {
+        const mine = item.sender_id === currentUser.id;
+        const bubble = make("article", `chat-message${mine ? " is-mine" : " is-other"}`);
+        bubble.setAttribute("data-msg-id", String(item.id));
+        bubble.append(make("span", "chat-message__name", mine ? "شما" : item.sender_name));
+        if (item.image_url) {
+            const imagePath = isStaffChat ? `/api/consultations/staff-conversations/${encodeURIComponent(staffConversationId)}/images/${Number(item.id)}/` : `/api/consultations/requests/${encodeURIComponent(requestId)}/images/${Number(item.id)}/`;
+            const image = make("img", "chat-message__image");
+            image.src = imagePath;
+            image.alt = "تصویر ارسال‌شده در گفت‌وگو";
+            image.loading = "eager";
+            image.referrerPolicy = "same-origin";
+            image.addEventListener("load", () => {
+                if (isNearBottom(250) || isInitialLoad) {
+                    scrollToBottom(false);
+                }
+            });
+            bubble.append(image);
+        }
+        if (item.body) bubble.append(make("p", "chat-message__body", item.body));
+        const stamp = make("time", "chat-message__time", new Date(item.created_at).toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" }));
+        stamp.dateTime = item.created_at;
+        bubble.append(stamp);
+        return bubble;
+    };
+
+    const loadMessages = async (forceScroll = false) => {
         try {
             const response = await fetch(messagesPath, { credentials: "same-origin" });
             const data = await response.json();
             if (!response.ok) throw new Error(data.detail || "دریافت پیام‌ها ممکن نشد.");
-            const nearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
-            target.replaceChildren();
-            if (!data.results.length) target.append(make("p", "chat-placeholder", "هنوز پیامی ردوبدل نشده. گفت‌وگو را شروع کنید."));
-            data.results.forEach((item) => {
-                const mine = item.sender_id === currentUser.id;
-                const bubble = make("article", `chat-message${mine ? " is-mine" : ""}`);
-                bubble.append(make("span", "chat-message__name", mine ? "شما" : item.sender_name));
-                if (item.image_url) {
-                    const imagePath = isStaffChat ? `/api/consultations/staff-conversations/${encodeURIComponent(staffConversationId)}/images/${Number(item.id)}/` : `/api/consultations/requests/${encodeURIComponent(requestId)}/images/${Number(item.id)}/`;
-                    const image = make("img", "chat-message__image");
-                    image.src = imagePath;
-                    image.alt = "تصویر ارسال‌شده در گفت‌وگو";
-                    image.loading = "lazy";
-                    image.referrerPolicy = "same-origin";
-                    bubble.append(image);
-                }
-                if (item.body) bubble.append(make("p", "chat-message__body", item.body));
-                const stamp = make("time", "chat-message__time", new Date(item.created_at).toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" }));
-                stamp.dateTime = item.created_at;
-                bubble.append(stamp);
-                target.append(bubble);
-            });
+
+            const results = data.results || [];
             updateQuota(data);
-            if (scrollToBottom || nearBottom) target.scrollTop = target.scrollHeight;
+
+            const newIds = results.map((item) => Number(item.id));
+            const isSame = newIds.length === renderedMessageIds.length &&
+                newIds.every((id, idx) => id === renderedMessageIds[idx]);
+
+            // No changes at all - keep DOM and scroll completely stable
+            if (isSame) {
+                return true;
+            }
+
+            const wasNearBottom = isNearBottom(120);
+            const shouldScroll = forceScroll || isInitialLoad || wasNearBottom;
+
+            const canAppendOnly = !isInitialLoad &&
+                renderedMessageIds.length > 0 &&
+                newIds.length > renderedMessageIds.length &&
+                renderedMessageIds.every((id, idx) => id === newIds[idx]);
+
+            if (canAppendOnly) {
+                // Incremental append: only add new bubbles!
+                const newItems = results.slice(renderedMessageIds.length);
+                newItems.forEach((item) => {
+                    target.append(renderBubble(item));
+                });
+                renderedMessageIds = newIds;
+            } else {
+                // Full rebuild needed (initial load, or order changed)
+                target.replaceChildren();
+                if (!results.length) {
+                    target.append(make("p", "chat-placeholder", "هنوز پیامی ردوبدل نشده. گفت‌وگو را شروع کنید."));
+                } else {
+                    results.forEach((item) => {
+                        target.append(renderBubble(item));
+                    });
+                }
+                renderedMessageIds = newIds;
+            }
+
+            if (shouldScroll) {
+                scrollToBottom(false);
+                requestAnimationFrame(() => scrollToBottom(false));
+                setTimeout(() => scrollToBottom(false), 50);
+                setTimeout(() => scrollToBottom(false), 200);
+            }
+
+            isInitialLoad = false;
             return true;
         } catch (failure) {
             target.textContent = failure.message || "دریافت پیام‌ها انجام نشد.";
@@ -214,10 +284,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             await loadMessages(true);
         } catch (failure) {
             setError(failure.message || "ارسال پیام انجام نشد.");
+        } finally {
             sendButton.disabled = false;
             attachButton.disabled = remainingImages < 1;
         }
     });
+
+    bodyField.addEventListener("focus", () => {
+        setTimeout(() => scrollToBottom(true), 300);
+    });
+
+    window.addEventListener("resize", () => {
+        if (isNearBottom(120)) {
+            scrollToBottom(false);
+        }
+    });
+
     window.addEventListener("beforeunload", () => {
         if (timer) clearInterval(timer);
         if (previewUrl) URL.revokeObjectURL(previewUrl);
