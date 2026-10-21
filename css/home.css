@@ -683,21 +683,21 @@ p {
     height: auto;
     transform: translate(-50%, -50%);
     object-fit: cover;
-    filter: brightness(0.95) contrast(1.02);
+    filter: none;
 }
 
-/* Clear, Light Video Overlay to keep video vibrant and visible */
+/* Very subtle overlay so the video is 100% visible and bright */
 .payeh-hero__video-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, rgba(8, 16, 38, 0.35) 0%, rgba(8, 16, 38, 0.12) 50%, rgba(8, 16, 38, 0.55) 100%);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.08) 40%, rgba(0, 0, 0, 0.45) 100%);
     z-index: 2;
 }
 
-/* Ambient Radial Glow (disabled to preserve video visibility) */
+/* Ambient Radial Glow disabled */
 .payeh-hero__ambient-glow {
     display: none;
 }
@@ -708,20 +708,19 @@ p {
     width: 100%;
 }
 
-/* Frosted Glass Content Card for Crisp Contrast Over Video */
+/* No Box / Card - Text sits directly and cleanly over the video */
 .payeh-hero__content {
-    max-width: 820px;
+    max-width: 860px;
     margin: 0 auto;
     text-align: center;
     position: relative;
     z-index: 3;
-    background: rgba(8, 19, 48, 0.72);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: 28px;
-    padding: 42px 36px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding: 0;
 }
 
 /* Eyebrow / Feature Tag */
@@ -765,7 +764,7 @@ p {
     font-weight: 400;
     line-height: 1.35;
     letter-spacing: -0.5px;
-    text-shadow: 0 4px 22px rgba(0, 0, 0, 0.75);
+    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.9), 0 6px 30px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 0, 0, 0.8);
     margin: 0 auto;
 }
 
@@ -835,15 +834,15 @@ p {
     }
 }
 
-/* High Contrast Short Description */
+/* High Contrast Short Description Directly Over Video */
 .payeh-hero__description {
     max-width: 680px;
     margin: 22px auto 0;
-    color: #E6EDF8;
+    color: #ffffff;
     font-size: clamp(1.02rem, 1.8vw, 1.2rem);
     line-height: 2.05;
-    font-weight: 500;
-    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
+    font-weight: 600;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0, 0, 0, 0.95), 0 0 30px rgba(0, 0, 0, 0.8);
 }
 
 /* Action Buttons Container */
