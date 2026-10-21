@@ -1067,7 +1067,7 @@ label {
   line-height: 1.85;
 }
 
-/* Strategy Tips Grid */
+/* Strategy Tips Grid - Authentic Payeh Surface Design */
 .tips {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1075,45 +1075,125 @@ label {
   margin-top: 32px;
 }
 
+.tip-card,
 .tips .stone {
-  padding: 22px 24px;
-  background: rgba(5, 14, 46, 0.78);
-  border: 1.5px solid rgba(232, 184, 74, 0.35);
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  display: flex;
-  align-items: flex-start;
+  padding: 24px !important;
+  background: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 14px !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
 }
 
-.tips .in {
+.tip-card:hover,
+.tips .stone:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 30px rgba(11, 61, 255, 0.08) !important;
+  border-color: rgba(11, 61, 255, 0.3) !important;
+}
+
+.tip-icon {
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tip-icon--blue {
+  background: #f1f7ff;
+  color: #0753a8;
+  border: 1px solid rgba(7, 83, 168, 0.15);
+}
+
+.tip-icon--yellow {
+  background: #fff9e8;
+  color: #d97706;
+  border: 1px solid rgba(217, 119, 6, 0.18);
+}
+
+.tip-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  color: #f8fafc;
-  font-size: 13.5px;
-  line-height: 1.85;
+  gap: 6px;
+  width: 100%;
 }
 
-.tips .in svg {
-  color: var(--gold2);
-  width: 28px;
-  height: 28px;
-  margin-bottom: 4px;
-}
-
+.tip-content strong,
 .tips .in strong {
-  color: #fff1c1;
-  font-size: 15px;
+  color: #0f172a !important;
+  font-size: 16px;
   font-weight: 800;
   display: block;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.tip-content p,
+.tips .in {
+  color: #475569 !important;
+  font-size: 13.5px;
+  line-height: 1.85;
+  font-weight: 500;
+  margin: 0;
 }
 
 /* Responsive */
 @media (max-width: 900px) {
   .panel,
   .gform,
-  .sources-grid {
-    grid-template-columns: 1fr;
+  .sources-grid,
+  .tips {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tips {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    margin-top: 24px !important;
+    width: 100% !important;
+  }
+
+  .tip-card,
+  .tips .stone {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    padding: 18px 16px !important;
+  }
+
+  .tip-icon {
+    width: 46px !important;
+    height: 46px !important;
+    flex: 0 0 46px !important;
+  }
+
+  .tip-content {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .tip-content strong {
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .tip-content p {
+    font-size: 13.5px !important;
+    line-height: 1.8 !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
 
   .stage {
@@ -1222,9 +1302,10 @@ label {
   display: grid;
   place-items: center;
   font-size: 24px;
-  background: linear-gradient(145deg, #0e2a85, #07143d);
-  color: var(--gold);
-  box-shadow: 0 8px 18px rgba(7, 20, 61, 0.25);
+  background: #f1f7ff;
+  color: #0753a8;
+  border: 1.5px solid rgba(7, 83, 168, 0.15);
+  box-shadow: 0 4px 14px rgba(7, 83, 168, 0.08);
 }
 
 .feat b {
@@ -1254,12 +1335,12 @@ label {
   }
 }
 
-/* High Contrast & Direct Panel Enhancements */
+/* Authentic Payeh Form Fields & Direct Mode Styling */
 .high-contrast-select,
 .high-contrast-input,
 .direct-rank-field {
-  background: rgba(5, 14, 46, 0.88) !important;
-  border: 1.5px solid rgba(232, 184, 74, 0.7) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.32) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
   border-radius: 14px;
@@ -1268,19 +1349,20 @@ label {
 .high-contrast-select:focus,
 .high-contrast-input:focus,
 .direct-rank-field:focus {
-  border-color: #fff1c1 !important;
-  background: rgba(8, 22, 68, 0.95) !important;
-  box-shadow: 0 0 14px rgba(232, 184, 74, 0.5) !important;
+  border-color: #93c5fd !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 0 16px rgba(147, 197, 253, 0.35) !important;
 }
 
 .high-contrast-select option {
-  background: #07143d !important;
+  background: #0b1a4a !important;
   color: #ffffff !important;
   padding: 12px !important;
 }
 
 .common-filters {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 18px;
   padding: 16px;
   margin-bottom: 20px;
@@ -1291,11 +1373,11 @@ label {
 }
 
 .direct-box {
-  background: rgba(5, 14, 46, 0.78);
-  border: 1.5px solid rgba(232, 184, 74, 0.6);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.24);
   border-radius: 22px;
   padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 32px rgba(5, 13, 43, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .direct-rank-field {
@@ -1305,11 +1387,11 @@ label {
   text-align: center;
   letter-spacing: 2px;
   padding: 14px 18px !important;
-  color: #fff1c1 !important;
+  color: #ffffff !important;
 }
 
 .direct-rank-field::placeholder {
-  color: rgba(255, 255, 255, 0.5) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
   font-size: 18px;
 }
 
