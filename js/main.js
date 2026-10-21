@@ -29,9 +29,44 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (span) span.textContent = conf.label;
                     mobileAuthLink.classList.add("payeh-bottom-item--active");
                 }
+                const heroLoginBtn = document.getElementById("payeh-hero-login-btn");
+                if (heroLoginBtn) {
+                    heroLoginBtn.href = conf.url;
+                    const heroBtnSpans = heroLoginBtn.querySelectorAll("span");
+                    heroBtnSpans.forEach(s => {
+                        if (!s.classList.contains("payeh-hero__btn-shimmer") &&
+                            !s.classList.contains("payeh-hero__btn-icon") &&
+                            !s.classList.contains("payeh-hero__btn-badge")) {
+                            s.textContent = conf.label;
+                        }
+                    });
+                }
             }
         })
         .catch(() => {});
+
+    // Hero video play/pause toggle
+    const videoToggle = document.getElementById("hero-video-toggle");
+    const heroVideo = document.querySelector(".payeh-hero__video");
+    if (videoToggle && heroVideo) {
+        const iconPause = document.getElementById("hero-video-icon-pause");
+        const iconPlay = document.getElementById("hero-video-icon-play");
+        const textToggle = document.getElementById("hero-video-text");
+
+        videoToggle.addEventListener("click", () => {
+            if (heroVideo.paused) {
+                heroVideo.play().catch(() => {});
+                if (iconPause) iconPause.style.display = "block";
+                if (iconPlay) iconPlay.style.display = "none";
+                if (textToggle) textToggle.textContent = "توقف ویدیو";
+            } else {
+                heroVideo.pause();
+                if (iconPause) iconPause.style.display = "none";
+                if (iconPlay) iconPlay.style.display = "block";
+                if (textToggle) textToggle.textContent = "پخش ویدیو";
+            }
+        });
+    }
 
     // Scroll listener for dynamic glass header
     const headerInner = document.querySelector(".payeh-header__inner");

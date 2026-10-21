@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; media-src 'self'; connect-src 'self'; form-action 'self'">
     <meta name="theme-color" content="#FFFCF5">
     <meta name="description" content="آکادمی مشاوره تحصیلی پایه از پایه شروع کن">
 
     <title>پایه | آکادمی مشاوره تحصیلی</title>
-    <link rel="stylesheet" href="css/fonts.css?v=20261016_5">
-    <link rel="stylesheet" href="css/home.css?v=20261017_20">
+    <link rel="stylesheet" href="css/fonts.css?v=20261021_1">
+    <link rel="stylesheet" href="css/home.css?v=20261021_1">
     <link rel="stylesheet" href="css/rank-estimator.css?v=20261020_1">
 </head>
 
@@ -70,90 +70,100 @@
 
     <main id="payeh-app">
         <!--hero-->
-<section class="payeh-hero" aria-labelledby="payeh-hero-title">
-
-    <div class="payeh-container">
-
-        <div class="payeh-hero__inner">
-
-            <div class="payeh-hero__content">
-
-
-
-        <h1 id="payeh-hero-title" class="payeh-hero__title">
-            با پایه شروع کن
-            <span style="font-size: 2.5rem; padding-top: 20px; font-family: 'Peyda' !important;">
-                از پایه تا قلّه همراهتیم
-            </span>
-        </h1>
-
-
-                <div class="payeh-hero__actions">
-
-                    <a href="signup.html" class="payeh-button payeh-button--primary">
-                        شروع مسیر من
-                    </a>
-
-                    <a href="#payeh-consultation" class="payeh-button payeh-button--outline">
-                        دریافت مشاوره
-                    </a>
-
-                </div>
-
-                <div class="payeh-hero__trust">
-
-                    <div class="payeh-hero__trust-item">
-                        <span class="payeh-hero__trust-icon">✓</span>
-                        <span>مشاوره تخصصی</span>
-                    </div>
-
-                    <div class="payeh-hero__trust-item">
-                        <span class="payeh-hero__trust-icon">✓</span>
-                        <span>برنامه‌ریزی شخصی</span>
-                    </div>
-
-                    <div class="payeh-hero__trust-item">
-                        <span class="payeh-hero__trust-icon">✓</span>
-                        <span>آموزش هدفمند</span>
-                    </div>
-
-                </div>
-
+        <section class="payeh-hero" aria-labelledby="payeh-hero-title">
+            <!-- Background Video Layer -->
+            <div class="payeh-hero__video-wrapper">
+                <video class="payeh-hero__video" id="payeh-hero-video-elem" autoplay loop muted playsinline webkit-playsinline preload="auto" poster="assets/images/hero-video-poster.jpg">
+                    <source src="assets/images/coverr-woman-sitting-at-her-desk-and-studying-at-home-3564-1080p.mp4" type="video/mp4">
+                    مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                </video>
+                <div class="payeh-hero__video-overlay"></div>
+                <div class="payeh-hero__ambient-glow"></div>
             </div>
 
-            <div class="payeh-hero__visual">
-
-                <div class="payeh-hero__visual-glow"></div>
-
-                <div class="payeh-hero__image-wrapper">
-
-                    <img
-                        src="assets/images/hero.png"
-                        alt="آکادمی مشاوره تحصیلی پایه"
-                        class="payeh-hero__image"
-                    >
-
-                </div>
-
-                <div class="payeh-hero__floating payeh-hero__floating--top">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkle preview-icon"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/></svg>
-                
-                <span>مسیر رشد تو</span>
-                </div>
-
-                <div class="payeh-hero__floating payeh-hero__floating--bottom">
-                    <strong>اولین ارائه دهندۀ هوش مصنوعی اختصاصی مشاوره</strong>
+            <div class="payeh-container payeh-hero__container">
+                <div class="payeh-hero__content">
                     
-                    <span></span>
-                </div>
+                    <!-- Eyebrow Badge -->
+                    <div class="payeh-hero__eyebrow">
+                        <span class="payeh-hero__eyebrow-dot"></span>
+                        <span>✨ پلتفرم تخصصی مشاوره و برنامه‌ریزی تحصیلی</span>
+                    </div>
 
+                    <!-- Main Title with Lalezar Font & Animated Yellow Heart -->
+                    <h1 id="payeh-hero-title" class="payeh-hero__title">
+                        <span class="payeh-hero__title-line">
+                            با <span class="payeh-hero__title-highlight">پایـه</span>، درس خوندنت <span class="payeh-hero__title-highlight">لذت‌بخش می‌شه!</span>
+                        </span>
+                        <span class="payeh-hero__title-sub">
+                            پایـه باش!
+                            <span class="payeh-hero__heart" aria-label="قلب زرد" title="پایه باش!">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </span>
+                        </span>
+                    </h1>
+
+                    <!-- High Contrast Description -->
+                    <p class="payeh-hero__description">
+                        برنامه‌ریزی هوشمند، همراهی رتبه‌های برتر و ابزارهای تخصصی کنکور؛ دیگه درس خوندن کلافه‌کننده نیست، چون اصولی و با انگیزه کنارتیم تا به اوج برسی.
+                    </p>
+
+                    <!-- Exciting Login CTA & Registration Actions -->
+                    <div class="payeh-hero__actions">
+                        <a href="login.html" class="payeh-hero__btn-exciting" id="payeh-hero-login-btn">
+                            <span class="payeh-hero__btn-shimmer"></span>
+                            <span class="payeh-hero__btn-icon">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                                    <polyline points="10 17 15 12 10 7"/>
+                                    <line x1="15" y1="12" x2="3" y2="12"/>
+                                </svg>
+                            </span>
+                            <span>ورود به دنیای پایه</span>
+                            <span class="payeh-hero__btn-badge">🚀 شروع سریع</span>
+                        </a>
+
+                        <a href="signup.html" class="payeh-hero__btn-secondary">
+                            <span>ثبت‌نام رایگان</span>
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <!-- Trust Pills over Video -->
+                    <div class="payeh-hero__trust">
+                        <div class="payeh-hero__trust-pill">
+                            <span class="payeh-hero__trust-check">✓</span>
+                            <span>هوش مصنوعی اختصاصی مشاوره</span>
+                        </div>
+                        <div class="payeh-hero__trust-pill">
+                            <span class="payeh-hero__trust-check">✓</span>
+                            <span>برنامه‌ریزی شخصی‌سازی شده</span>
+                        </div>
+                        <div class="payeh-hero__trust-pill">
+                            <span class="payeh-hero__trust-check">✓</span>
+                            <span>همراهی رتبه‌های تک‌رقمی و دورقمی</span>
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
-        </div>
-
-    </div>
-
-</section>
+            <!-- Video Play/Pause Toggle -->
+            <button type="button" class="payeh-hero__video-toggle" id="hero-video-toggle" aria-label="توقف / پخش ویدیو">
+                <svg id="hero-video-icon-pause" viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                    <rect x="6" y="4" width="4" height="16" rx="1"/>
+                    <rect x="14" y="4" width="4" height="16" rx="1"/>
+                </svg>
+                <svg id="hero-video-icon-play" viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="display:none;">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                <span id="hero-video-text">توقف ویدیو</span>
+            </button>
+        </section>
 
 <!-- Rank Estimator Teaser Section -->
 <section class="payeh-rank-teaser" style="padding: 10px 0 30px;">
@@ -987,7 +997,7 @@
             <span>حساب کاربری</span>
         </a>
     </nav>
-    <script src="js/main.js?v=20261016_5"></script>
+    <script src="js/main.js?v=20261021_1"></script>
 
 </body>
 </html>
