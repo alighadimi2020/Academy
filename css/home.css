@@ -3955,3 +3955,236 @@ p {
     }
 }
 
+/* ==========================================================================
+   Payeh Interactive Animation Enhancements (4 Core Animations)
+   ========================================================================== */
+
+/* 1. Student Showcase - Robot Analytics Box */
+.payeh-student-robot-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 214, 0, 0.35);
+    border-radius: 18px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.payeh-student-robot-box:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 214, 0, 0.65);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.payeh-student-robot-media {
+    width: 82px;
+    height: 82px;
+    flex: 0 0 82px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(255, 214, 0, 0.4);
+}
+
+.payeh-robot-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.payeh-student-robot-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-align: right;
+    min-width: 0;
+}
+
+.payeh-student-robot-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #FFD600;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.payeh-student-robot-info strong {
+    font-size: 13px;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.5;
+}
+
+.payeh-student-robot-info p {
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: #CBD5E1 !important;
+    margin: 0 !important;
+}
+
+/* 2. Why Payeh - Student Study Card */
+.payeh-why__student-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 14px 18px;
+    margin: 20px 0 22px;
+    box-shadow: 0 10px 26px rgba(11, 61, 255, 0.06);
+    max-width: 310px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.payeh-why__student-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 34px rgba(11, 61, 255, 0.12);
+}
+
+.payeh-why__student-media {
+    width: 100%;
+    height: 140px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #FAF8F5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payeh-why__student-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.payeh-why__student-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #0753a8;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* 3. Consultation Section - Study Discussion Video */
+.payeh-consultation__anim-wrapper {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    max-width: 380px;
+}
+
+.payeh-consultation__video {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    max-height: 270px;
+    border-radius: 24px;
+    object-fit: contain;
+    background: #FFFFFF;
+    box-shadow: 0 16px 40px rgba(7, 91, 196, 0.16);
+    border: 3px solid rgba(255, 255, 255, 0.95);
+    transition: transform 0.3s ease;
+}
+
+.payeh-consultation__video:hover {
+    transform: scale(1.02);
+}
+
+.payeh-consultation__floating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFFFFF;
+    color: #0753a8;
+    border: 1px solid rgba(7, 83, 168, 0.18);
+    font-size: 13px;
+    font-weight: 800;
+    padding: 7px 18px;
+    border-radius: 99px;
+    box-shadow: 0 8px 20px rgba(7, 91, 196, 0.1);
+    text-align: center;
+}
+
+/* 4. Final CTA - Successful Target Video */
+.payeh-final-cta__illustration {
+    position: absolute;
+    z-index: 3;
+    left: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+.payeh-final-cta__anim-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.payeh-final-cta__video {
+    width: 100%;
+    max-width: 220px;
+    max-height: 175px;
+    border-radius: 20px;
+    object-fit: contain;
+    background: #FFFFFF;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 210, 28, 0.5);
+    transition: transform 0.3s ease;
+}
+
+.payeh-final-cta__video:hover {
+    transform: scale(1.03);
+}
+
+@media (max-width: 900px) {
+    .payeh-why__student-card {
+        max-width: 100%;
+        margin: 16px auto;
+    }
+    .payeh-consultation__video {
+        max-width: 280px;
+        max-height: 220px;
+    }
+    .payeh-final-cta__illustration {
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        margin-top: 20px !important;
+        height: auto !important;
+    }
+    .payeh-final-cta__video {
+        max-width: 180px;
+        max-height: 150px;
+    }
+}
+
