@@ -649,15 +649,18 @@ p {
 .payeh-hero {
     position: relative;
     width: 100%;
-    min-height: 86vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding-top: 145px;
-    padding-bottom: 75px;
+    padding-top: 80px;
+    padding-bottom: 50px;
     overflow: hidden;
     color: #ffffff;
-    background: #08122c;
+    background: #000000;
     isolation: isolate;
 }
 
@@ -756,15 +759,19 @@ p {
     50% { transform: scale(1.4); opacity: 0.45; }
 }
 
-/* Playful, Clear Title with Lalezar Font */
+/* Painted Sayeh Style Title */
 .payeh-hero__title {
     color: #ffffff;
-    font-family: "Lalezar", "Peyda", sans-serif !important;
-    font-size: clamp(2.3rem, 5.2vw, 4.3rem);
+    font-family: "Sayeh", "Lalezar", cursive, sans-serif !important;
+    font-size: clamp(2.5rem, 6vw, 4.8rem);
     font-weight: 400;
-    line-height: 1.35;
-    letter-spacing: -0.5px;
-    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.9), 0 6px 30px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 0, 0, 0.8);
+    line-height: 1.45;
+    letter-spacing: normal;
+    text-shadow: 
+        3px 3px 0px #04091a,
+        5px 5px 0px #071330,
+        7px 7px 18px rgba(0, 0, 0, 0.95),
+        0 0 35px rgba(0, 0, 0, 0.85);
     margin: 0 auto;
 }
 
@@ -782,9 +789,13 @@ p {
 
 .payeh-hero__title-sub {
     display: block;
-    margin-top: 14px;
-    font-size: clamp(2.1rem, 4.8vw, 3.8rem);
+    margin-top: 16px;
+    font-size: clamp(2.3rem, 5.2vw, 4.2rem);
     color: #ffffff;
+    text-shadow: 
+        3px 3px 0px #04091a,
+        5px 5px 0px #071330,
+        7px 7px 18px rgba(0, 0, 0, 0.95);
 }
 
 /* Blinking Yellow Heart */
@@ -1025,12 +1036,54 @@ p {
     transform: scale(1.04);
 }
 
+/* Bouncing Scroll Down Indicator */
+.payeh-hero__scroll-indicator {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+    animation: payehScrollBounce 2.2s infinite ease-in-out;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.payeh-hero__scroll-indicator svg {
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.9));
+}
+
+.payeh-hero__scroll-indicator:hover {
+    color: #FFD600;
+}
+
+@keyframes payehScrollBounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translate(-50%, 0);
+    }
+    40% {
+        transform: translate(-50%, -10px);
+    }
+    60% {
+        transform: translate(-50%, -5px);
+    }
+}
+
 @media (max-width: 992px) {
 
     .payeh-hero {
-        padding-top: 130px;
-        padding-bottom: 60px;
-        min-height: 75vh;
+        padding-top: 90px;
+        padding-bottom: 50px;
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: 100vh;
     }
 
     .payeh-hero__title {
@@ -1045,9 +1098,11 @@ p {
 @media (max-width: 768px) {
 
     .payeh-hero {
-        padding-top: 110px;
-        padding-bottom: 50px;
-        min-height: 640px;
+        padding-top: 85px;
+        padding-bottom: 55px;
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: 100vh;
     }
 
     .payeh-hero__content {
