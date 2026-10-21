@@ -231,37 +231,76 @@ nav.rank-nav li.on a {
   font-weight: 800;
   line-height: 1.4;
   margin-bottom: 8px;
+  color: #ffffff !important;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+.stage p {
+  color: #f1f5f9 !important;
+  opacity: 1 !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
 }
 
 .gt {
-  background: linear-gradient(135deg, var(--gold2), var(--gold));
+  background: linear-gradient(135deg, #fff3bf, #ffd600 55%, #f59e0b);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  text-shadow: 0 0 20px rgba(255, 214, 0, 0.4);
 }
 
 .chip {
   display: inline-flex;
   gap: 8px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(232, 184, 74, 0.5);
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 214, 0, 0.6) !important;
   border-radius: 99px;
   padding: 6px 16px;
   font-size: 13px;
   margin-bottom: 16px;
-  color: var(--gold2);
+  color: #ffd600 !important;
+  font-weight: 700;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.stone {
+  position: relative;
+  border-radius: 28px;
+  padding: 28px;
+  background: rgba(7, 20, 61, 0.72) !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1.5px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 22px 50px rgba(5, 13, 43, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+}
+
+.stone small {
+  color: #e2e8f0 !important;
+  font-weight: 600;
+  opacity: 1 !important;
+}
+
+.stone label {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+.stone label span {
+  color: #ffffff !important;
 }
 
 .big {
   font-size: 64px;
   font-weight: 800;
   line-height: 1.1;
-  background: linear-gradient(180deg, #fff, var(--gold));
+  background: linear-gradient(180deg, #ffffff 0%, #ffd600 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   margin: 8px 0;
+  text-shadow: 0 0 24px rgba(255, 214, 0, 0.45);
 }
 
 /* Inputs and Forms */

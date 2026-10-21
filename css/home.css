@@ -3517,3 +3517,441 @@ p {
     }
 }
 
+/* ==========================================================================
+   Payeh Dedicated Student Dashboard Showcase & High Contrast Section Styles
+   ========================================================================== */
+
+/* Rank Teaser High Contrast Enforcements */
+.payeh-rank-teaser .stage h3 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+.payeh-rank-teaser .stage p {
+    color: #f1f5f9 !important;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+
+.payeh-rank-teaser .stage .chip {
+    color: #ffd600 !important;
+    background: rgba(255, 255, 255, 0.14) !important;
+    border: 1px solid rgba(255, 214, 0, 0.6) !important;
+}
+
+.payeh-rank-teaser .stone {
+    background: rgba(7, 20, 61, 0.76) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.28) !important;
+    color: #ffffff !important;
+}
+
+.payeh-rank-teaser .stone small,
+.payeh-rank-teaser .stone label,
+.payeh-rank-teaser .stone label span {
+    color: #ffffff !important;
+}
+
+/* Dedicated Student Dashboard Showcase */
+.payeh-student-showcase {
+    position: relative;
+    padding: 70px 0 60px;
+    background: linear-gradient(180deg, rgba(248, 250, 255, 0.9) 0%, rgba(238, 244, 255, 0.95) 100%);
+    overflow: hidden;
+}
+
+.payeh-student-showcase__header {
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto 46px;
+}
+
+.payeh-student-showcase__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(11, 61, 255, 0.08);
+    color: var(--payeh-primary);
+    border: 1px solid rgba(11, 61, 255, 0.22);
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 7px 20px;
+    border-radius: 99px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 10px rgba(11, 61, 255, 0.06);
+}
+
+.payeh-student-showcase__title {
+    font-size: clamp(24px, 3.2vw, 36px);
+    font-weight: 900;
+    color: #07143D;
+    line-height: 1.4;
+    margin: 0 0 16px;
+    letter-spacing: -0.3px;
+}
+
+.payeh-student-showcase__subtitle {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: #475569;
+    margin: 0;
+}
+
+.payeh-student-showcase__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 46px;
+}
+
+.payeh-student-card {
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 24px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    position: relative;
+}
+
+.payeh-student-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(11, 61, 255, 0.1);
+    border-color: rgba(11, 61, 255, 0.35);
+}
+
+.payeh-student-card__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.payeh-student-card__icon--blue {
+    background: linear-gradient(135deg, #0B3DFF, #0834D6);
+    color: #FFFFFF;
+    box-shadow: 0 8px 18px rgba(11, 61, 255, 0.28);
+}
+
+.payeh-student-card__icon--gold {
+    background: linear-gradient(135deg, #FFF3BF, #FFD600 65%, #F59E0B);
+    color: #07143D;
+    box-shadow: 0 8px 18px rgba(245, 158, 11, 0.25);
+}
+
+.payeh-student-card__body h3 {
+    font-size: 17px;
+    font-weight: 800;
+    color: #07143D;
+    line-height: 1.5;
+    margin: 0 0 10px;
+}
+
+.payeh-student-card__body p {
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: #64748B;
+    margin: 0 0 14px;
+}
+
+.payeh-student-card__tag {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0B3DFF;
+    background: #E8F1FF;
+    padding: 4px 12px;
+    border-radius: 99px;
+    width: fit-content;
+}
+
+/* Interactive Preview & CTA Banner */
+.payeh-student-preview-banner {
+    position: relative;
+    background: linear-gradient(135deg, #07143D 0%, #0B2570 55%, #0E359E 100%);
+    border-radius: 28px;
+    padding: 44px 40px;
+    color: #FFFFFF;
+    border: 1.5px solid rgba(255, 214, 0, 0.35);
+    box-shadow: 0 25px 60px rgba(7, 20, 61, 0.35);
+    overflow: hidden;
+}
+
+.payeh-student-preview-banner::before {
+    content: "";
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 214, 0, 0.15) 0%, transparent 70%);
+    top: -120px;
+    left: -100px;
+    pointer-events: none;
+}
+
+.payeh-student-preview-banner__inner {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 36px;
+    align-items: center;
+}
+
+.payeh-student-preview-banner__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 214, 0, 0.16);
+    color: #FFD600;
+    border: 1px solid rgba(255, 214, 0, 0.35);
+    font-size: 13px;
+    font-weight: 800;
+    padding: 6px 18px;
+    border-radius: 99px;
+    margin-bottom: 14px;
+}
+
+.payeh-student-preview-banner__text h3 {
+    font-size: clamp(22px, 2.5vw, 30px);
+    font-weight: 900;
+    color: #FFFFFF !important;
+    line-height: 1.4;
+    margin: 0 0 12px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.payeh-student-preview-banner__text p {
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: #E2E8F0 !important;
+    margin: 0 0 24px;
+}
+
+.payeh-student-preview-banner__actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.payeh-btn-dashboard-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #FFF3BF, #FFD600 55%, #F59E0B);
+    color: #07143D !important;
+    font-weight: 800;
+    font-size: 14.5px;
+    padding: 13px 26px;
+    border-radius: 14px;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(255, 214, 0, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payeh-btn-dashboard-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255, 214, 0, 0.45);
+}
+
+.payeh-btn-dashboard-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF !important;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 22px;
+    border-radius: 14px;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: background 0.2s ease;
+}
+
+.payeh-btn-dashboard-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Mini Mockup Preview Card */
+.payeh-student-preview-card {
+    background: rgba(5, 15, 52, 0.78);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1.5px solid rgba(255, 255, 255, 0.22);
+    border-radius: 20px;
+    padding: 24px;
+    color: #FFFFFF;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.payeh-student-preview-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    margin-bottom: 16px;
+}
+
+.payeh-student-preview-card__user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.payeh-student-preview-card__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #0B3DFF;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 16px;
+}
+
+.payeh-student-preview-card__user strong {
+    display: block;
+    font-size: 14.5px;
+    color: #FFFFFF;
+}
+
+.payeh-student-preview-card__user small {
+    display: block;
+    font-size: 12px;
+    color: #94A3B8;
+}
+
+.payeh-student-preview-card__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #34D399;
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    padding: 4px 10px;
+    border-radius: 99px;
+}
+
+.payeh-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34D399;
+    box-shadow: 0 0 8px #34D399;
+}
+
+.payeh-student-preview-card__stats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.payeh-mini-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 10px 14px;
+}
+
+.payeh-mini-stat__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(255, 214, 0, 0.16);
+    color: #FFD600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.payeh-mini-stat__info small {
+    display: block;
+    font-size: 11.5px;
+    color: #94A3B8;
+}
+
+.payeh-mini-stat__info b {
+    display: block;
+    font-size: 13.5px;
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.payeh-student-preview-card__msg {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(11, 61, 255, 0.18);
+    border: 1px solid rgba(11, 61, 255, 0.35);
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.payeh-student-preview-card__msg-icon {
+    color: #93C5FD;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.payeh-student-preview-card__msg-text strong {
+    display: block;
+    font-size: 12px;
+    color: #93C5FD;
+    margin-bottom: 3px;
+}
+
+.payeh-student-preview-card__msg-text p {
+    font-size: 12px;
+    line-height: 1.65;
+    color: #F1F5F9 !important;
+    margin: 0 !important;
+}
+
+@media (max-width: 990px) {
+    .payeh-student-showcase__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .payeh-student-preview-banner__inner {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .payeh-student-showcase {
+        padding: 50px 0 40px;
+    }
+    .payeh-student-showcase__grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .payeh-student-preview-banner {
+        padding: 28px 20px;
+    }
+    .payeh-student-preview-banner__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .payeh-btn-dashboard-primary,
+    .payeh-btn-dashboard-secondary {
+        justify-content: center;
+        width: 100%;
+    }
+}
+
