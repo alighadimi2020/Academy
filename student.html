@@ -8,7 +8,7 @@
     <title>پنل دانش‌آموز | آکادمی پایه</title>
 
     <link rel="stylesheet" href="css/fonts.css?v=20261019_3">
-    <link rel="stylesheet" href="css/student.css?v=20261019_3">
+    <link rel="stylesheet" href="css/student.css?v=20261022_5">
 </head>
 
 <body>
@@ -563,6 +563,236 @@
             </div>
             <!-- END VIEW 1: DASHBOARD -->
 
+            <!-- VIEW: MY CONSULTANT & EVENTS HUB -->
+            <div id="view-consultant" class="payeh-student__view" style="display:none;">
+                <div class="payeh-consultant-page-wrapper">
+                    
+                    <!-- 1. Assigned Consultant Profile Card -->
+                    <section class="payeh-myconsultant-card" id="payeh-myconsultant-card">
+                        <div class="payeh-myconsultant-header">
+                            <div class="payeh-myconsultant-profile">
+                                <div class="payeh-myconsultant-avatar-wrap">
+                                    <div class="payeh-myconsultant-avatar" id="myconsultant-avatar"></div>
+                                    <span class="payeh-myconsultant-status-dot" title="مشاور آنلاین و در دسترس"></span>
+                                </div>
+                                <div class="payeh-myconsultant-details">
+                                    <div class="payeh-myconsultant-name-row">
+                                        <h2 id="myconsultant-name">دکتر امیرحسین فرهمند</h2>
+                                        <span class="payeh-badge-verified">
+                                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>مشاور اختصاصی شما</span>
+                                        </span>
+                                    </div>
+                                    <p class="payeh-myconsultant-bio" id="myconsultant-bio">رتبه ۸ کنکور سراسری تجربی · پزشکی دانشگاه علوم پزشکی تهران · طراح برنامه‌ریزی راهبردی آکادمی پایه</p>
+                                    <div class="payeh-myconsultant-badges">
+                                        <span class="payeh-consultant-pill payeh-consultant-pill--plan" id="myconsultant-plan">
+                                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <span id="myconsultant-plan-text">پلن VIP نظارت روزانه</span>
+                                        </span>
+                                        <span class="payeh-consultant-pill payeh-consultant-pill--meta" id="myconsultant-days">
+                                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                            <span id="myconsultant-days-text">۴۸ روز همراهی مستمر</span>
+                                        </span>
+                                        <span class="payeh-consultant-pill payeh-consultant-pill--status">
+                                            <span class="payeh-pulse-dot"></span>
+                                            <span>پاسخگویی سریع فعال</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- The 2 Core Action Buttons Requested by User -->
+                            <div class="payeh-myconsultant-actions">
+                                <button type="button" class="payeh-btn-consultant-primary" id="btn-consultant-open-chat">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <span>گفت‌وگو با مشاور</span>
+                                </button>
+                                <button type="button" class="payeh-btn-consultant-secondary active" id="btn-consultant-view-events">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        <polyline points="9 16 11 18 15 14"></polyline>
+                                    </svg>
+                                    <span>مشاهده رخدادها</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Consultant Highlights Stats Strip -->
+                        <div class="payeh-myconsultant-stats-strip">
+                            <div class="payeh-consultant-stat-box">
+                                <span class="payeh-stat-box-lbl">کل گزارش‌های ارسالی</span>
+                                <strong class="payeh-stat-box-val" id="myconsultant-stat-reports">۴۸ گزارش</strong>
+                                <small class="payeh-stat-box-hint">ثبت‌شده در ساعت ۱۲ شب</small>
+                            </div>
+                            <div class="payeh-consultant-stat-box">
+                                <span class="payeh-stat-box-lbl">پاسخ‌ها و بازخوردهای مشاور</span>
+                                <strong class="payeh-stat-box-val" id="myconsultant-stat-feedbacks">۴۴ بازخورد</strong>
+                                <small class="payeh-stat-box-hint">شامل ویس و تحلیل شبانه</small>
+                            </div>
+                            <div class="payeh-consultant-stat-box">
+                                <span class="payeh-stat-box-lbl">نرخ پیوستگی و تحویل به موقع</span>
+                                <strong class="payeh-stat-box-val" id="myconsultant-stat-rate">۹۸٪</strong>
+                                <small class="payeh-stat-box-hint">سطح انضباط: عالی</small>
+                            </div>
+                            <div class="payeh-consultant-stat-box">
+                                <span class="payeh-stat-box-lbl">وضعیت برنامه هفتگی</span>
+                                <strong class="payeh-stat-box-val" id="myconsultant-stat-plan">هفته جاری تنظیم‌شده</strong>
+                                <small class="payeh-stat-box-hint">۵۲ ساعت هدف مطالعاتی</small>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 2. Events & Activity Hub (صفحه رخدادها) -->
+                    <section class="payeh-events-hub" id="consultant-events-hub">
+                        <div class="payeh-events-hub__nav" role="tablist">
+                            <button type="button" class="payeh-events-tab active" data-events-tab="feedbacks">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="7" x2="12" y2="13"/></svg>
+                                <span>بازخوردهای مشاور در تاریخ‌های مختلف</span>
+                                <span class="payeh-tab-count" id="events-feedbacks-count">۰</span>
+                            </button>
+                            <button type="button" class="payeh-events-tab" data-events-tab="weekly-plan">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <span>برنامه چیده‌شده برای این هفته</span>
+                            </button>
+                            <button type="button" class="payeh-events-tab" data-events-tab="reports-stats">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                <span>آمار گزارش‌ها و جواب‌های مشاور</span>
+                            </button>
+                        </div>
+
+                        <!-- TAB 1: FEEDBACKS TIMELINE BY DATE -->
+                        <div class="payeh-events-panel active" id="events-panel-feedbacks">
+                            <div class="payeh-panel-filter-bar">
+                                <div class="payeh-filter-title">
+                                    <h3>سوابق بازخوردهای مشاور اختصاصی</h3>
+                                    <p>پاسخ‌های تحلیلی، پیام‌های راهبردی و توصیه‌های صوتی مشاور روی گزارش‌های مطالعه</p>
+                                </div>
+                                <div class="payeh-filter-actions">
+                                    <select id="feedbackFilterType" class="payeh-filter-select">
+                                        <option value="all">همه بازخوردها</option>
+                                        <option value="report">تحلیل گزارش کار شبانه</option>
+                                        <option value="voice">توصیه صوتی و انگیزشی</option>
+                                        <option value="exam">تحلیل آزمون آزمایشی</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="payeh-feedbacks-timeline" id="payeh-feedbacks-timeline">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: CONSULTANT'S WEEKLY PLAN -->
+                        <div class="payeh-events-panel" id="events-panel-weekly-plan" style="display:none;">
+                            <div class="payeh-weekly-plan-banner">
+                                <div class="payeh-plan-banner-content">
+                                    <span class="payeh-plan-banner-tag">برنامه راهبردی هفته جاری</span>
+                                    <h3>نقشه راه مطالعاتی تنظیم‌شده توسط مشاور اختصاصی</h3>
+                                    <p id="consultant-weekly-strategy-text">تمرکز ویژه این هفته: تثبیت فیزیک دوازدهم، ارتقای سرعت تست‌زنی زیست‌شناسی و جمع‌بندی سرفصل‌های آزمون جامع جمعه.</p>
+                                </div>
+                                <div class="payeh-plan-banner-meta">
+                                    <div class="payeh-plan-meta-item">
+                                        <span>هدف کل ساعت:</span>
+                                        <strong id="consultant-plan-total-hours">۵۲ ساعت</strong>
+                                    </div>
+                                    <div class="payeh-plan-meta-item">
+                                        <span>هدف تست:</span>
+                                        <strong id="consultant-plan-total-tests">۷۵۰ تست</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="payeh-consultant-week-grid" id="consultant-week-grid">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: STUDY REPORTS STATS & CONSULTANT REPLIES -->
+                        <div class="payeh-events-panel" id="events-panel-reports-stats" style="display:none;">
+                            <div class="payeh-reports-stats-overview">
+                                <div class="payeh-report-kpi-card">
+                                    <div class="payeh-kpi-icon payeh-kpi-icon--blue">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                    </div>
+                                    <div class="payeh-kpi-body">
+                                        <small>کل گزارش‌های ارسالی شما</small>
+                                        <b id="kpi-total-reports">۴۸ روز</b>
+                                        <span>بدون وقفه از زمان ثبت‌نام</span>
+                                    </div>
+                                </div>
+
+                                <div class="payeh-report-kpi-card">
+                                    <div class="payeh-kpi-icon payeh-kpi-icon--green">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+                                    </div>
+                                    <div class="payeh-kpi-body">
+                                        <small>تحویل داده‌شده قبل از ۱۲ شب</small>
+                                        <b id="kpi-ontime-rate">۹۸٪</b>
+                                        <span>۴۷ گزارش به‌موقع و منظم</span>
+                                    </div>
+                                </div>
+
+                                <div class="payeh-report-kpi-card">
+                                    <div class="payeh-kpi-icon payeh-kpi-icon--amber">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                    </div>
+                                    <div class="payeh-kpi-body">
+                                        <small>پاسخ‌های مشاور روی گزارش‌ها</small>
+                                        <b id="kpi-reviewed-feedbacks">۴۴ پاسخ</b>
+                                        <span>نرخ پاسخگویی مشاور: ۹۵٪</span>
+                                    </div>
+                                </div>
+
+                                <div class="payeh-report-kpi-card">
+                                    <div class="payeh-kpi-icon payeh-kpi-icon--purple">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    </div>
+                                    <div class="payeh-kpi-body">
+                                        <small>میانگین زمان بررسی مشاور</small>
+                                        <b id="kpi-avg-time">۳۵ دقیقه</b>
+                                        <span>تحلیل صبحگاهی قبل از شروع روز</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Detailed Comparison Log -->
+                            <div class="payeh-reports-log-card">
+                                <div class="payeh-log-card-header">
+                                    <div>
+                                        <h4>تطبیق گزارش‌های مطالعه دانش‌آموز با پاسخ‌های مشاور</h4>
+                                        <p>سوابق ساعت مطالعه، تست ثبت‌شده و بازخورد مستقیم مشاور به تفکیک روزها</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="payeh-reports-log-table-wrap">
+                                    <table class="payeh-reports-log-table">
+                                        <thead>
+                                            <tr>
+                                                <th>تاریخ گزارش</th>
+                                                <th>ساعت مطالعه</th>
+                                                <th>تعداد تست</th>
+                                                <th>وضعیت بررسی</th>
+                                                <th>پاسخ و ارزیابی مشاور اختصاصی</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="payeh-reports-log-tbody">
+                                            <!-- Dynamically injected -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+
+                </div>
+            </div>
+
             <!-- VIEW 2: CHAT & MESSENGER -->
             <div id="view-chat" class="payeh-student__view" style="display:none;">
                 <div class="payeh-chat-container">
@@ -963,7 +1193,7 @@
     </div>
 </div>
 
-<script src="js/student.js?v=20261019_3"></script>
+<script src="js/student.js?v=20261022_5"></script>
 
 </body>
 </html>

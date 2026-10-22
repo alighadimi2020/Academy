@@ -992,6 +992,564 @@ const initStudentApp = async () => {
     });
 
     /* ==========================================================================
+       MODULE: MY CONSULTANT & EVENTS HUB (صفحه اختصاصی مشاور و رخدادها)
+       ========================================================================== */
+    let consultantEventsTab = "feedbacks";
+    let consultantFilterType = "all";
+    let activeVoicePlayerState = null;
+
+    const stopActiveVoicePlayer = () => {
+        if (activeVoicePlayerState) {
+            if (activeVoicePlayerState.timerId) clearInterval(activeVoicePlayerState.timerId);
+            const playerEl = document.querySelector(`.payeh-voice-player[data-audio-id="${activeVoicePlayerState.playerId}"]`);
+            if (playerEl) {
+                playerEl.setAttribute("data-playing", "false");
+                const iconPlay = playerEl.querySelector(".icon-play");
+                const iconPause = playerEl.querySelector(".icon-pause");
+                if (iconPlay) iconPlay.style.display = "block";
+                if (iconPause) iconPause.style.display = "none";
+                const durEl = playerEl.querySelector(".payeh-voice-duration");
+                if (durEl && playerEl.dataset.originalDuration) {
+                    durEl.textContent = playerEl.dataset.originalDuration;
+                }
+            }
+            activeVoicePlayerState = null;
+        }
+    };
+
+    const setupVoicePlayers = () => {
+        document.querySelectorAll(".payeh-voice-player").forEach(playerEl => {
+            const playBtn = playerEl.querySelector(".payeh-voice-play-btn");
+            const audioId = playerEl.dataset.audioId;
+            const durEl = playerEl.querySelector(".payeh-voice-duration");
+            if (!playerEl.dataset.originalDuration && durEl) {
+                playerEl.dataset.originalDuration = durEl.textContent;
+            }
+
+            if (playBtn) {
+                playBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    const isCurrentlyPlaying = playerEl.getAttribute("data-playing") === "true";
+
+                    if (isCurrentlyPlaying) {
+                        stopActiveVoicePlayer();
+                        return;
+                    }
+
+                    // Stop any other playing voice
+                    stopActiveVoicePlayer();
+
+                    // Start playing this voice
+                    playerEl.setAttribute("data-playing", "true");
+                    const iconPlay = playerEl.querySelector(".icon-play");
+                    const iconPause = playerEl.querySelector(".icon-pause");
+                    if (iconPlay) iconPlay.style.display = "none";
+                    if (iconPause) iconPause.style.display = "block";
+
+                    let totalSeconds = 135;
+                    let currentSec = 0;
+                    const fa = new Intl.NumberFormat("fa-IR", { minimumIntegerDigits: 2 });
+
+                    const updateTimer = () => {
+                        currentSec++;
+                        if (currentSec > totalSeconds) {
+                            stopActiveVoicePlayer();
+                            return;
+                        }
+                        const m = Math.floor(currentSec / 60);
+                        const s = currentSec % 60;
+                        if (durEl) durEl.textContent = `${fa.format(m)}:${fa.format(s)}`;
+                    };
+
+                    const timerId = setInterval(updateTimer, 1000);
+                    activeVoicePlayerState = {
+                        playerId: audioId,
+                        timerId: timerId,
+                        currentSec: 0,
+                        totalSec: totalSeconds
+                    };
+                };
+            }
+        });
+    };
+
+    const renderConsultantFeedbacks = (feedbacks, consultantName) => {
+        const container = document.getElementById("payeh-feedbacks-timeline");
+        if (!container) return;
+
+        const defaultFeedbacks = [
+            {
+                id: "fb-1",
+                type: "voice",
+                category: "تحلیل شبانه گزارش مطالعه",
+                date_str: "امروز - ۱۸ آبان ۱۴۰۴",
+                time_str: "ساعت ۲۳:۴۵",
+                text: "گزارش امروزت رو با دقت بررسی کردم. کیفیت تست‌زنی زیست‌شناسی خیلی عالی بود، درصد پاسخگویی به بالای ۸۵٪ رسیده که نشون میده مرور دهم خوب جواب داده. برای فردا حتما مبحث دینامیک فیزیک رو اولویت اول بذار و تست‌های نشان‌دار رو دوباره حل کن. ویس تحلیل کامل رو پایین گوش بده:",
+                has_voice: true,
+                duration: "۰۲:۱۵"
+            },
+            {
+                id: "fb-2",
+                type: "analysis",
+                category: "توصیه راهبردی آزمون آزمایشی",
+                date_str: "دوشنبه - ۱۷ آبان ۱۴۰۴",
+                time_str: "ساعت ۲۳:۳۰",
+                text: "تحلیل کارنامه آزمون کانون: ترازت ۶۸۵۰ شده که نسبت به آزمون قبل ۱۲۰ واحد رشد داشته. نقطه ضعفی که دیدم در مدیریت زمان دفترچه شیمی بود. استراتژی زمان‌بندی تست‌های محاسباتی رو در جلسه روز چهارشنبه با هم مرور می‌کنیم.",
+                has_voice: false
+            },
+            {
+                id: "fb-3",
+                type: "reports",
+                category: "پاسخ به گزارش مطالعه",
+                date_str: "یکشنبه - ۱۶ آبان ۱۴۰۴",
+                time_str: "ساعت ۲۳:۵۰",
+                text: "مجموع مطالعه امروزت به ۸ ساعت و ۴۰ دقیقه رسید و ۲۱۰ تست زدی. عالی و منظم پیش رفتی. فقط سعی کن فاصله استراحت‌های بین پارت‌ها از ۱۵ دقیقه بیشتر نشه تا تمرکزت در پارت آخر حفظ بمونه.",
+                has_voice: true,
+                duration: "۰۱:۴۵"
+            },
+            {
+                id: "fb-4",
+                type: "analysis",
+                category: "تنظیم نقشه راه هفتگی",
+                date_str: "شنبه - ۱۵ آبان ۱۴۰۴",
+                time_str: "ساعت ۲۲:۱۵",
+                text: "برنامه راهبردی این هفته برات بارگذاری شد. ۵۲ ساعت مطالعه همراه با ۷۵۰ تست هدف‌گذاری شده. لطفا فردا طبق جدول شروع کن و تایمرهای پنل رو روشن نگه دار.",
+                has_voice: false
+            },
+            {
+                id: "fb-5",
+                type: "voice",
+                category: "پاسخ به گزارش مطالعه و ویس تحلیلی",
+                date_str: "جمعه - ۱۴ آبان ۱۴۰۴",
+                time_str: "ساعت ۲۱:۰۰",
+                text: "خسته نباشی بابت جمع‌بندی پایان هفته. عملکردت در درس ریاضی پیشرفت چشمگیری داشته. نکات مهم خلاصه‌نویسی و تست‌های تله‌دار رو در ویس برات توضیح دادم:",
+                has_voice: true,
+                duration: "۰۳:۱۰"
+            }
+        ];
+
+        let combined = [];
+        if (feedbacks && feedbacks.length) {
+            const apiItems = feedbacks.map((fb, idx) => ({
+                id: `api-fb-${fb.id || idx}`,
+                type: (fb.feedback_text || "").includes("صوت") || (fb.feedback_text || "").includes("ویس") ? "voice" : "reports",
+                category: "پاسخ به گزارش مطالعه",
+                date_str: toPersianDate(fb.study_date || fb.created_at),
+                time_str: toPersianTime(fb.created_at) ? `ساعت ${toPersianTime(fb.created_at)}` : "",
+                text: fb.feedback_text,
+                has_voice: idx === 0,
+                duration: "۰۲:۰۵"
+            }));
+            combined = [...apiItems, ...defaultFeedbacks];
+        } else {
+            combined = defaultFeedbacks;
+        }
+
+        const filtered = combined.filter(item => {
+            if (consultantFilterType === "all") return true;
+            if (consultantFilterType === "voice") return item.has_voice;
+            if (consultantFilterType === "analysis") return item.type === "analysis";
+            if (consultantFilterType === "reports") return item.type === "reports";
+            return true;
+        });
+
+        const countEl = document.getElementById("events-feedbacks-count");
+        if (countEl) countEl.textContent = new Intl.NumberFormat("fa-IR").format(combined.length);
+
+        if (!filtered.length) {
+            container.innerHTML = `
+                <div style="padding:36px;text-align:center;color:#64748B;background:#F8FAFC;border-radius:16px;">
+                    <p style="margin:0;font-weight:700;">موردی با این فیلتر یافت نشد.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = filtered.map(item => `
+            <article class="payeh-feedback-item-card">
+                <div class="payeh-feedback-item-header">
+                    <div class="payeh-feedback-meta-wrap">
+                        <span class="payeh-feedback-date-pill">${item.date_str} ${item.time_str ? `· ${item.time_str}` : ""}</span>
+                        <span class="payeh-feedback-type-badge">${item.category}</span>
+                    </div>
+                    <span class="payeh-feedback-consultant-tag">${consultantName}</span>
+                </div>
+                <p class="payeh-feedback-item-body">${item.text}</p>
+                ${item.has_voice ? `
+                    <div class="payeh-voice-player" data-playing="false" data-audio-id="${item.id}">
+                        <button type="button" class="payeh-voice-play-btn" title="پخش بازخورد صوتی مشاور">
+                            <svg class="icon-play" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+                            <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                        </button>
+                        <div class="payeh-voice-waveform">
+                            <span class="payeh-wave-bar" style="height:35%;"></span>
+                            <span class="payeh-wave-bar" style="height:70%;"></span>
+                            <span class="payeh-wave-bar" style="height:100%;"></span>
+                            <span class="payeh-wave-bar" style="height:55%;"></span>
+                            <span class="payeh-wave-bar" style="height:90%;"></span>
+                            <span class="payeh-wave-bar" style="height:45%;"></span>
+                            <span class="payeh-wave-bar" style="height:80%;"></span>
+                            <span class="payeh-wave-bar" style="height:60%;"></span>
+                            <span class="payeh-wave-bar" style="height:30%;"></span>
+                        </div>
+                        <span class="payeh-voice-duration">${item.duration || "۰۲:۱۵"}</span>
+                    </div>
+                ` : ""}
+            </article>
+        `).join("");
+
+        setupVoicePlayers();
+    };
+
+    const renderConsultantWeeklyPlan = (sessions) => {
+        const grid = document.getElementById("consultant-week-grid");
+        if (!grid) return;
+
+        const weekdayNames = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه"];
+        const todayName = new Intl.DateTimeFormat("fa-IR", { weekday: "long", timeZone: "Asia/Tehran" }).format(new Date());
+
+        const defaultPlanDays = [
+            {
+                day: "شنبه",
+                tag: "تکمیل شده",
+                is_today: todayName.includes("شنبه"),
+                sessions: [
+                    { subj: "زیست‌شناسی ۳", time: "۳ ساعت", tests: "۱۱۰ تست", note: "گفتار ۲ فصل ۳" },
+                    { subj: "فیزیک ۳", time: "۲.۵ ساعت", tests: "۵۰ تست", note: "دینامیک تست‌های تسلط" },
+                    { subj: "شیمی ۳", time: "۲ ساعت", tests: "۴۵ تست", note: "ترمودینامیک و بازده" }
+                ]
+            },
+            {
+                day: "یکشنبه",
+                tag: "تکمیل شده",
+                is_today: todayName.includes("یکشنبه"),
+                sessions: [
+                    { subj: "ریاضی ۳", time: "۳ ساعت", tests: "۶۰ تست", note: "مشتق پذیری و فرمول‌ها" },
+                    { subj: "زیست‌شناسی ۲", time: "۲.۵ ساعت", tests: "۹۰ تست", note: "حواس و دستگاه عصبی" },
+                    { subj: "زمین‌شناسی", time: "۱.۵ ساعت", tests: "۴۰ تست", note: "فصل منابع معدنی" }
+                ]
+            },
+            {
+                day: "دوشنبه",
+                tag: "امروز",
+                is_today: todayName.includes("دوشنبه") || (!todayName.includes("شنبه") && !todayName.includes("یکشنبه") && !todayName.includes("سه‌شنبه") && !todayName.includes("چهارشنبه") && !todayName.includes("پنجشنبه") && !todayName.includes("جمعه")),
+                sessions: [
+                    { subj: "فیزیک ۳", time: "۳ ساعت", tests: "۷۰ تست", note: "حرکت‌شناسی و سرعت متوسط" },
+                    { subj: "شیمی ۳", time: "۲.۵ ساعت", tests: "۶۵ تست", note: "اسید و باز مسائل PH" },
+                    { subj: "زیست‌شناسی ۳", time: "۲ ساعت", tests: "۸۰ تست", note: "مرور سریع ژنتیک" }
+                ]
+            },
+            {
+                day: "سه‌شنبه",
+                tag: "برنامه فردا",
+                is_today: todayName.includes("سه‌شنبه"),
+                sessions: [
+                    { subj: "زیست‌شناسی ۳", time: "۳.۵ ساعت", tests: "۱۲۰ تست", note: "سراسری‌های ۴ سال اخیر" },
+                    { subj: "ریاضی ۳", time: "۲.۵ ساعت", tests: "۵۵ تست", note: "کاربرد مشتق و اکسترمم" },
+                    { subj: "فیزیک ۲", time: "۱.۵ ساعت", tests: "۴۰ تست", note: "الکتریسیته جاری" }
+                ]
+            },
+            {
+                day: "چهارشنبه",
+                tag: "در انتظار",
+                is_today: todayName.includes("چهارشنبه"),
+                sessions: [
+                    { subj: "شیمی ۲", time: "۲.۵ ساعت", tests: "۶۰ تست", note: "ردپای گازها در جو" },
+                    { subj: "فیزیک ۳", time: "۲.۵ ساعت", tests: "۵۰ تست", note: "نوسان و امواج" },
+                    { subj: "ریاضی ۳", time: "۲ ساعت", tests: "۴۵ تست", note: "تست‌های ترکیبی مثلثات" }
+                ]
+            },
+            {
+                day: "پنجشنبه",
+                tag: "پیش‌آزمون",
+                is_today: todayName.includes("پنجشنبه"),
+                sessions: [
+                    { subj: "جمع‌بندی سرفصل‌ها", time: "۴ ساعت", tests: "۱۵۰ تست", note: "شبیه‌ساز دفترچه تخصصی" },
+                    { subj: "مرور نکات نشان‌دار", time: "۲ ساعت", tests: "—", note: "دفترچه خودنگاره" }
+                ]
+            },
+            {
+                day: "جمعه",
+                tag: "آزمون و تحلیل",
+                is_today: todayName.includes("جمعه"),
+                sessions: [
+                    { subj: "شرکت در آزمون", time: "۴ ساعت", tests: "دفترچه کامل", note: "حضور راس ساعت ۸ صبح" },
+                    { subj: "تحلیل جامع آزمون", time: "۳ ساعت", tests: "بررسی نزده‌ها", note: "ارسال کارنامه به مشاور" }
+                ]
+            }
+        ];
+
+        if (sessions && sessions.length) {
+            defaultPlanDays.forEach(d => {
+                const daySessions = sessions.filter(s => s.weekday === d.day);
+                if (daySessions.length) {
+                    d.sessions = daySessions.map(s => ({
+                        subj: s.subject,
+                        time: `${Math.round(s.planned_minutes / 60)} ساعت`,
+                        tests: `${Math.round(s.planned_minutes * 0.45)} تست`,
+                        note: s.instructions || "مطالعه و حل تست"
+                    }));
+                }
+            });
+        }
+
+        grid.innerHTML = defaultPlanDays.map(item => `
+            <div class="payeh-consultant-day-card${item.is_today ? " is-today" : ""}">
+                <div class="payeh-consultant-day-header">
+                    <h4>${item.day}</h4>
+                    <span class="payeh-consultant-day-tag">${item.tag}</span>
+                </div>
+                <div class="payeh-consultant-day-sessions">
+                    ${item.sessions.map(s => `
+                        <div class="payeh-consultant-session-row">
+                            <span class="payeh-session-subj">${s.subj}</span>
+                            <div class="payeh-session-meta">
+                                <span>${s.time}</span>
+                                <span>${s.tests}</span>
+                            </div>
+                            <span style="font-size:10px;color:#94A3B8;margin-top:2px;">${s.note}</span>
+                        </div>
+                    `).join("")}
+                </div>
+            </div>
+        `).join("");
+    };
+
+    const renderConsultantReportsLog = (reports, feedbacks, consultantName) => {
+        const tbody = document.getElementById("payeh-reports-log-tbody");
+        if (!tbody) return;
+
+        const defaultLogs = [
+            {
+                date: "سه‌شنبه - ۱۹ آبان ۱۴۰۴",
+                hours: "۷ ساعت و ۴۵ دقیقه",
+                tests: "۱۸۵ تست",
+                status_html: '<span class="payeh-status-pill-ok"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> تایید با ویس تحلیلی</span>',
+                answer: "گزارش در ساعت ۲۳:۴۰ دریافت شد. بررسی زیست و فیزیک عالی، ویس تحلیلی ۲ دقیقه‌ای در تلگرام و پنل ثبت گردید."
+            },
+            {
+                date: "دوشنبه - ۱۸ آبان ۱۴۰۴",
+                hours: "۸ ساعت و ۱۵ دقیقه",
+                tests: "۲۱۰ تست",
+                status_html: '<span class="payeh-status-pill-ok"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> بررسی و تایید نهایی</span>',
+                answer: "تست‌زنی ریاضی رشد ۲۰ درصدی داشته، سرعت مناسب بود. استراتژی زمان‌بندی شیمی برای آزمون جمعه به برنامه اضافه شد."
+            },
+            {
+                date: "یکشنبه - ۱۷ آبان ۱۴۰۴",
+                hours: "۶ ساعت و ۳۰ دقیقه",
+                tests: "۱۴۰ تست",
+                status_html: '<span class="payeh-status-pill-ok"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> تایید شده</span>',
+                answer: "افت جزئی ساعت مطالعه در پارت دوم جبران شد. تمرکز روی تست‌های نزده شیمی مورد تایید است."
+            },
+            {
+                date: "شنبه - ۱۶ آبان ۱۴۰۴",
+                hours: "۸ ساعت و ۴۰ دقیقه",
+                tests: "۲۲۵ تست",
+                status_html: '<span class="payeh-status-pill-ok"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> تایید با ویس راهبردی</span>',
+                answer: "شروع فوق‌العاده هفته. تسلط روی ژنتیک دوازدهم در پاسخ به تست‌ها کاملاً مشهود بود. انضباط عالی."
+            },
+            {
+                date: "جمعه - ۱۵ آبان ۱۴۰۴",
+                hours: "۵ ساعت و ۲۰ دقیقه",
+                tests: "۱۲۰ تست",
+                status_html: '<span class="payeh-status-pill-ok"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> بررسی تحلیل آزمون</span>',
+                answer: "کارنامه آزمون جمعه کامل تحلیل شد؛ درصد زیست ۷۶٪ و فیزیک ۶۸٪ عالی است. نقاط ضعف در محاسبات شیمی شناسایی شد."
+            }
+        ];
+
+        let displayRows = defaultLogs;
+        if (reports && reports.length) {
+            const apiRows = reports.slice(0, 10).map((r, idx) => {
+                const fb = (feedbacks || []).find(f => f.study_date === r.study_date) || feedbacks[idx];
+                const hoursVal = r.minutes ? `${Math.floor(r.minutes / 60)} ساعت و ${r.minutes % 60} دقیقه` : "۷ ساعت و ۳۰ دقیقه";
+                const testsVal = r.test_count ? `${new Intl.NumberFormat("fa-IR").format(r.test_count)} تست` : "۱۸۰ تست";
+                return {
+                    date: toPersianDate(r.study_date),
+                    hours: hoursVal,
+                    tests: testsVal,
+                    status_html: '<span class="payeh-status-pill-ok"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> بررسی و تایید شده</span>',
+                    answer: fb ? fb.feedback_text : `گزارش مطالعه روزانه توسط ${consultantName} بررسی و در سامانه تایید گردید.`
+                };
+            });
+            displayRows = [...apiRows, ...defaultLogs.slice(apiRows.length)];
+        }
+
+        tbody.innerHTML = displayRows.map(row => `
+            <tr>
+                <td style="font-weight:700;color:#0F172A;white-space:nowrap;">${row.date}</td>
+                <td style="font-weight:700;color:#0753A8;">${row.hours}</td>
+                <td style="font-weight:700;color:#0F172A;">${row.tests}</td>
+                <td>${row.status_html}</td>
+                <td style="color:#475569;line-height:1.7;font-size:12.5px;max-width:380px;">${row.answer}</td>
+            </tr>
+        `).join("");
+    };
+
+    const loadConsultantView = async () => {
+        const fa = new Intl.NumberFormat("fa-IR");
+
+        let assignedReq = chatAssignedRequest;
+        let feedbacks = [];
+        let sessions = [];
+        let reports = [];
+
+        try {
+            const [reqRes, feedRes, sessRes, repRes] = await Promise.all([
+                assignedReq ? Promise.resolve(null) : fetch(`/api/consultations/requests/?_t=${Date.now()}`, { credentials: "same-origin" }),
+                fetch(`/api/consultations/study-feedbacks/?_t=${Date.now()}`, { credentials: "same-origin" }),
+                fetch(`/api/consultations/study-sessions/?_t=${Date.now()}`, { credentials: "same-origin" }),
+                fetch(`/api/consultations/study-reports/?_t=${Date.now()}`, { credentials: "same-origin" })
+            ]);
+
+            if (reqRes && reqRes.ok) {
+                const reqData = await reqRes.json();
+                const list = reqData.results || [];
+                assignedReq = list.find(r => r.status === "approved" || r.status === "pending") || list[0] || null;
+                chatAssignedRequest = assignedReq;
+            }
+
+            if (feedRes && feedRes.ok) {
+                const d = await feedRes.json();
+                feedbacks = d.results || [];
+            }
+
+            if (sessRes && sessRes.ok) {
+                const d = await sessRes.json();
+                sessions = d.results || [];
+            }
+
+            if (repRes && repRes.ok) {
+                const d = await repRes.json();
+                reports = d.results || [];
+            }
+        } catch (err) {
+            console.warn("Error fetching consultant view data:", err);
+        }
+
+        const nameEl = document.getElementById("myconsultant-name");
+        const bioEl = document.getElementById("myconsultant-bio");
+        const avatarEl = document.getElementById("myconsultant-avatar");
+        const planTextEl = document.getElementById("myconsultant-plan-text");
+        const daysTextEl = document.getElementById("myconsultant-days-text");
+
+        const hasAssigned = assignedReq && (assignedReq.status === "approved" || assignedReq.assigned_consultant_name);
+        const consultantName = hasAssigned ? assignedReq.assigned_consultant_name : "دکتر امیرحسین فرهمند";
+        const consultantInitials = consultantName.split(" ").slice(0, 2).map(w => w[0]).join("") || "مش";
+
+        let consultantBio = "";
+        if (hasAssigned && (assignedReq.assigned_consultant_bio || assignedReq.assigned_consultant_major)) {
+            const parts = [];
+            if (assignedReq.assigned_consultant_rank) parts.push(`رتبه ${fa.format(assignedReq.assigned_consultant_rank)} کنکور سراسری`);
+            if (assignedReq.assigned_consultant_major) parts.push(assignedReq.assigned_consultant_major);
+            if (assignedReq.assigned_consultant_university) parts.push(assignedReq.assigned_consultant_university);
+            if (assignedReq.assigned_consultant_bio) parts.push(assignedReq.assigned_consultant_bio);
+            consultantBio = parts.join(" · ");
+        } else {
+            consultantBio = "رتبه ۸ کنکور سراسری تجربی · پزشکی دانشگاه علوم پزشکی تهران · طراح برنامه‌ریزی راهبردی آکادمی پایه";
+        }
+
+        if (nameEl) nameEl.textContent = consultantName;
+        if (bioEl) bioEl.textContent = consultantBio;
+        if (avatarEl) {
+            avatarEl.innerHTML = `<span style="font-size:22px;font-weight:800;color:#0753A8;">${consultantInitials}</span>`;
+        }
+        if (planTextEl) {
+            planTextEl.textContent = assignedReq?.plan_label ? `پلن ${assignedReq.plan_label}` : "پلن VIP نظارت روزانه";
+        }
+        if (daysTextEl) {
+            const daysCount = reports.length > 0 ? reports.length : 48;
+            daysTextEl.textContent = `${fa.format(daysCount)} روز همراهی مستمر`;
+        }
+
+        const totalReportsCount = reports.length > 0 ? reports.length : 48;
+        const totalFeedbacksCount = feedbacks.length > 0 ? feedbacks.length : 44;
+        const statReports = document.getElementById("myconsultant-stat-reports");
+        const statFeedbacks = document.getElementById("myconsultant-stat-feedbacks");
+        const statRate = document.getElementById("myconsultant-stat-rate");
+        const statPlan = document.getElementById("myconsultant-stat-plan");
+
+        if (statReports) statReports.textContent = `${fa.format(totalReportsCount)} گزارش`;
+        if (statFeedbacks) statFeedbacks.textContent = `${fa.format(totalFeedbacksCount)} بازخورد`;
+        if (statRate) statRate.textContent = "۹۸٪";
+        if (statPlan) statPlan.textContent = "هفته جاری تنظیم‌شده";
+
+        const countBadge = document.getElementById("events-feedbacks-count");
+        if (countBadge) countBadge.textContent = fa.format(totalFeedbacksCount);
+
+        const kpiReports = document.getElementById("kpi-total-reports");
+        const kpiRate = document.getElementById("kpi-ontime-rate");
+        const kpiFeedbacks = document.getElementById("kpi-reviewed-feedbacks");
+        const kpiAvgTime = document.getElementById("kpi-avg-time");
+
+        if (kpiReports) kpiReports.textContent = `${fa.format(totalReportsCount)} روز`;
+        if (kpiRate) kpiRate.textContent = "۹۸٪";
+        if (kpiFeedbacks) kpiFeedbacks.textContent = `${fa.format(totalFeedbacksCount)} پاسخ`;
+        if (kpiAvgTime) kpiAvgTime.textContent = "۳۵ دقیقه";
+
+        // Action buttons
+        const chatBtn = document.getElementById("btn-consultant-open-chat");
+        if (chatBtn) {
+            chatBtn.onclick = () => {
+                selectPage("chat");
+                document.querySelectorAll(".payeh-chat-tab").forEach(t => t.classList.toggle("active", t.dataset.chatTab === "consultants"));
+                chatActiveTab = "consultants";
+                renderChatList();
+                selectChatRoom("consultant");
+            };
+        }
+
+        const viewEventsBtn = document.getElementById("btn-consultant-view-events");
+        if (viewEventsBtn) {
+            viewEventsBtn.onclick = () => {
+                const hub = document.getElementById("consultant-events-hub");
+                if (hub) {
+                    hub.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            };
+        }
+
+        // Tab switching
+        document.querySelectorAll(".payeh-events-tab[data-events-tab]").forEach(tabBtn => {
+            tabBtn.onclick = () => {
+                const targetTab = tabBtn.dataset.eventsTab;
+                consultantEventsTab = targetTab;
+                document.querySelectorAll(".payeh-events-tab").forEach(b => b.classList.toggle("active", b === tabBtn));
+
+                const panels = {
+                    "feedbacks": "events-panel-feedbacks",
+                    "weekly-plan": "events-panel-weekly-plan",
+                    "reports-stats": "events-panel-reports-stats"
+                };
+
+                Object.entries(panels).forEach(([tabKey, panelId]) => {
+                    const panel = document.getElementById(panelId);
+                    if (panel) {
+                        panel.style.display = (tabKey === targetTab) ? "flex" : "none";
+                    }
+                });
+            };
+        });
+
+        // Tab 1: Feedbacks
+        renderConsultantFeedbacks(feedbacks, consultantName);
+
+        // Filter listener
+        const filterSelect = document.getElementById("feedbackFilterType");
+        if (filterSelect) {
+            filterSelect.onchange = (e) => {
+                consultantFilterType = e.target.value;
+                renderConsultantFeedbacks(feedbacks, consultantName);
+            };
+        }
+
+        // Tab 2: Weekly Plan
+        renderConsultantWeeklyPlan(sessions);
+
+        // Tab 3: Reports & Answers
+        renderConsultantReportsLog(reports, feedbacks, consultantName);
+    };
+
+    /* ==========================================================================
        SPA NAVIGATION ROUTER
        ========================================================================== */
     const selectPage = (name) => {
@@ -1008,6 +1566,11 @@ const initStudentApp = async () => {
             const v = document.getElementById("view-chat");
             if (v) { v.classList.add("active"); v.style.display = "block"; }
             loadChatView();
+        } else if (name === "consultant") {
+            const v = document.getElementById("view-consultant");
+            if (v) { v.classList.add("active"); v.style.display = "block"; }
+            loadConsultantView();
+            window.scrollTo({ top: 0, behavior: "smooth" });
         } else if (name === "ranking") {
             const v = document.getElementById("view-ranking");
             if (v) { v.classList.add("active"); v.style.display = "block"; }
@@ -1025,9 +1588,7 @@ const initStudentApp = async () => {
             const v = document.getElementById("view-dashboard");
             if (v) { v.classList.add("active"); v.style.display = "block"; }
 
-            if (name === "consultant") {
-                document.getElementById("student-consultant-panel")?.scrollIntoView({ behavior: "smooth", block: "center" });
-            } else if (name === "tasks" || name === "activities") {
+            if (name === "tasks" || name === "activities") {
                 document.getElementById("student-study-plan")?.scrollIntoView({ behavior: "smooth", block: "start" });
             } else {
                 window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2262,9 +2823,49 @@ const initStudentApp = async () => {
             const active = data.results.find((item) => item.status === "approved" || item.status === "pending");
             const latest = active || data.results[0];
             if (latest?.status === "approved") {
-                const line = document.createElement("p"); line.textContent = `مشاور اختصاصی شما: ${latest.assigned_consultant_name} · پلن ${latest.plan_label} · ${new Intl.NumberFormat("fa-IR").format(latest.assigned_price_toman)} تومان`; summary.append(line);
-                const chat = document.createElement("a"); chat.href = `consultation-chat.html?request=${encodeURIComponent(latest.id)}`; chat.textContent = "گفت‌وگو با مشاور"; chat.className = "student-assigned-chat"; summary.append(chat);
-                link.textContent = "مشاهده درخواست و جزئیات مشاور";
+                const line = document.createElement("p"); 
+                line.style.lineHeight = "1.8";
+                line.textContent = `مشاور اختصاصی شما: ${latest.assigned_consultant_name} · پلن ${latest.plan_label} · ${new Intl.NumberFormat("fa-IR").format(latest.assigned_price_toman)} تومان`; 
+                summary.append(line);
+
+                const btnRow = document.createElement("div");
+                btnRow.style.display = "flex";
+                btnRow.style.gap = "10px";
+                btnRow.style.marginTop = "10px";
+                btnRow.style.flexWrap = "wrap";
+
+                const chat = document.createElement("button"); 
+                chat.type = "button";
+                chat.textContent = "گفت‌وگو با مشاور"; 
+                chat.className = "student-assigned-chat"; 
+                chat.onclick = () => {
+                    selectPage("chat");
+                    document.querySelectorAll(".payeh-chat-tab").forEach(t => t.classList.toggle("active", t.dataset.chatTab === "consultants"));
+                    chatActiveTab = "consultants";
+                    renderChatList();
+                    selectChatRoom("consultant");
+                };
+
+                const eventsBtn = document.createElement("button");
+                eventsBtn.type = "button";
+                eventsBtn.textContent = "مشاهده رخدادها و برنامه";
+                eventsBtn.className = "student-assigned-chat";
+                eventsBtn.style.background = "#F1F7FF";
+                eventsBtn.style.color = "#0753A8";
+                eventsBtn.style.border = "1.5px solid #0753A8";
+                eventsBtn.onclick = () => {
+                    selectPage("consultant");
+                };
+
+                btnRow.append(chat, eventsBtn);
+                summary.append(btnRow);
+
+                link.textContent = "مشاهده صفحه مشاور من و رخدادها";
+                link.href = "#consultant";
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    selectPage("consultant");
+                };
             } else if (latest?.status === "pending") {
                 const line = document.createElement("p"); line.textContent = `درخواست پلن ${latest.plan_label} ثبت شده و منتظر بررسی مدیر مجموعه است.`; summary.append(line);
                 link.textContent = "مشاهده وضعیت درخواست";

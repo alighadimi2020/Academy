@@ -98,6 +98,10 @@ def request_payload(item, viewer):
         "preferences": preferences,
         "assigned_consultant_id": item.assigned_consultant.user_id if item.assigned_consultant_id else None,
         "assigned_consultant_name": (item.assigned_consultant.user.full_name or "مشاور آکادمی") if item.assigned_consultant_id else "",
+        "assigned_consultant_major": (item.assigned_consultant.university_major or "") if item.assigned_consultant_id else "",
+        "assigned_consultant_university": (item.assigned_consultant.current_university or "") if item.assigned_consultant_id else "",
+        "assigned_consultant_rank": (item.assigned_consultant.quota_rank or None) if item.assigned_consultant_id else None,
+        "assigned_consultant_bio": (item.assigned_consultant.bio or "") if item.assigned_consultant_id else "",
         "assigned_price_toman": item.assigned_price_toman,
     }
     return data

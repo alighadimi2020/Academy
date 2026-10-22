@@ -4017,3 +4017,816 @@ body.payeh-sidebar-locked {
     }
 }
 
+/* ==========================================================================
+   MODULE: MY CONSULTANT & EVENTS HUB (صفحه اختصاصی مشاور و رخدادها)
+   ========================================================================== */
+.payeh-consultant-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 1450px;
+    margin: 0 auto;
+}
+
+/* 1. Consultant Profile Hero Card */
+.payeh-myconsultant-card {
+    background: #FFFFFF;
+    border: 1.5px solid #EDF1F6;
+    border-radius: 24px;
+    padding: 30px 34px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+}
+
+.payeh-myconsultant-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+}
+
+.payeh-myconsultant-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.payeh-myconsultant-avatar-wrap {
+    position: relative;
+    width: 78px;
+    height: 78px;
+    flex: 0 0 78px;
+}
+
+.payeh-myconsultant-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: #EEF4FF;
+    border: 2px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.payeh-myconsultant-status-dot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #10B981;
+    border: 3px solid #FFFFFF;
+}
+
+.payeh-myconsultant-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.payeh-myconsultant-name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.payeh-myconsultant-name-row h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.payeh-badge-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0753A8;
+    background: #F1F7FF;
+    border: 1px solid rgba(7, 83, 168, 0.16);
+    padding: 3px 10px;
+    border-radius: 99px;
+}
+
+.payeh-myconsultant-bio {
+    margin: 0;
+    font-size: 13.5px;
+    color: #64748B;
+    line-height: 1.7;
+}
+
+.payeh-myconsultant-badges {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.payeh-consultant-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 99px;
+}
+
+.payeh-consultant-pill--plan {
+    background: #FFF9E8;
+    color: #D97706;
+    border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.payeh-consultant-pill--meta {
+    background: #F8FAFC;
+    color: #475569;
+    border: 1px solid #E2E8F0;
+}
+
+.payeh-consultant-pill--status {
+    background: #ECFDF5;
+    color: #059669;
+    border: 1px solid #A7F3D0;
+}
+
+.payeh-pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: payehPulse 2s infinite;
+}
+
+@keyframes payehPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Two Primary Buttons */
+.payeh-myconsultant-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.payeh-btn-consultant-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #075BC4;
+    color: #FFFFFF;
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 12px 22px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(7, 91, 196, 0.2);
+}
+
+.payeh-btn-consultant-primary:hover {
+    background: #064DA7;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(7, 91, 196, 0.28);
+}
+
+.payeh-btn-consultant-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFFFFF;
+    color: #0753A8;
+    border: 1.5px solid #0753A8;
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 11px 20px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.payeh-btn-consultant-secondary:hover,
+.payeh-btn-consultant-secondary.active {
+    background: #F1F7FF;
+    transform: translateY(-2px);
+}
+
+/* Stats Strip */
+.payeh-myconsultant-stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    padding-top: 22px;
+    border-top: 1px solid #EDF2F7;
+}
+
+.payeh-consultant-stat-box {
+    background: #F8FAFC;
+    border: 1px solid #EDF2F7;
+    border-radius: 16px;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.payeh-stat-box-lbl {
+    font-size: 11.5px;
+    color: #64748B;
+    font-weight: 600;
+}
+
+.payeh-stat-box-val {
+    font-size: 17px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.payeh-stat-box-hint {
+    font-size: 11px;
+    color: #94A3B8;
+}
+
+/* 2. Events & Activity Hub */
+.payeh-events-hub {
+    background: #FFFFFF;
+    border: 1.5px solid #EDF1F6;
+    border-radius: 24px;
+    padding: 28px 32px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+}
+
+.payeh-events-hub__nav {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1.5px solid #EDF2F7;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+}
+
+.payeh-events-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 12px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    color: #64748B;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.payeh-events-tab:hover {
+    background: #F1F7FF;
+    color: #0753A8;
+}
+
+.payeh-events-tab.active {
+    background: #075BC4;
+    color: #FFFFFF;
+    border-color: #075BC4;
+    box-shadow: 0 4px 12px rgba(7, 91, 196, 0.2);
+}
+
+.payeh-tab-count {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.25);
+    font-weight: 800;
+}
+
+.payeh-events-tab:not(.active) .payeh-tab-count {
+    background: #E2E8F0;
+    color: #475569;
+}
+
+.payeh-events-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Panel Header & Filter */
+.payeh-panel-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.payeh-filter-title h3 {
+    margin: 0 0 4px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.payeh-filter-title p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748B;
+}
+
+.payeh-filter-select {
+    padding: 8px 14px;
+    border: 1px solid #CBD5E1;
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #334155;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Feedback Timeline */
+.payeh-feedbacks-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.payeh-feedback-item-card {
+    background: #F8FAFC;
+    border: 1.5px solid #EDF2F7;
+    border-radius: 18px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.payeh-feedback-item-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.payeh-feedback-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.payeh-feedback-meta-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.payeh-feedback-date-pill {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0753A8;
+    background: #EEF4FF;
+    border: 1px solid rgba(7, 83, 168, 0.15);
+    padding: 3px 10px;
+    border-radius: 8px;
+}
+
+.payeh-feedback-type-badge {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #475569;
+    background: #E2E8F0;
+    padding: 3px 10px;
+    border-radius: 8px;
+}
+
+.payeh-feedback-consultant-tag {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.payeh-feedback-item-body {
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: #334155;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+/* Voice Player Widget */
+.payeh-voice-player {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    padding: 6px 14px;
+    border-radius: 99px;
+    width: fit-content;
+    margin-top: 4px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.payeh-voice-play-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #075BC4;
+    color: #FFFFFF;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.payeh-voice-play-btn:hover {
+    background: #064DA7;
+    transform: scale(1.05);
+}
+
+.payeh-voice-waveform {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 18px;
+}
+
+.payeh-wave-bar {
+    width: 3px;
+    background: #93C5FD;
+    border-radius: 2px;
+    transition: height 0.2s ease;
+}
+
+.payeh-voice-player[data-playing="true"] .payeh-wave-bar {
+    animation: wavePulse 1s ease-in-out infinite alternate;
+}
+
+.payeh-voice-player[data-playing="true"] .payeh-wave-bar:nth-child(2) { animation-delay: 0.15s; }
+.payeh-voice-player[data-playing="true"] .payeh-wave-bar:nth-child(3) { animation-delay: 0.3s; }
+.payeh-voice-player[data-playing="true"] .payeh-wave-bar:nth-child(4) { animation-delay: 0.45s; }
+.payeh-voice-player[data-playing="true"] .payeh-wave-bar:nth-child(5) { animation-delay: 0.6s; }
+
+@keyframes wavePulse {
+    0% { height: 25%; }
+    100% { height: 100%; }
+}
+
+.payeh-voice-duration {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748B;
+    direction: ltr;
+}
+
+/* Tab 2: Weekly Plan */
+.payeh-weekly-plan-banner {
+    background: #F1F7FF;
+    border: 1.5px solid #DCE7F5;
+    border-radius: 18px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.payeh-plan-banner-tag {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0753A8;
+    background: #FFFFFF;
+    border: 1px solid rgba(7, 83, 168, 0.18);
+    padding: 3px 10px;
+    border-radius: 99px;
+    margin-bottom: 6px;
+}
+
+.payeh-plan-banner-content h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #0753A8;
+}
+
+.payeh-plan-banner-content p {
+    margin: 0;
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.7;
+    max-width: 720px;
+}
+
+.payeh-plan-banner-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.payeh-plan-meta-item {
+    background: #FFFFFF;
+    border: 1px solid #DCE7F5;
+    padding: 10px 16px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.payeh-plan-meta-item span {
+    font-size: 11px;
+    color: #64748B;
+}
+
+.payeh-plan-meta-item strong {
+    font-size: 15px;
+    color: #0753A8;
+    font-weight: 800;
+}
+
+.payeh-consultant-week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+}
+
+.payeh-consultant-day-card {
+    background: #F8FAFC;
+    border: 1px solid #EDF2F7;
+    border-radius: 16px;
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 220px;
+}
+
+.payeh-consultant-day-card.is-today {
+    border: 2px solid #075BC4;
+    background: #FFFFFF;
+    box-shadow: 0 4px 16px rgba(7, 91, 196, 0.1);
+}
+
+.payeh-consultant-day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #E2E8F0;
+}
+
+.payeh-consultant-day-header h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.payeh-consultant-day-tag {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #075BC4;
+    background: #EEF4FF;
+    padding: 2px 7px;
+    border-radius: 6px;
+}
+
+.payeh-consultant-day-sessions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.payeh-consultant-session-row {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 11.5px;
+}
+
+.payeh-session-subj {
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.payeh-session-meta {
+    font-size: 10.5px;
+    color: #64748B;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Tab 3: Reports & Answers Stats */
+.payeh-reports-stats-overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.payeh-report-kpi-card {
+    background: #F8FAFC;
+    border: 1.5px solid #EDF2F7;
+    border-radius: 18px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.payeh-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.payeh-kpi-icon--blue { background: #EEF4FF; color: #0753A8; }
+.payeh-kpi-icon--green { background: #ECFDF5; color: #059669; }
+.payeh-kpi-icon--amber { background: #FFF9E8; color: #D97706; }
+.payeh-kpi-icon--purple { background: #F3E8FF; color: #7E22CE; }
+
+.payeh-kpi-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.payeh-kpi-body small {
+    font-size: 11.5px;
+    color: #64748B;
+    font-weight: 600;
+}
+
+.payeh-kpi-body b {
+    font-size: 19px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.payeh-kpi-body span {
+    font-size: 10.5px;
+    color: #94A3B8;
+}
+
+/* Comparison Table */
+.payeh-reports-log-card {
+    background: #FFFFFF;
+    border: 1px solid #EDF2F7;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.payeh-log-card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid #EDF2F7;
+    background: #FAFAFA;
+}
+
+.payeh-log-card-header h4 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.payeh-log-card-header p {
+    margin: 0;
+    font-size: 12px;
+    color: #64748B;
+}
+
+.payeh-reports-log-table-wrap {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.payeh-reports-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: right;
+}
+
+.payeh-reports-log-table th {
+    background: #F8FAFC;
+    color: #475569;
+    font-weight: 700;
+    padding: 12px 18px;
+    border-bottom: 1.5px solid #EDF2F7;
+    white-space: nowrap;
+}
+
+.payeh-reports-log-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #EDF2F7;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.payeh-reports-log-table tr:hover td {
+    background: #F8FAFC;
+}
+
+.payeh-status-pill-ok {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #059669;
+    background: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+/* Responsive Breakpoints for Consultant View */
+@media (max-width: 1200px) {
+    .payeh-consultant-week-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .payeh-myconsultant-stats-strip,
+    .payeh-reports-stats-overview {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .payeh-consultant-week-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .payeh-myconsultant-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .payeh-myconsultant-actions {
+        width: 100%;
+    }
+    .payeh-btn-consultant-primary,
+    .payeh-btn-consultant-secondary {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .payeh-consultant-week-grid {
+        grid-template-columns: 1fr;
+    }
+    .payeh-myconsultant-stats-strip,
+    .payeh-reports-stats-overview {
+        grid-template-columns: 1fr;
+    }
+    .payeh-myconsultant-card,
+    .payeh-events-hub {
+        padding: 20px 16px;
+    }
+    .payeh-myconsultant-profile {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .payeh-myconsultant-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    .payeh-btn-consultant-primary,
+    .payeh-btn-consultant-secondary {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+
