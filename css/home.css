@@ -22,7 +22,7 @@
     --payeh-success: #14B8A6;
     --payeh-danger: #EF4444;
 
-    --payeh-container: 1180px;
+    --payeh-container: 1360px;
 
     --payeh-radius-sm: 10px;
     --payeh-radius-md: 16px;
@@ -49,6 +49,24 @@
     --payeh-transition-fast: 180ms ease;
     --payeh-transition: 280ms ease;
     --payeh-transition-slow: 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (min-width: 1400px) {
+    :root {
+        --payeh-container: 1440px;
+    }
+}
+
+@media (min-width: 1600px) {
+    :root {
+        --payeh-container: 1540px;
+    }
+}
+
+@media (min-width: 1900px) {
+    :root {
+        --payeh-container: 1680px;
+    }
 }
 
 html {
@@ -713,7 +731,7 @@ p {
 
 /* No Box / Card - Text sits directly and cleanly over the video */
 .payeh-hero__content {
-    max-width: 860px;
+    max-width: 980px;
     margin: 0 auto;
     text-align: center;
     position: relative;
@@ -1494,7 +1512,7 @@ p {
 }
 
 .payeh-why__description {
-    max-width: 330px;
+    max-width: 480px;
     margin: 0 0 24px;
     color: #68778b;
     font-size: 0.82rem;
@@ -3559,6 +3577,14 @@ p {
     background: rgba(7, 20, 61, 0.76) !important;
     border: 1.5px solid rgba(255, 255, 255, 0.28) !important;
     color: #ffffff !important;
+}
+
+@media (min-width: 1200px) {
+    .payeh-rank-teaser .stage-grid {
+        grid-template-columns: 1.35fr minmax(360px, 460px);
+        gap: 48px;
+        align-items: center;
+    }
 }
 
 .payeh-rank-teaser .stone small,

@@ -249,7 +249,7 @@
     }
 }
 .payeh-magazine-container {
-    width: min(1180px, calc(100% - 32px));
+    width: min(var(--payeh-container, 1440px), calc(100% - 32px));
     margin-inline: auto;
 }
 
