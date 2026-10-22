@@ -1634,6 +1634,7 @@ const initStudentApp = async () => {
             const v = document.getElementById("view-performance");
             if (v) { v.classList.add("active"); v.style.display = "block"; }
             loadPerformanceView();
+            window.scrollTo({ top: 0, behavior: "smooth" });
         } else if (name === "profile") {
             const v = document.getElementById("view-profile");
             if (v) { v.classList.add("active"); v.style.display = "block"; }
@@ -2026,13 +2027,22 @@ const initStudentApp = async () => {
     };
     window.toggleStudentSidebar = toggleStudentSidebar;
 
-    document.querySelectorAll("[data-page]").forEach((item) => item.addEventListener("click", (event) => {
-        event.preventDefault();
-        const name = item.dataset.page;
-        history.replaceState(null, "", `#${name}`);
-        selectPage(name);
-        toggleStudentSidebar(false);
-    }));
+    document.querySelectorAll("[data-page]").forEach((item) => {
+        const triggerNavigation = (event) => {
+            event.preventDefault();
+            const name = item.dataset.page;
+            if (!name) return;
+            history.replaceState(null, "", `#${name}`);
+            selectPage(name);
+            toggleStudentSidebar(false);
+        };
+        item.addEventListener("click", triggerNavigation);
+        item.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                triggerNavigation(event);
+            }
+        });
+    });
 
     let lastMenuToggle = 0;
     const handleMenuToggle = (e) => {

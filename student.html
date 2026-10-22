@@ -339,23 +339,6 @@
 
                     </div>
 
-
-                    <div class="payeh-student__hero-orbit">
-
-                        <div class="payeh-student__hero-anim-card">
-                            <video src="assets/animations/student-study.mp4" autoplay loop muted playsinline preload="auto" class="payeh-student__hero-video" aria-label="مطالعه هدفمند امروز"></video>
-                            <div class="payeh-student__hero-anim-badge">
-                                <span class="payeh-pulse-dot"></span>
-                                <span>مطالعه هدفمند · امروز</span>
-                            </div>
-                        </div>
-
-                        <div class="payeh-student__hero-dot hero-dot-one"></div>
-                        <div class="payeh-student__hero-dot hero-dot-two"></div>
-                        <div class="payeh-student__hero-dot hero-dot-three"></div>
-
-                    </div>
-
                 </section>
 
 
@@ -439,13 +422,18 @@
                 <section class="payeh-student__main-grid">
 
 
-                    <div class="payeh-student__card payeh-student__progress-card">
+                    <div class="payeh-student__card payeh-student__progress-card" data-page="performance" role="button" tabindex="0" title="مشاهده کامل نمودارها و صفحه عملکرد من">
 
                         <div class="payeh-student__card-header">
 
                             <div>
                                 <span>وضعیت من</span>
-                                <h3>پیشرفت تحصیلی</h3>
+                                <h3 style="display:flex;align-items:center;gap:6px;">
+                                    پیشرفت تحصیلی
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="transform:scaleX(-1);color:#1e633d;">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </h3>
                             </div>
 
                             <div class="payeh-student__progress-percent">
@@ -492,6 +480,16 @@
                                 </span>
                             </div>
 
+                        </div>
+
+                        <div class="payeh-student__progress-footer">
+                            <span class="payeh-progress-cta-link" data-page="performance">
+                                <span>مشاهده کامل نمودارها و عملکرد من</span>
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M5 12h14"></path>
+                                    <path d="m13 6 6 6-6 6"></path>
+                                </svg>
+                            </span>
                         </div>
 
                     </div>
