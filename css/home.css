@@ -1260,7 +1260,6 @@ p {
         font-size: 0.74rem;
         padding: 5px 10px;
     }
-    }
 
     .payeh-hero__trust-icon {
         width: 18px;
@@ -1995,14 +1994,7 @@ p {
 }
 
 .payeh-consultation__circle {
-    position: absolute;
-    width: 310px;
-    height: 310px;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    background: #fff9df;
+    display: none !important;
 }
 
 .payeh-consultation__image {
@@ -4015,8 +4007,6 @@ p {
     border-color: rgba(7, 83, 168, 0.28);
 }
 
-.payeh-showcase-split-item--reverse .payeh-showcase-split-media {
-    order: 2;
 .payeh-student-showcase,
 .payeh-student-showcase * {
     font-family: 'Vazirmatn', 'Vazir', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
@@ -4801,22 +4791,17 @@ p {
     color: #0F172A;
 }
 
-.payeh-showcase-check-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #ECFDF5;
-    color: #10B981;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-.payeh-showcase-check-icon svg {
-    width: 12px;
-    height: 12px;
+.payeh-showcase-bullet-dot {
+    width: 8px !important;
+    height: 8px !important;
+    min-width: 8px !important;
+    max-width: 8px !important;
+    border-radius: 50% !important;
+    background: #0753A8 !important;
+    display: inline-block !important;
+    flex-shrink: 0 !important;
+    margin-top: 8px !important;
+    box-shadow: 0 0 0 3px rgba(7, 83, 168, 0.18) !important;
 }
 
 .payeh-showcase-tags {
