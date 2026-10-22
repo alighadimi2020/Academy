@@ -18,6 +18,7 @@ const initConsultantApp = async () => {
 
     // Study reports & Jalali range picker state
     let currentStudentReports = [];
+    let currentStudentFeedbacks = [];
     let reportsDateSortOrder = "desc";
     let reportsDateRange = { start: null, end: null };
 
@@ -497,7 +498,135 @@ const initConsultantApp = async () => {
             grid.innerHTML = `<p class="consultant-article-hint">${error.message || "فهرست مقاله‌ها بارگذاری نشد."}</p>`;
         }
     }
+    function renderConsultantAvatar(avatarUrl, fullName) {
+        const circle = document.getElementById("consultant-profile-avatar-circle");
+        const removeBtn = document.getElementById("btn-remove-consultant-avatar");
+        const nameEl = document.getElementById("consultant-avatar-name");
+        const name = fullName || "مشاور آکادمی";
+        const initials = name.split(" ").slice(0, 2).map(w => w[0]).join("") || "مش";
+
+        if (nameEl) nameEl.textContent = name;
+
+        if (avatarUrl) {
+            if (circle) {
+                circle.innerHTML = `<img src="${avatarUrl}" alt="${name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            }
+            if (removeBtn) removeBtn.style.display = "inline-flex";
+
+            document.querySelectorAll(".payeh-consultant__avatar, .payeh-consultant__header-avatar").forEach(el => {
+                el.innerHTML = `<img src="${avatarUrl}" alt="${name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            });
+        } else {
+            if (circle) {
+                circle.textContent = initials;
+            }
+            if (removeBtn) removeBtn.style.display = "none";
+
+            document.querySelectorAll(".payeh-consultant__avatar, .payeh-consultant__header-avatar").forEach(el => {
+                el.textContent = initials;
+            });
+        }
+    }
+
+    let consultantAvatarInitialized = false;
+    function initConsultantAvatarUploader() {
+        if (consultantAvatarInitialized) return;
+        consultantAvatarInitialized = true;
+
+        const fileInput = document.getElementById("consultant-avatar-file-input");
+        const pickBtn = document.getElementById("btn-pick-consultant-avatar");
+        const removeBtn = document.getElementById("btn-remove-consultant-avatar");
+        const statusEl = document.getElementById("consultant-avatar-status");
+
+        if (!fileInput) return;
+
+        const showStatus = (text, type = "info") => {
+            if (!statusEl) return;
+            statusEl.textContent = text;
+            statusEl.className = `consultant-avatar-status ${type}`;
+            statusEl.style.display = "block";
+            if (type === "success") {
+                setTimeout(() => { statusEl.style.display = "none"; }, 4000);
+            }
+        };
+
+        if (pickBtn) {
+            pickBtn.addEventListener("click", () => fileInput.click());
+        }
+
+        fileInput.addEventListener("change", async () => {
+            const file = fileInput.files?.[0];
+            if (!file) return;
+
+            // Check 10MB
+            const maxBytes = 10 * 1024 * 1024;
+            if (file.size > maxBytes) {
+                showStatus("حجم تصویر بیش از حد مجاز است. حداکثر ۱۰ مگابایت مجاز است.", "error");
+                fileInput.value = "";
+                return;
+            }
+
+            const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+            const allowedExts = [".jpg", ".jpeg", ".png", ".webp"];
+            const ext = "." + (file.name.split(".").pop() || "").toLowerCase();
+            if (!allowedTypes.includes(file.type) && !allowedExts.includes(ext)) {
+                showStatus("تنها فرمت‌های تصویری JPG، PNG و WEBP مجاز هستند.", "error");
+                fileInput.value = "";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("avatar", file);
+
+            showStatus("در حال بارگذاری تصویر...", "info");
+            try {
+                const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+                const res = await fetch("/api/auth/profile/avatar/", {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: { "X-CSRFToken": csrf.csrfToken },
+                    body: formData,
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "بارگذاری تصویر انجام نشد.");
+
+                showStatus("تصویر پروفایل شما با موفقیت ثبت شد.", "success");
+                const currentName = document.getElementById("consultant-header-name")?.textContent || "";
+                renderConsultantAvatar(data.avatar_url, currentName);
+            } catch (err) {
+                showStatus(err.message || "خطا در بارگذاری تصویر.", "error");
+            } finally {
+                fileInput.value = "";
+            }
+        });
+
+        if (removeBtn) {
+            removeBtn.addEventListener("click", async () => {
+                if (!confirm("آیا از حذف عکس پروفایل اطمینان دارید؟")) return;
+
+                showStatus("در حال حذف تصویر...", "info");
+                try {
+                    const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+                    const res = await fetch("/api/auth/profile/avatar/", {
+                        method: "DELETE",
+                        credentials: "same-origin",
+                        headers: { "X-CSRFToken": csrf.csrfToken },
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.detail || "حذف تصویر انجام نشد.");
+
+                    showStatus("تصویر پروفایل حذف شد.", "success");
+                    const currentName = document.getElementById("consultant-header-name")?.textContent || "";
+                    renderConsultantAvatar(null, currentName);
+                } catch (err) {
+                    showStatus(err.message || "خطا در حذف تصویر.", "error");
+                }
+            });
+        }
+    }
+
     async function loadConsultantProfile() {
+        initConsultantAvatarUploader();
         const form = document.getElementById("consultant-profile-form");
         const message = document.getElementById("consultant-profile-message");
         if (!form) return;
@@ -506,6 +635,7 @@ const initConsultantApp = async () => {
             const data = await response.json(); if (!response.ok) throw new Error(data.detail || "دریافت رزومه ممکن نشد.");
             ["full_name", "bio", "experience_years", "available_slots", "university_major", "current_university"].forEach((key) => { form.elements[key].value = data[key] ?? ""; });
             document.getElementById("consultant-assigned-count").textContent = numberFa(data.assigned_count);
+            renderConsultantAvatar(data.avatar_url, data.full_name);
             const prices = document.getElementById("consultant-plan-prices");
             prices.textContent = `معمولی: ${data.prices.standard ? numberFa(data.prices.standard) + " تومان" : "تعیین نشده"} · VIP: ${data.prices.vip ? numberFa(data.prices.vip) + " تومان" : "تعیین نشده"} · Super VIP: ${data.prices.super_vip ? numberFa(data.prices.super_vip) + " تومان" : "تعیین نشده"}`;
         } catch (error) { message.textContent = error.message || "دریافت رزومه انجام نشد."; }
@@ -518,6 +648,7 @@ const initConsultantApp = async () => {
                 const data = await response.json(); if (!response.ok) throw new Error(data.detail || "ذخیره رزومه انجام نشد.");
                 document.getElementById("consultant-assigned-count").textContent = numberFa(data.assigned_count);
                 ["consultant-account-name", "consultant-header-name"].forEach((id) => { const node = document.getElementById(id); if (node) node.textContent = data.full_name; });
+                renderConsultantAvatar(data.avatar_url, data.full_name);
                 message.textContent = "رزومه و ظرفیت ذخیره شد و در فهرست مشاوران نمایش داده می‌شود.";
             } catch (error) { message.textContent = error.message || "ذخیره رزومه انجام نشد."; }
             finally { button.disabled = false; }
@@ -1068,7 +1199,222 @@ const initConsultantApp = async () => {
             }
 
             quoteBubble.append(quoteIcon, quoteContent);
-            card.append(header, quoteBubble);
+
+            // Existing Feedbacks for this report's study_date
+            const dayFeedbacks = (currentStudentFeedbacks || []).filter(f => f.study_date === report.study_date);
+            const feedbackSection = document.createElement("div");
+            feedbackSection.className = "consultant-report-reply-box";
+
+            if (dayFeedbacks.length) {
+                dayFeedbacks.forEach(fb => {
+                    const fbItem = document.createElement("div");
+                    fbItem.style.background = "#F8FAFC";
+                    fbItem.style.border = "1px solid #E2E8F0";
+                    fbItem.style.borderRadius = "12px";
+                    fbItem.style.padding = "10px 14px";
+                    fbItem.style.display = "flex";
+                    fbItem.style.flexDirection = "column";
+                    fbItem.style.gap = "8px";
+
+                    const fbHeader = document.createElement("div");
+                    fbHeader.style.display = "flex";
+                    fbHeader.style.alignItems = "center";
+                    fbHeader.style.justifyContent = "space-between";
+                    fbHeader.style.gap = "10px";
+
+                    const badge = document.createElement("span");
+                    badge.style.fontSize = "11.5px";
+                    badge.style.fontWeight = "700";
+                    badge.style.color = "#059669";
+                    badge.style.background = "#ECFDF5";
+                    badge.style.padding = "2px 8px";
+                    badge.style.borderRadius = "6px";
+                    badge.textContent = `✓ بازخورد مشاور (${fb.source === "telegram" ? "ارسال از تلگرام" : "ارسال از پنل"})`;
+
+                    const dateSpan = document.createElement("span");
+                    dateSpan.style.fontSize = "11px";
+                    dateSpan.style.color = "#64748B";
+                    dateSpan.textContent = fb.created_at || "";
+
+                    fbHeader.append(badge, dateSpan);
+                    fbItem.append(fbHeader);
+
+                    if (fb.feedback_text) {
+                        const p = document.createElement("p");
+                        p.style.margin = "0";
+                        p.style.fontSize = "12.5px";
+                        p.style.color = "#1E293B";
+                        p.style.lineHeight = "1.7";
+                        p.textContent = fb.feedback_text;
+                        fbItem.append(p);
+                    }
+
+                    if (fb.voice_url) {
+                        const voiceBox = document.createElement("div");
+                        voiceBox.style.display = "flex";
+                        voiceBox.style.alignItems = "center";
+                        voiceBox.style.gap = "10px";
+                        voiceBox.style.background = "#EFF6FF";
+                        voiceBox.style.padding = "6px 12px";
+                        voiceBox.style.borderRadius = "8px";
+                        voiceBox.style.width = "fit-content";
+
+                        const audio = new Audio(fb.voice_url);
+                        const playBtn = document.createElement("button");
+                        playBtn.type = "button";
+                        playBtn.style.background = "#0753A8";
+                        playBtn.style.color = "#FFFFFF";
+                        playBtn.style.border = "none";
+                        playBtn.style.width = "28px";
+                        playBtn.style.height = "28px";
+                        playBtn.style.borderRadius = "50%";
+                        playBtn.style.cursor = "pointer";
+                        playBtn.style.display = "flex";
+                        playBtn.style.alignItems = "center";
+                        playBtn.style.justifyContent = "center";
+                        playBtn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>`;
+
+                        let isPlaying = false;
+                        playBtn.onclick = () => {
+                            if (isPlaying) {
+                                audio.pause();
+                                isPlaying = false;
+                                playBtn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>`;
+                            } else {
+                                audio.play();
+                                isPlaying = true;
+                                playBtn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+                            }
+                        };
+                        audio.onended = () => {
+                            isPlaying = false;
+                            playBtn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>`;
+                        };
+
+                        const voiceLabel = document.createElement("span");
+                        voiceLabel.style.fontSize = "12px";
+                        voiceLabel.style.fontWeight = "600";
+                        voiceLabel.style.color = "#0753A8";
+                        const durSeconds = fb.voice_duration || 0;
+                        const durText = durSeconds > 0 ? `${Math.floor(durSeconds / 60)}:${String(durSeconds % 60).padStart(2, "0")}` : "پخش ویس";
+                        voiceLabel.textContent = `پیام صوتی (${durText})`;
+
+                        voiceBox.append(playBtn, voiceLabel);
+                        fbItem.append(voiceBox);
+                    }
+
+                    feedbackSection.append(fbItem);
+                });
+            }
+
+            // Reply toggle & form
+            const replyToggleBtn = document.createElement("button");
+            replyToggleBtn.type = "button";
+            replyToggleBtn.className = "consultant-report-reply-toggle-btn";
+            replyToggleBtn.innerHTML = `${getFormalSvgIcon("edit")} <span>${dayFeedbacks.length ? "ثبت بازخورد تکمیلی" : "ثبت بازخورد مشاور (متن یا ویس)"}</span>`;
+
+            const replyForm = document.createElement("form");
+            replyForm.className = "consultant-report-reply-form";
+            replyForm.style.display = "none";
+
+            const textarea = document.createElement("textarea");
+            textarea.rows = 3;
+            textarea.placeholder = "توصیه‌ها، ارزیابی تست‌ها یا نکات تحلیلی این روز را بنویسید...";
+
+            const actionsRow = document.createElement("div");
+            actionsRow.className = "consultant-report-reply-form-actions";
+
+            const voiceAttachWrap = document.createElement("div");
+            voiceAttachWrap.style.display = "flex";
+            voiceAttachWrap.style.alignItems = "center";
+            voiceAttachWrap.style.gap = "8px";
+
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = "audio/*,.ogg,.mp3,.wav,.m4a,.webm";
+            fileInput.style.display = "none";
+
+            const voiceBtn = document.createElement("button");
+            voiceBtn.type = "button";
+            voiceBtn.className = "consultant-voice-attach-btn";
+            voiceBtn.innerHTML = `${getFormalSvgIcon("phone")} <span>پیوست ویس / فایل صوتی</span>`;
+            voiceBtn.onclick = () => fileInput.click();
+
+            const fileHint = document.createElement("span");
+            fileHint.style.fontSize = "11.5px";
+            fileHint.style.color = "#64748B";
+
+            fileInput.onchange = () => {
+                if (fileInput.files?.[0]) {
+                    const f = fileInput.files[0];
+                    if (f.size > 10 * 1024 * 1024) {
+                        fileHint.textContent = "حجم فایل بیش از ۱۰ مگابایت است!";
+                        fileHint.style.color = "#DC2626";
+                        fileInput.value = "";
+                    } else {
+                        fileHint.textContent = f.name;
+                        fileHint.style.color = "#059669";
+                    }
+                } else {
+                    fileHint.textContent = "";
+                }
+            };
+
+            voiceAttachWrap.append(voiceBtn, fileInput, fileHint);
+
+            const submitBtn = document.createElement("button");
+            submitBtn.type = "submit";
+            submitBtn.className = "consultant-reply-submit-btn";
+            submitBtn.innerHTML = `<span>ارسال بازخورد</span>`;
+
+            actionsRow.append(voiceAttachWrap, submitBtn);
+            replyForm.append(textarea, actionsRow);
+
+            replyToggleBtn.onclick = () => {
+                replyForm.style.display = (replyForm.style.display === "none") ? "flex" : "none";
+            };
+
+            replyForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const textVal = textarea.value.trim();
+                const audioFile = fileInput.files?.[0];
+
+                if (!textVal && !audioFile) {
+                    alert("لطفاً متن بازخورد یا یک فایل صوتی پیوست کنید.");
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = "در حال ارسال...";
+
+                try {
+                    const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+                    const formData = new FormData();
+                    formData.append("student_id", plannerPicker.value);
+                    formData.append("study_date", report.study_date);
+                    if (textVal) formData.append("feedback_text", textVal);
+                    if (audioFile) formData.append("voice_file", audioFile);
+
+                    const res = await fetch("/api/consultations/study-feedbacks/", {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: { "X-CSRFToken": csrf.csrfToken },
+                        body: formData
+                    });
+                    const resData = await res.json();
+                    if (!res.ok) throw new Error(resData.detail || "ارسال بازخورد با خطا مواجه شد.");
+
+                    await loadStudyReports();
+                } catch (err) {
+                    alert(err.message || "خطا در ارسال بازخورد.");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<span>ارسال بازخورد</span>`;
+                }
+            };
+
+            feedbackSection.append(replyToggleBtn, replyForm);
+            card.append(header, quoteBubble, feedbackSection);
             target.append(card);
         });
     }
@@ -1078,10 +1424,21 @@ const initConsultantApp = async () => {
         if (!target || !plannerPicker?.value) return;
         target.innerHTML = `<p class="consultant-article-hint">در حال بارگذاری گزارش‌های مطالعه…</p>`;
         try {
-            const response = await fetch(`/api/consultations/study-reports/?student=${encodeURIComponent(plannerPicker.value)}`, { credentials: "same-origin" });
+            const [response, fbResponse] = await Promise.all([
+                fetch(`/api/consultations/study-reports/?student=${encodeURIComponent(plannerPicker.value)}`, { credentials: "same-origin" }),
+                fetch(`/api/consultations/study-feedbacks/?student=${encodeURIComponent(plannerPicker.value)}`, { credentials: "same-origin" })
+            ]);
             const data = await response.json();
             if (!response.ok) throw new Error(data.detail || "گزارش‌ها دریافت نشد.");
             currentStudentReports = data.results || [];
+            
+            if (fbResponse && fbResponse.ok) {
+                const fbData = await fbResponse.json();
+                currentStudentFeedbacks = fbData.results || [];
+            } else {
+                currentStudentFeedbacks = [];
+            }
+
             initJalaliDatePicker();
             renderStudentReportsView();
         } catch (error) {

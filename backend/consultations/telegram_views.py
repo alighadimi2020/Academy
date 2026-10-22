@@ -99,11 +99,81 @@ def consultant_telegram_test(request):
         return JsonResponse({"detail": f"ارسال نشد: {desc}"}, status=502)
 
 
-@require_GET
 def study_feedbacks_list(request):
+    import os
+    from datetime import date
+    from accounts.models import User
+    from .models import ConsultationRequest
+
     if not request.user.is_authenticated or not request.user.is_active:
         return JsonResponse({"detail": "وارد حساب شوید."}, status=401)
 
+    if request.method == "POST":
+        if request.user.role != "consultant":
+            return JsonResponse({"detail": "فقط مشاور مجاز به ثبت بازخورد است."}, status=403)
+
+        student_id = request.POST.get("student_id")
+        study_date_str = request.POST.get("study_date")
+        feedback_text = (request.POST.get("feedback_text") or "").strip()[:3000]
+        voice_file = request.FILES.get("voice")
+
+        if not student_id or not study_date_str:
+            return JsonResponse({"detail": "شناسه دانش‌آموز و تاریخ مطالعه الزامی است."}, status=400)
+
+        try:
+            student = User.objects.get(id=int(student_id), role="student")
+        except (User.DoesNotExist, ValueError):
+            return JsonResponse({"detail": "دانش‌آموز یافت نشد."}, status=404)
+
+        # Verify consultant is assigned to this student
+        is_assigned = ConsultationRequest.objects.filter(
+            student=student,
+            assigned_consultant__user=request.user,
+            status=ConsultationRequest.Status.APPROVED
+        ).exists()
+        if not is_assigned:
+            return JsonResponse({"detail": "این دانش‌آموز به شما اختصاص داده نشده است."}, status=403)
+
+        try:
+            study_date = date.fromisoformat(study_date_str)
+        except ValueError:
+            return JsonResponse({"detail": "فرمت تاریخ نامعتبر است (YYYY-MM-DD)."}, status=400)
+
+        # Validate voice file if present
+        voice_duration = 0
+        if voice_file:
+            if voice_file.size > 10 * 1024 * 1024:
+                return JsonResponse({"detail": "حجم فایل صوتی نباید بیشتر از ۱۰ مگابایت باشد."}, status=400)
+            allowed_audio = {".ogg", ".mp3", ".wav", ".m4a", ".webm"}
+            ext = os.path.splitext(voice_file.name.lower())[1]
+            if ext not in allowed_audio and not (voice_file.content_type and voice_file.content_type.startswith("audio/")):
+                return JsonResponse({"detail": "فرمت فایل صوتی نامعتبر است."}, status=400)
+            try:
+                voice_duration = int(request.POST.get("voice_duration") or 0)
+            except ValueError:
+                voice_duration = 0
+
+        if not feedback_text and not voice_file:
+            return JsonResponse({"detail": "متن یا فایل صوتی بازخورد الزامی است."}, status=400)
+
+        feedback = StudyReportFeedback.objects.create(
+            student=student,
+            consultant=request.user,
+            study_date=study_date,
+            feedback_text=feedback_text or "پیام صوتی ارزیابی مشاور",
+            voice_file=voice_file,
+            voice_duration=voice_duration,
+            source="panel",
+        )
+
+        return JsonResponse({
+            "ok": True,
+            "detail": "بازخورد با موفقیت ثبت شد.",
+            "feedback_id": feedback.id,
+            "voice_url": feedback.voice_file.url if feedback.voice_file else None,
+        })
+
+    # GET handling
     if request.user.role == "student":
         feedbacks = StudyReportFeedback.objects.filter(student=request.user).select_related("consultant")[:50]
     elif request.user.role == "consultant":
@@ -123,8 +193,11 @@ def study_feedbacks_list(request):
             "student_name": f.student.full_name or "دانش‌آموز",
             "consultant_id": f.consultant_id,
             "consultant_name": f.consultant.full_name or "مشاور",
+            "consultant_avatar_url": f.consultant.avatar.url if (hasattr(f.consultant, "avatar") and f.consultant.avatar) else None,
             "study_date": f.study_date.isoformat(),
             "feedback_text": f.feedback_text,
+            "voice_url": f.voice_file.url if f.voice_file else None,
+            "voice_duration": f.voice_duration or 0,
             "source": f.source,
             "created_at": timezone.localtime(f.created_at, TEHRAN).strftime("%Y/%m/%d - %H:%M"),
         })

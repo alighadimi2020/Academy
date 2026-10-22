@@ -3739,5 +3739,238 @@ body.payeh-sidebar-locked {
     }
 }
 
+/* ========================================================
+   CONSULTANT AVATAR UPLOAD & REPORT FEEDBACK STYLES
+   ======================================================== */
+.consultant-avatar-upload-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+}
+
+.consultant-avatar-preview-wrap {
+    position: relative;
+    width: 86px;
+    height: 86px;
+    flex: 0 0 86px;
+}
+
+.consultant-avatar-preview-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0753A8, #FF7A00);
+    color: #FFFFFF;
+    font-size: 26px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3.5px solid #FFFFFF;
+    box-shadow: 0 8px 20px rgba(7, 83, 168, 0.2);
+    overflow: hidden;
+}
+
+.consultant-avatar-preview-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.consultant-avatar-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #FF7A00;
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 122, 0, 0.35);
+    transition: transform 0.2s ease;
+}
+
+.consultant-avatar-badge:hover {
+    transform: scale(1.1);
+}
+
+.consultant-avatar-meta h4 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.consultant-avatar-meta p {
+    margin: 0 0 10px;
+    font-size: 12.5px;
+    color: #64748B;
+}
+
+.consultant-avatar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.consultant-btn-avatar-pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0753A8;
+    background: #EEF4FF;
+    border: 1px solid rgba(7, 83, 168, 0.2);
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.consultant-btn-avatar-pick:hover {
+    background: #0753A8;
+    color: #FFFFFF;
+}
+
+.consultant-btn-avatar-remove {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #EF4444;
+    background: #FEE2E2;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.consultant-avatar-format-hint {
+    font-size: 11px;
+    color: #94A3B8;
+    width: 100%;
+    margin-top: 2px;
+}
+
+.consultant-avatar-status {
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+.consultant-avatar-status.success { background: #ECFDF5; color: #059669; }
+.consultant-avatar-status.error { background: #FEF2F2; color: #DC2626; }
+
+/* Consultant Feedback Form Box on Student Study Reports */
+.consultant-report-reply-box {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed #E2E8F0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.consultant-report-reply-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0753A8;
+    background: #F1F7FF;
+    border: 1px solid rgba(7, 83, 168, 0.2);
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: fit-content;
+    transition: all 0.2s;
+}
+
+.consultant-report-reply-toggle-btn:hover {
+    background: #0753A8;
+    color: #FFFFFF;
+}
+
+.consultant-report-reply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 1.5px solid #EDF2F7;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.consultant-report-reply-form textarea {
+    width: 100%;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+}
+
+.consultant-report-reply-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.consultant-voice-attach-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #FF7A00;
+    background: #FFF7ED;
+    border: 1px solid rgba(255, 122, 0, 0.25);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.consultant-voice-attach-btn:hover {
+    background: #FF7A00;
+    color: #FFFFFF;
+}
+
+.consultant-reply-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #FFFFFF;
+    background: #075BC4;
+    border: none;
+    padding: 7px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.consultant-reply-submit-btn:hover {
+    background: #064DA7;
+}
+
 
 

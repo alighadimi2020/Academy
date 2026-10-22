@@ -997,8 +997,16 @@ const initStudentApp = async () => {
     let consultantEventsTab = "feedbacks";
     let consultantFilterType = "all";
     let activeVoicePlayerState = null;
+    let activeVoiceAudio = null;
 
     const stopActiveVoicePlayer = () => {
+        if (activeVoiceAudio) {
+            try {
+                activeVoiceAudio.pause();
+                activeVoiceAudio.currentTime = 0;
+            } catch (_) {}
+            activeVoiceAudio = null;
+        }
         if (activeVoicePlayerState) {
             if (activeVoicePlayerState.timerId) clearInterval(activeVoicePlayerState.timerId);
             const playerEl = document.querySelector(`.payeh-voice-player[data-audio-id="${activeVoicePlayerState.playerId}"]`);
@@ -1021,6 +1029,7 @@ const initStudentApp = async () => {
         document.querySelectorAll(".payeh-voice-player").forEach(playerEl => {
             const playBtn = playerEl.querySelector(".payeh-voice-play-btn");
             const audioId = playerEl.dataset.audioId;
+            const voiceUrl = playerEl.dataset.voiceUrl;
             const durEl = playerEl.querySelector(".payeh-voice-duration");
             if (!playerEl.dataset.originalDuration && durEl) {
                 playerEl.dataset.originalDuration = durEl.textContent;
@@ -1046,28 +1055,61 @@ const initStudentApp = async () => {
                     if (iconPlay) iconPlay.style.display = "none";
                     if (iconPause) iconPause.style.display = "block";
 
-                    let totalSeconds = 135;
-                    let currentSec = 0;
                     const fa = new Intl.NumberFormat("fa-IR", { minimumIntegerDigits: 2 });
 
-                    const updateTimer = () => {
-                        currentSec++;
-                        if (currentSec > totalSeconds) {
-                            stopActiveVoicePlayer();
-                            return;
-                        }
-                        const m = Math.floor(currentSec / 60);
-                        const s = currentSec % 60;
-                        if (durEl) durEl.textContent = `${fa.format(m)}:${fa.format(s)}`;
-                    };
+                    if (voiceUrl) {
+                        const audio = new Audio(voiceUrl);
+                        activeVoiceAudio = audio;
 
-                    const timerId = setInterval(updateTimer, 1000);
-                    activeVoicePlayerState = {
-                        playerId: audioId,
-                        timerId: timerId,
-                        currentSec: 0,
-                        totalSec: totalSeconds
-                    };
+                        audio.addEventListener("timeupdate", () => {
+                            if (durEl && !isNaN(audio.currentTime)) {
+                                const m = Math.floor(audio.currentTime / 60);
+                                const s = Math.floor(audio.currentTime % 60);
+                                durEl.textContent = `${fa.format(m)}:${fa.format(s)}`;
+                            }
+                        });
+
+                        audio.addEventListener("ended", () => {
+                            stopActiveVoicePlayer();
+                        });
+
+                        audio.addEventListener("error", (err) => {
+                            console.warn("Audio playback error:", err);
+                            stopActiveVoicePlayer();
+                        });
+
+                        audio.play().catch(err => {
+                            console.warn("Audio play prevented:", err);
+                            stopActiveVoicePlayer();
+                        });
+
+                        activeVoicePlayerState = {
+                            playerId: audioId,
+                            timerId: null
+                        };
+                    } else {
+                        let totalSeconds = 135;
+                        let currentSec = 0;
+
+                        const updateTimer = () => {
+                            currentSec++;
+                            if (currentSec > totalSeconds) {
+                                stopActiveVoicePlayer();
+                                return;
+                            }
+                            const m = Math.floor(currentSec / 60);
+                            const s = currentSec % 60;
+                            if (durEl) durEl.textContent = `${fa.format(m)}:${fa.format(s)}`;
+                        };
+
+                        const timerId = setInterval(updateTimer, 1000);
+                        activeVoicePlayerState = {
+                            playerId: audioId,
+                            timerId: timerId,
+                            currentSec: 0,
+                            totalSec: totalSeconds
+                        };
+                    }
                 };
             }
         });
@@ -1130,16 +1172,25 @@ const initStudentApp = async () => {
 
         let combined = [];
         if (feedbacks && feedbacks.length) {
-            const apiItems = feedbacks.map((fb, idx) => ({
-                id: `api-fb-${fb.id || idx}`,
-                type: (fb.feedback_text || "").includes("صوت") || (fb.feedback_text || "").includes("ویس") ? "voice" : "reports",
-                category: "پاسخ به گزارش مطالعه",
-                date_str: toPersianDate(fb.study_date || fb.created_at),
-                time_str: toPersianTime(fb.created_at) ? `ساعت ${toPersianTime(fb.created_at)}` : "",
-                text: fb.feedback_text,
-                has_voice: idx === 0,
-                duration: "۰۲:۰۵"
-            }));
+            const apiItems = feedbacks.map((fb, idx) => {
+                const hasVoice = Boolean(fb.voice_url);
+                const durationSeconds = fb.voice_duration || 135;
+                const m = Math.floor(durationSeconds / 60);
+                const s = durationSeconds % 60;
+                const fa = new Intl.NumberFormat("fa-IR", { minimumIntegerDigits: 2 });
+                const durStr = `${fa.format(m)}:${fa.format(s)}`;
+                return {
+                    id: `api-fb-${fb.id || idx}`,
+                    type: hasVoice ? "voice" : "reports",
+                    category: hasVoice ? "پاسخ صوتی به گزارش مطالعه" : "پاسخ به گزارش مطالعه",
+                    date_str: toPersianDate(fb.study_date || fb.created_at),
+                    time_str: toPersianTime(fb.created_at) ? `ساعت ${toPersianTime(fb.created_at)}` : "",
+                    text: fb.feedback_text || (hasVoice ? "پیام صوتی ارسالی از مشاور برای گزارش این روز." : "گزارش شما بررسی و در سامانه تایید گردید."),
+                    has_voice: hasVoice,
+                    voice_url: fb.voice_url || "",
+                    duration: durStr
+                };
+            });
             combined = [...apiItems, ...defaultFeedbacks];
         } else {
             combined = defaultFeedbacks;
@@ -1176,7 +1227,7 @@ const initStudentApp = async () => {
                 </div>
                 <p class="payeh-feedback-item-body">${item.text}</p>
                 ${item.has_voice ? `
-                    <div class="payeh-voice-player" data-playing="false" data-audio-id="${item.id}">
+                    <div class="payeh-voice-player" data-playing="false" data-audio-id="${item.id}" data-voice-url="${item.voice_url || ''}">
                         <button type="button" class="payeh-voice-play-btn" title="پخش بازخورد صوتی مشاور">
                             <svg class="icon-play" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
                             <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
@@ -1451,7 +1502,11 @@ const initStudentApp = async () => {
         if (nameEl) nameEl.textContent = consultantName;
         if (bioEl) bioEl.textContent = consultantBio;
         if (avatarEl) {
-            avatarEl.innerHTML = `<span style="font-size:22px;font-weight:800;color:#0753A8;">${consultantInitials}</span>`;
+            if (hasAssigned && assignedReq.assigned_consultant_avatar_url) {
+                avatarEl.innerHTML = `<img src="${assignedReq.assigned_consultant_avatar_url}" alt="${consultantName}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            } else {
+                avatarEl.innerHTML = `<span style="font-size:22px;font-weight:800;color:#0753A8;">${consultantInitials}</span>`;
+            }
         }
         if (planTextEl) {
             planTextEl.textContent = assignedReq?.plan_label ? `پلن ${assignedReq.plan_label}` : "پلن VIP نظارت روزانه";
@@ -1697,10 +1752,156 @@ const initStudentApp = async () => {
 
         const fEmail = document.getElementById("profile-email");
         if (fEmail) fEmail.value = data.email || "";
+
+        // Avatar UI
+        const avatarImg = document.getElementById("profile-avatar-img");
+        const avatarText = document.getElementById("profile-avatar-text");
+        const removeAvatarBtn = document.getElementById("btn-remove-student-avatar");
+        const initials = name.split(" ").slice(0, 2).map(w => w[0]).join("") || "دا";
+
+        if (data.avatar_url) {
+            if (avatarImg) {
+                avatarImg.src = data.avatar_url;
+                avatarImg.style.display = "block";
+            }
+            if (avatarText) avatarText.style.display = "none";
+            if (removeAvatarBtn) removeAvatarBtn.style.display = "inline-flex";
+
+            ["student-header-avatar-text", "student-sidebar-avatar-text"].forEach(id => {
+                const node = document.getElementById(id);
+                if (node && node.parentElement) {
+                    node.parentElement.innerHTML = `<img src="${data.avatar_url}" alt="${name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                }
+            });
+        } else {
+            if (avatarImg) {
+                avatarImg.src = "";
+                avatarImg.style.display = "none";
+            }
+            if (avatarText) {
+                avatarText.textContent = initials;
+                avatarText.style.display = "block";
+            }
+            if (removeAvatarBtn) removeAvatarBtn.style.display = "none";
+
+            ["student-header-avatar-text", "student-sidebar-avatar-text"].forEach(id => {
+                const node = document.getElementById(id);
+                if (node) node.textContent = initials;
+            });
+        }
+    };
+
+    let studentAvatarUploaderInitialized = false;
+    const setupStudentAvatarUploader = () => {
+        if (studentAvatarUploaderInitialized) return;
+        studentAvatarUploaderInitialized = true;
+
+        const fileInput = document.getElementById("student-avatar-file-input");
+        const pickBtn = document.getElementById("btn-pick-student-avatar");
+        const removeBtn = document.getElementById("btn-remove-student-avatar");
+        const statusEl = document.getElementById("student-avatar-status");
+
+        if (!fileInput) return;
+
+        const showStatus = (text, type = "info") => {
+            if (!statusEl) return;
+            statusEl.textContent = text;
+            statusEl.className = `payeh-avatar-upload-status ${type}`;
+            statusEl.style.display = "block";
+            if (type === "success") {
+                setTimeout(() => {
+                    statusEl.style.display = "none";
+                }, 4000);
+            }
+        };
+
+        if (pickBtn) {
+            pickBtn.addEventListener("click", () => fileInput.click());
+        }
+
+        fileInput.addEventListener("change", async () => {
+            const file = fileInput.files?.[0];
+            if (!file) return;
+
+            // Validate file size (10MB max)
+            const maxBytes = 10 * 1024 * 1024;
+            if (file.size > maxBytes) {
+                showStatus("حجم تصویر بیش از حد مجاز است. حداکثر حجم فایل ۱۰ مگابایت است.", "error");
+                fileInput.value = "";
+                return;
+            }
+
+            // Validate file type
+            const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+            const allowedExts = [".jpg", ".jpeg", ".png", ".webp"];
+            const ext = "." + (file.name.split(".").pop() || "").toLowerCase();
+            if (!allowedTypes.includes(file.type) && !allowedExts.includes(ext)) {
+                showStatus("تنها فرمت‌های تصویری JPG، PNG و WEBP مجاز هستند.", "error");
+                fileInput.value = "";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("avatar", file);
+
+            showStatus("در حال بارگذاری تصویر...", "info");
+            try {
+                const csrfToken = await getCsrfToken();
+                const res = await fetch("/api/auth/profile/avatar/", {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: { "X-CSRFToken": csrfToken },
+                    body: formData,
+                });
+                const resData = await res.json();
+                if (!res.ok) {
+                    throw new Error(resData.detail || "بارگذاری تصویر با خطا مواجه شد.");
+                }
+
+                showStatus("تصویر پروفایل شما با موفقیت به‌روزرسانی شد.", "success");
+                if (currentUserData) {
+                    currentUserData.avatar_url = resData.avatar_url;
+                    updateProfileUI(currentUserData);
+                }
+            } catch (err) {
+                showStatus(err.message || "خطا در برقراری ارتباط با سرور.", "error");
+            } finally {
+                fileInput.value = "";
+            }
+        });
+
+        if (removeBtn) {
+            removeBtn.addEventListener("click", async () => {
+                if (!confirm("آیا از حذف عکس پروفایل اطمینان دارید؟")) return;
+
+                showStatus("در حال حذف تصویر...", "info");
+                try {
+                    const csrfToken = await getCsrfToken();
+                    const res = await fetch("/api/auth/profile/avatar/", {
+                        method: "DELETE",
+                        credentials: "same-origin",
+                        headers: { "X-CSRFToken": csrfToken },
+                    });
+                    const resData = await res.json();
+                    if (!res.ok) {
+                        throw new Error(resData.detail || "حذف تصویر با خطا مواجه شد.");
+                    }
+
+                    showStatus("تصویر پروفایل حذف شد.", "success");
+                    if (currentUserData) {
+                        currentUserData.avatar_url = null;
+                        updateProfileUI(currentUserData);
+                    }
+                } catch (err) {
+                    showStatus(err.message || "خطا در حذف تصویر.", "error");
+                }
+            });
+        }
     };
 
     let profileFormInitialized = false;
     const loadProfileView = () => {
+        setupStudentAvatarUploader();
         if (currentUserData) {
             updateProfileUI(currentUserData);
         }
@@ -2823,49 +3024,64 @@ const initStudentApp = async () => {
             const active = data.results.find((item) => item.status === "approved" || item.status === "pending");
             const latest = active || data.results[0];
             if (latest?.status === "approved") {
-                const line = document.createElement("p"); 
-                line.style.lineHeight = "1.8";
-                line.textContent = `مشاور اختصاصی شما: ${latest.assigned_consultant_name} · پلن ${latest.plan_label} · ${new Intl.NumberFormat("fa-IR").format(latest.assigned_price_toman)} تومان`; 
-                summary.append(line);
+                const cName = latest.assigned_consultant_name || "مشاور اختصاصی";
+                const cInitials = cName.split(" ").slice(0, 2).map(w => w[0]).join("") || "مش";
+                const cAvatar = latest.assigned_consultant_avatar_url;
 
-                const btnRow = document.createElement("div");
-                btnRow.style.display = "flex";
-                btnRow.style.gap = "10px";
-                btnRow.style.marginTop = "10px";
-                btnRow.style.flexWrap = "wrap";
+                summary.innerHTML = `
+                    <div class="consultant-glass-hero-card" style="padding:22px 24px;margin-top:10px;margin-bottom:12px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;">
+                            <div style="display:flex;align-items:center;gap:16px;">
+                                <div style="width:64px;height:64px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg, #0753A8, #FF7A00);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(7,83,168,0.22);flex-shrink:0;">
+                                    ${cAvatar ? `<img src="${cAvatar}" alt="${cName}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="color:#FFFFFF;font-weight:800;font-size:20px;">${cInitials}</span>`}
+                                </div>
+                                <div>
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                                        <h4 style="margin:0;font-size:16.5px;font-weight:800;color:#0F172A;">${cName}</h4>
+                                        <span class="payeh-badge-verified" style="padding:3px 9px;font-size:11px;">
+                                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                            مشاور شما
+                                        </span>
+                                    </div>
+                                    <p style="margin:0;font-size:12.5px;color:#475569;line-height:1.6;">
+                                        پلن ${latest.plan_label} · نظارت روزانه و همراهی مستمر
+                                    </p>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                                <button type="button" class="payeh-btn-consultant-primary" id="dash-chat-btn" style="padding:8px 18px;font-size:13px;border-radius:12px;">
+                                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                    گفت‌وگو با مشاور
+                                </button>
+                                <button type="button" class="payeh-btn-consultant-secondary active" id="dash-events-btn" style="padding:8px 18px;font-size:13px;border-radius:12px;">
+                                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/></svg>
+                                    مشاهده رخدادها و برنامه
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
 
-                const chat = document.createElement("button"); 
-                chat.type = "button";
-                chat.textContent = "گفت‌وگو با مشاور"; 
-                chat.className = "student-assigned-chat"; 
-                chat.onclick = () => {
+                document.getElementById("dash-chat-btn")?.addEventListener("click", () => {
                     selectPage("chat");
                     document.querySelectorAll(".payeh-chat-tab").forEach(t => t.classList.toggle("active", t.dataset.chatTab === "consultants"));
                     chatActiveTab = "consultants";
                     renderChatList();
                     selectChatRoom("consultant");
-                };
+                });
 
-                const eventsBtn = document.createElement("button");
-                eventsBtn.type = "button";
-                eventsBtn.textContent = "مشاهده رخدادها و برنامه";
-                eventsBtn.className = "student-assigned-chat";
-                eventsBtn.style.background = "#F1F7FF";
-                eventsBtn.style.color = "#0753A8";
-                eventsBtn.style.border = "1.5px solid #0753A8";
-                eventsBtn.onclick = () => {
+                document.getElementById("dash-events-btn")?.addEventListener("click", () => {
                     selectPage("consultant");
-                };
+                });
 
-                btnRow.append(chat, eventsBtn);
-                summary.append(btnRow);
-
-                link.textContent = "مشاهده صفحه مشاور من و رخدادها";
-                link.href = "#consultant";
-                link.onclick = (e) => {
-                    e.preventDefault();
-                    selectPage("consultant");
-                };
+                if (link) {
+                    link.textContent = "مشاهده صفحه مشاور من و رخدادها";
+                    link.href = "#consultant";
+                    link.onclick = (e) => {
+                        e.preventDefault();
+                        selectPage("consultant");
+                    };
+                }
             } else if (latest?.status === "pending") {
                 const line = document.createElement("p"); line.textContent = `درخواست پلن ${latest.plan_label} ثبت شده و منتظر بررسی مدیر مجموعه است.`; summary.append(line);
                 link.textContent = "مشاهده وضعیت درخواست";

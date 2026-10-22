@@ -52,6 +52,7 @@ class User(AbstractUser):
     grade = models.CharField(max_length=10, choices=GRADE_CHOICES, blank=True, verbose_name="پایه تحصیلی")
     major = models.CharField(max_length=20, choices=MAJOR_CHOICES, blank=True, verbose_name="رشته تحصیلی")
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, verbose_name="جنسیت")
+    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True, verbose_name="تصویر پروفایل")
 
     ROLE_CHOICES = (
         ("student", "دانش‌آموز"),

@@ -54,6 +54,7 @@ def profile_payload(profile, include_phone=False):
         "available_slots": profile.available_slots,
         "assigned_count": assigned_count,
         "is_active": user.is_active,
+        "avatar_url": user.avatar.url if user.avatar else None,
         "prices": {key: prices.get(key, 0) for key in PLAN_KEYS},
     }
     if include_phone:
@@ -72,6 +73,7 @@ def request_payload(item, viewer):
         preferences.append({
             "consultant_id": profile.user_id,
             "consultant_name": profile.user.full_name or "مشاور آکادمی",
+            "consultant_avatar_url": profile.user.avatar.url if profile.user.avatar else None,
             "experience_years": profile.experience_years,
             "university_major": profile.university_major,
             "current_university": profile.current_university,
@@ -83,6 +85,7 @@ def request_payload(item, viewer):
         "student_id": item.student_id,
         "student_name": item.student.full_name or "دانش‌آموز",
         "student_phone": item.student.phone,
+        "student_avatar_url": item.student.avatar.url if item.student.avatar else None,
         "student_grade": dict(User.GRADE_CHOICES).get(item.student.grade, ""),
         "student_grade_value": item.student.grade,
         "student_major": dict(User.MAJOR_CHOICES).get(item.student.major, ""),
@@ -98,6 +101,7 @@ def request_payload(item, viewer):
         "preferences": preferences,
         "assigned_consultant_id": item.assigned_consultant.user_id if item.assigned_consultant_id else None,
         "assigned_consultant_name": (item.assigned_consultant.user.full_name or "مشاور آکادمی") if item.assigned_consultant_id else "",
+        "assigned_consultant_avatar_url": item.assigned_consultant.user.avatar.url if (item.assigned_consultant_id and item.assigned_consultant.user.avatar) else None,
         "assigned_consultant_major": (item.assigned_consultant.university_major or "") if item.assigned_consultant_id else "",
         "assigned_consultant_university": (item.assigned_consultant.current_university or "") if item.assigned_consultant_id else "",
         "assigned_consultant_rank": (item.assigned_consultant.quota_rank or None) if item.assigned_consultant_id else None,

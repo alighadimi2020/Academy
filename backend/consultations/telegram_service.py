@@ -1,7 +1,9 @@
 import json
 import logging
+import os
 import urllib.error
 import urllib.request
+import uuid
 from zoneinfo import ZoneInfo
 from django.conf import settings
 from django.utils import timezone
@@ -55,6 +57,43 @@ def call_telegram_api(method: str, payload: dict = None) -> dict:
     except Exception as exc:
         logger.error(f"Telegram API Exception: {exc}")
         return {"ok": False, "description": str(exc)}
+
+
+def download_telegram_voice_file(file_id: str) -> str | None:
+    token = get_bot_token()
+    if not token or not file_id:
+        return None
+    try:
+        res = call_telegram_api("getFile", {"file_id": file_id})
+        if not res.get("ok"):
+            logger.error(f"Failed getFile from telegram: {res}")
+            return None
+        file_path = res["result"].get("file_path")
+        if not file_path:
+            return None
+
+        file_url = f"https://api.telegram.org/file/bot{token}/{file_path}"
+        ext = os.path.splitext(file_path)[1] or ".ogg"
+        filename = f"voice_{uuid.uuid4().hex[:12]}{ext}"
+        rel_path = os.path.join("study_feedbacks", "voices", filename)
+        abs_path = os.path.join(settings.MEDIA_ROOT, rel_path)
+        os.makedirs(os.path.dirname(abs_path), exist_ok=True)
+
+        proxy = getattr(settings, "TELEGRAM_PROXY", "").strip() or os.getenv("TELEGRAM_PROXY", "").strip()
+        if proxy:
+            opener = urllib.request.build_opener(urllib.request.ProxyHandler({"http": proxy, "https": proxy}))
+        else:
+            opener = urllib.request.build_opener()
+
+        with opener.open(file_url, timeout=30) as resp:
+            content = resp.read()
+            with open(abs_path, "wb") as f:
+                f.write(content)
+
+        return rel_path
+    except Exception as e:
+        logger.error(f"Error downloading voice file from Telegram: {e}")
+        return None
 
 
 def send_telegram_message(chat_id: int | str, text: str, parse_mode: str = "HTML", reply_to_message_id: int = None) -> dict:
@@ -215,9 +254,25 @@ def process_telegram_update(update: dict) -> dict:
         reply_to_msg_id = reply_to.get("message_id")
         log = TelegramReportLog.objects.filter(telegram_message_id=reply_to_msg_id).select_related("student", "consultant").first()
         if log:
-            feedback_text = text[:3000].strip()
-            if not feedback_text:
-                send_telegram_message(chat_id, "⚠️ متن بازخورد نمی‌تواند خالی باشد.", reply_to_message_id=msg.get("message_id"))
+            voice = msg.get("voice") or msg.get("audio")
+            caption = (msg.get("caption") or "").strip()
+            feedback_text = (text or caption)[:3000].strip()
+
+            voice_file_path = None
+            voice_duration = 0
+            voice_file_id = ""
+
+            if voice:
+                voice_file_id = voice.get("file_id", "")
+                voice_duration = voice.get("duration", 0)
+                downloaded_file = download_telegram_voice_file(voice_file_id)
+                if downloaded_file:
+                    voice_file_path = downloaded_file
+                if not feedback_text:
+                    feedback_text = "پیام صوتی ارزیابی مشاور"
+
+            if not feedback_text and not voice_file_path:
+                send_telegram_message(chat_id, "⚠️ متن یا صوت بازخورد نمی‌تواند خالی باشد.", reply_to_message_id=msg.get("message_id"))
                 return {"status": "empty_feedback"}
 
             feedback = StudyReportFeedback.objects.create(
@@ -225,13 +280,17 @@ def process_telegram_update(update: dict) -> dict:
                 consultant=log.consultant,
                 study_date=log.study_date,
                 feedback_text=feedback_text,
+                voice_file=voice_file_path,
+                voice_duration=voice_duration,
+                voice_telegram_file_id=voice_file_id,
                 source="telegram",
                 telegram_message_id=msg.get("message_id"),
             )
 
             student_name = log.student.full_name or "دانش‌آموز"
+            voice_notice = " 🎙 (همراه با ویس تحلیلی)" if voice_file_path else ""
             confirm_msg = (
-                f"✅ <b>بازخورد شما با موفقیت ثبت شد!</b>\n\n"
+                f"✅ <b>بازخورد شما با موفقیت ثبت شد!</b>{voice_notice}\n\n"
                 f"👤 دانش‌آموز: <b>{student_name}</b>\n"
                 f"📅 مربوط به مطالعهٔ تاریخ: <b>{log.study_date}</b>\n\n"
                 "این بازخورد در بخش «بازخوردهای مشاور» پنل دانش‌آموز نمایش داده می‌شود."

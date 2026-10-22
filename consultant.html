@@ -7,7 +7,7 @@
     <title>پنل مشاور | آکادمی پایه</title>
 
     <link rel="stylesheet" href="css/fonts.css?v=20261017_25">
-    <link rel="stylesheet" href="css/consultant.css?v=20261017_25">
+    <link rel="stylesheet" href="css/consultant.css?v=20261022_6">
     <link rel="stylesheet" href="css/consultations.css?v=20261017_25">
 </head>
 
@@ -716,6 +716,31 @@
                     <div class="payeh-consultant__section-header"><div><span>اطلاعات قابل نمایش به دانش‌آموز</span><h3>رزومه و ظرفیت من</h3></div></div>
                     <p class="consultant-article-hint">رزومه، رشته دانشگاهی، دانشگاه فعلی و ظرفیت آزاد شما در فهرست مشاوران نمایش داده می‌شود. قیمت پلن‌ها را مدیر مجموعه تعیین می‌کند.</p>
                     <div class="consultant-profile-stats">تعداد دانش‌آموزان تخصیص‌یافته: <strong id="consultant-assigned-count">۰</strong></div>
+
+                    <!-- Consultant Avatar Upload Card -->
+                    <div class="consultant-avatar-upload-card">
+                        <div class="consultant-avatar-preview-wrap">
+                            <div class="consultant-avatar-preview-circle" id="consultant-profile-avatar-circle">مش</div>
+                            <label for="consultant-avatar-file-input" class="consultant-avatar-badge" title="تغییر عکس پروفایل">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            </label>
+                            <input type="file" id="consultant-avatar-file-input" accept="image/png, image/jpeg, image/webp" style="display:none;">
+                        </div>
+                        <div class="consultant-avatar-meta">
+                            <h4>تصویر پروفایل مشاور</h4>
+                            <p>این تصویر در کارت معرفی شما به دانش‌آموزان و بخش گفت‌وگو نمایش داده می‌شود.</p>
+                            <div class="consultant-avatar-actions">
+                                <button type="button" class="consultant-btn-avatar-pick" id="btn-pick-consultant-avatar">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    <span>انتخاب و بارگذاری تصویر</span>
+                                </button>
+                                <button type="button" class="consultant-btn-avatar-remove" id="btn-remove-consultant-avatar" style="display:none;">حذف عکس</button>
+                                <span class="consultant-avatar-format-hint">فرمت‌های مجاز: JPG, PNG, WEBP (حداکثر ۱۰ مگابایت)</span>
+                            </div>
+                            <div id="consultant-avatar-status" class="consultant-avatar-status" style="display:none;"></div>
+                        </div>
+                    </div>
+
                     <form id="consultant-profile-form" class="consultant-profile-form">
                         <label>نام نمایشی<input name="full_name" maxlength="100" required></label>
                         <label>رزومه و معرفی<textarea name="bio" maxlength="3000" rows="5" placeholder="سوابق، روش مشاوره و زمینه تخصصی خود را بنویسید"></textarea></label>
@@ -764,7 +789,7 @@
 </div>
 
 <script src="js/curriculum-data.js?v=20261017_25"></script>
-<script src="js/consultant.js?v=20261017_25"></script>
+<script src="js/consultant.js?v=20261022_6"></script>
 
 </body>
 </html>

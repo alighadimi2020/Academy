@@ -261,6 +261,7 @@ def current_user(request):
         "phone": user.phone,
         "role": user.role,
         "full_name": user.full_name,
+        "avatar_url": user.avatar.url if user.avatar else None,
         "email": user.email or "",
         "national_id": user.national_id or "",
         "parent_phone": user.parent_phone or "",
@@ -272,6 +273,69 @@ def current_user(request):
         "gender_label": dict(User.GENDER_CHOICES).get(user.gender, "ثبت نشده"),
     })
     return _add_no_cache_headers(response)
+
+
+@csrf_protect
+@never_cache
+def upload_avatar(request):
+    import os
+    if not request.user.is_authenticated or not request.user.is_active:
+        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+
+    if request.method == "DELETE":
+        if request.user.avatar:
+            try:
+                request.user.avatar.delete(save=False)
+            except Exception:
+                pass
+            request.user.avatar = None
+            request.user.save(update_fields=["avatar"])
+        return JsonResponse({"ok": True, "avatar_url": None, "detail": "تصویر پروفایل حذف شد."})
+
+    if request.method != "POST":
+        return JsonResponse({"detail": "متد مجاز نیست."}, status=405)
+
+    file = request.FILES.get("avatar")
+    if not file:
+        return JsonResponse({"detail": "فایلی برای آپلود انتخاب نشده است."}, status=400)
+
+    # 1. Size validation: max 10MB
+    max_size = 10 * 1024 * 1024
+    if file.size > max_size:
+        return JsonResponse({"detail": "حجم تصویر نباید بیشتر از ۱۰ مگابایت باشد."}, status=400)
+
+    # 2. Format validation: only image formats
+    allowed_exts = {".jpg", ".jpeg", ".png", ".webp"}
+    file_ext = os.path.splitext(file.name.lower())[1]
+    if file_ext not in allowed_exts:
+        return JsonResponse({"detail": "فقط فرمت‌های تصویری (JPG, PNG, WEBP) مجاز هستند."}, status=400)
+
+    if file.content_type not in {"image/jpeg", "image/png", "image/webp"}:
+        return JsonResponse({"detail": "نوع فایل ارسالی معتبر نیست."}, status=400)
+
+    try:
+        from PIL import Image
+        img = Image.open(file)
+        img.verify()
+        file.seek(0)
+    except Exception:
+        return JsonResponse({"detail": "فایل ارسالی یک تصویر معتبر و سالم نیست."}, status=400)
+
+    if request.user.avatar:
+        try:
+            request.user.avatar.delete(save=False)
+        except Exception:
+            pass
+
+    request.user.avatar = file
+    request.user.save(update_fields=["avatar"])
+    record_event(request, "user.avatar.uploaded", "users", "success", subject=f"user:{request.user.pk}")
+
+    return JsonResponse({
+        "ok": True,
+        "avatar_url": request.user.avatar.url,
+        "detail": "تصویر پروفایل شما با موفقیت ذخیره شد."
+    })
 
 
 @require_POST

@@ -8,7 +8,7 @@
     <title>پنل دانش‌آموز | آکادمی پایه</title>
 
     <link rel="stylesheet" href="css/fonts.css?v=20261019_3">
-    <link rel="stylesheet" href="css/student.css?v=20261022_5">
+    <link rel="stylesheet" href="css/student.css?v=20261022_6">
 </head>
 
 <body>
@@ -1042,8 +1042,14 @@
                     <!-- Profile Header Card -->
                     <div class="payeh-profile-header-card">
                         <div class="payeh-profile-user-group">
-                            <div class="payeh-profile-avatar-large" id="profile-avatar-circle">
-                                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                            <div class="payeh-profile-avatar-wrap">
+                                <div class="payeh-profile-avatar-large" id="profile-avatar-circle">
+                                    <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                </div>
+                                <label for="student-avatar-file-input" class="payeh-avatar-upload-badge" title="تغییر عکس پروفایل">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                </label>
+                                <input type="file" id="student-avatar-file-input" accept="image/png, image/jpeg, image/webp" style="display:none;">
                             </div>
                             <div class="payeh-profile-info-block">
                                 <div class="payeh-profile-name-row">
@@ -1051,6 +1057,15 @@
                                     <span class="payeh-badge-pill" id="profile-card-grade-badge">پایه تعیین‌نشده</span>
                                 </div>
                                 <p id="profile-card-phone" class="payeh-profile-phone">۰۹xxxxxxxxx</p>
+                                <div class="payeh-avatar-action-links">
+                                    <button type="button" class="payeh-btn-avatar-pick" id="btn-pick-student-avatar">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        <span>آپلود عکس پروفایل</span>
+                                    </button>
+                                    <button type="button" class="payeh-btn-avatar-remove" id="btn-remove-student-avatar" style="display:none;">حذف عکس</button>
+                                    <span class="payeh-avatar-format-hint">فرمت‌های مجاز: JPG, PNG, WEBP (حداکثر ۱۰ مگابایت)</span>
+                                </div>
+                                <div id="student-avatar-status" class="payeh-avatar-upload-status" style="display:none;"></div>
                             </div>
                         </div>
 
@@ -1193,7 +1208,7 @@
     </div>
 </div>
 
-<script src="js/student.js?v=20261022_5"></script>
+<script src="js/student.js?v=20261022_6"></script>
 
 </body>
 </html>
