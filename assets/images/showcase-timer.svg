@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 450" width="100%" height="100%" style="font-family:'Peyda', 'Vazirmatn', system-ui, sans-serif; direction:rtl;">
+  <defs>
+    <linearGradient id="timerBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <linearGradient id="primaryBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e7e4e"/>
+      <stop offset="100%" stop-color="#135936"/>
+    </linearGradient>
+    <linearGradient id="pauseBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#c2410c"/>
+    </linearGradient>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0753a8" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect x="10" y="10" width="500" height="430" rx="24" fill="url(#timerBg)" stroke="#dbe7df" stroke-width="2" filter="url(#shadow)"/>
+
+  <rect x="10" y="10" width="500" height="42" rx="24" fill="#f1f7f4"/>
+  <rect x="10" y="32" width="500" height="20" fill="#f1f7f4"/>
+  <circle cx="36" cy="31" r="5" fill="#ef4444"/>
+  <circle cx="52" cy="31" r="5" fill="#f59e0b"/>
+  <circle cx="68" cy="31" r="5" fill="#10b981"/>
+  <text x="260" y="36" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">پنل دانش‌آموز پایه · زمان‌سنج هوشمند مطالعه</text>
+
+  <text x="475" y="86" font-size="20" font-weight="900" fill="#0f172a" text-anchor="end">شیمی ۳ (دوازدهم)</text>
+  <rect x="35" y="66" width="92" height="26" rx="13" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1.2"/>
+  <text x="81" y="83" font-size="11.5" font-weight="800" fill="#059669" text-anchor="middle">برنامهٔ امروز</text>
+
+  <rect x="35" y="106" width="450" height="38" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="408" y="112" width="68" height="26" rx="6" fill="#e0f2fe"/>
+  <text x="442" y="129" font-size="11" font-weight="800" fill="#0284c7" text-anchor="middle">فصل و مبحث</text>
+  <text x="395" y="130" font-size="12" font-weight="700" fill="#334155" text-anchor="end">فصل ۲: در پی غذای سالم - ترموشیمی و حل تست‌های تیپ</text>
+
+  <rect x="35" y="156" width="450" height="84" rx="16" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+  <circle cx="340" cy="198" r="6" fill="#22c55e"/>
+  <text x="260" y="209" font-size="38" font-weight="900" fill="#14532d" text-anchor="middle" letter-spacing="2">۰۲:۴۵:۳۰</text>
+  <rect x="52" y="186" width="94" height="26" rx="13" fill="#22c55e"/>
+  <text x="99" y="203" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">در حال مطالعه</text>
+
+  <g transform="translate(35, 252)">
+    <rect x="0" y="0" width="142" height="42" rx="10" fill="url(#pauseBtn)"/>
+    <text x="71" y="26" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">⏸ استپ (توقف موقت)</text>
+
+    <rect x="154" y="0" width="142" height="42" rx="10" fill="url(#primaryBtn)"/>
+    <text x="225" y="26" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">▶ ادامهٔ مطالعه</text>
+
+    <rect x="308" y="0" width="142" height="42" rx="10" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.2"/>
+    <text x="379" y="26" font-size="12" font-weight="800" fill="#1d4ed8" text-anchor="middle">⏹ اتمام و ثبت گزارش</text>
+  </g>
+
+  <rect x="35" y="306" width="450" height="54" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="470" y="328" font-size="11" font-weight="700" fill="#334155" text-anchor="end">توضیحات و گزارش کار:</text>
+  <text x="470" y="347" font-size="11" font-weight="500" fill="#64748b" text-anchor="end">حل ۴۵ تست کنکور تجربی ۱۴۰۰ تا ۱۴۰۲ · درصد پاسخگویی ۸۸٪ · مرور نکات آنتالپی</text>
+
+  <rect x="35" y="370" width="450" height="46" rx="12" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1.2"/>
+  <circle cx="462" cy="393" r="10" fill="#9333ea"/>
+  <path d="M465 391l-4 4-2-2" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <text x="442" y="397" font-size="11.5" font-weight="800" fill="#6b21a8" text-anchor="end">ارسال خودکار در ساعت ۱۲ شب به مشاور · دریافت بازخورد صوتی و تحلیلی</text>
+</svg>

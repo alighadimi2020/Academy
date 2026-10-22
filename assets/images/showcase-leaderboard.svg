@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 450" width="100%" height="100%" style="font-family:'Peyda', 'Vazirmatn', system-ui, sans-serif; direction:rtl;">
+  <defs>
+    <linearGradient id="rankBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <linearGradient id="goldPodium" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+    <linearGradient id="silverPodium" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <linearGradient id="bronzePodium" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffedd5"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <filter id="shadow3" x="-8%" y="-8%" width="116%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0753a8" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect x="10" y="10" width="500" height="430" rx="24" fill="url(#rankBg)" stroke="#dbe7df" stroke-width="2" filter="url(#shadow3)"/>
+
+  <rect x="10" y="10" width="500" height="42" rx="24" fill="#f8fafc"/>
+  <rect x="10" y="32" width="500" height="20" fill="#f8fafc"/>
+  <circle cx="36" cy="31" r="5" fill="#ef4444"/>
+  <circle cx="52" cy="31" r="5" fill="#f59e0b"/>
+  <circle cx="68" cy="31" r="5" fill="#10b981"/>
+  <text x="260" y="36" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">لیگ هفتگی و رتبه‌بندی کشوری داوطلبان پایه</text>
+
+  <!-- 3D Podium Graphic -->
+  <g transform="translate(35, 60)">
+    <!-- 2nd Place (Silver) -->
+    <rect x="20" y="60" width="110" height="90" rx="12" fill="url(#silverPodium)" stroke="#94a3b8" stroke-width="1"/>
+    <circle cx="75" cy="40" r="22" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+    <text x="75" y="47" font-size="16" font-weight="900" fill="#334155" text-anchor="middle">۲</text>
+    <text x="75" y="85" font-size="11.5" font-weight="800" fill="#1e293b" text-anchor="middle">حسین مرادی</text>
+    <text x="75" y="102" font-size="10.5" font-weight="700" fill="#475569" text-anchor="middle">۵۲ ساعت · تجربی</text>
+
+    <!-- 1st Place (Gold) -->
+    <rect x="170" y="25" width="110" height="125" rx="14" fill="url(#goldPodium)" stroke="#ca8a04" stroke-width="1.5"/>
+    <circle cx="225" cy="5" r="26" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/>
+    <text x="225" y="13" font-size="20" font-weight="900" fill="#854d0e" text-anchor="middle">👑 ۱</text>
+    <text x="225" y="55" font-size="12.5" font-weight="900" fill="#713f12" text-anchor="middle">زهرا ابراهیمی</text>
+    <text x="225" y="74" font-size="11" font-weight="800" fill="#854d0e" text-anchor="middle">۵۸ ساعت · ریاضی</text>
+
+    <!-- 3rd Place (Bronze) -->
+    <rect x="320" y="80" width="110" height="70" rx="12" fill="url(#bronzePodium)" stroke="#ea580c" stroke-width="1"/>
+    <circle cx="375" cy="60" r="20" fill="#ffedd5" stroke="#f97316" stroke-width="2"/>
+    <text x="375" y="67" font-size="15" font-weight="900" fill="#9a3412" text-anchor="middle">۳</text>
+    <text x="375" y="105" font-size="11.5" font-weight="800" fill="#7c2d12" text-anchor="middle">آرمین راد</text>
+    <text x="375" y="122" font-size="10.5" font-weight="700" fill="#9a3412" text-anchor="middle">۴۹ ساعت · تجربی</text>
+  </g>
+
+  <!-- My Rank Strip -->
+  <rect x="35" y="222" width="450" height="48" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+  <rect x="430" y="232" width="42" height="28" rx="8" fill="#10b981"/>
+  <text x="451" y="251" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">رتبه ۵</text>
+  <text x="415" y="252" font-size="13" font-weight="800" fill="#065f46" text-anchor="end">دانیال دانش‌پژوه (شما) · تجربی دوازدهم</text>
+  <text x="50" y="251" font-size="12" font-weight="700" fill="#047857" text-anchor="start">۴۶ ساعت و ۳۰ دقیقه · ۴۲۰ تست</text>
+
+  <!-- Leaderboard Table Preview Rows -->
+  <g transform="translate(35, 280)">
+    <rect x="0" y="0" width="450" height="142" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+
+    <!-- Row 4 -->
+    <rect x="10" y="10" width="430" height="36" rx="8" fill="#f8fafc"/>
+    <text x="420" y="33" font-size="12" font-weight="800" fill="#334155">۴</text>
+    <text x="390" y="33" font-size="12" font-weight="700" fill="#0f172a" text-anchor="end">پوریا احمدی</text>
+    <text x="240" y="33" font-size="11" font-weight="600" fill="#64748b" text-anchor="end">ریاضی دوازدهم</text>
+    <text x="25" y="33" font-size="11.5" font-weight="700" fill="#0f172a">۴۷ ساعت مطالعه</text>
+
+    <!-- Row 5 (Me) -->
+    <rect x="10" y="52" width="430" height="36" rx="8" fill="#f0fdf4" stroke="#a7f3d0" stroke-width="1"/>
+    <text x="420" y="75" font-size="12" font-weight="900" fill="#059669">۵</text>
+    <text x="390" y="75" font-size="12" font-weight="800" fill="#065f46" text-anchor="end">دانیال دانش‌پژوه (شما)</text>
+    <text x="240" y="75" font-size="11" font-weight="700" fill="#047857" text-anchor="end">تجربی دوازدهم</text>
+    <text x="25" y="75" font-size="11.5" font-weight="800" fill="#065f46">۴۶:۳۰ ساعت</text>
+
+    <!-- Row 6 -->
+    <rect x="10" y="94" width="430" height="36" rx="8" fill="#f8fafc"/>
+    <text x="420" y="117" font-size="12" font-weight="800" fill="#334155">۶</text>
+    <text x="390" y="117" font-size="12" font-weight="700" fill="#0f172a" text-anchor="end">نگار سلطانی</text>
+    <text x="240" y="117" font-size="11" font-weight="600" fill="#64748b" text-anchor="end">انسانی دوازدهم</text>
+    <text x="25" y="117" font-size="11.5" font-weight="700" fill="#0f172a">۴۵ ساعت مطالعه</text>
+  </g>
+</svg>

@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 450" width="100%" height="100%" style="font-family:'Peyda', 'Vazirmatn', system-ui, sans-serif; direction:rtl;">
+  <defs>
+    <linearGradient id="chartBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <linearGradient id="barBio" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="barChem" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="barPhys" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="barMath" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+    <filter id="shadow2" x="-8%" y="-8%" width="116%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0753a8" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect x="10" y="10" width="500" height="430" rx="24" fill="url(#chartBg)" stroke="#dbe7df" stroke-width="2" filter="url(#shadow2)"/>
+
+  <rect x="10" y="10" width="500" height="42" rx="24" fill="#f1f5f9"/>
+  <rect x="10" y="32" width="500" height="20" fill="#f1f5f9"/>
+  <circle cx="36" cy="31" r="5" fill="#ef4444"/>
+  <circle cx="52" cy="31" r="5" fill="#f59e0b"/>
+  <circle cx="68" cy="31" r="5" fill="#10b981"/>
+  <text x="260" y="36" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">تحلیل هوشمند عملکرد · نمودار ساعات مطالعه و تست‌ها</text>
+
+  <!-- 3 Mini Metric Cards -->
+  <g transform="translate(35, 64)">
+    <rect x="0" y="0" width="142" height="66" rx="12" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text x="130" y="24" font-size="11" font-weight="700" fill="#1e40af" text-anchor="end">میانگین روزانه</text>
+    <text x="130" y="52" font-size="20" font-weight="900" fill="#1e3a8a" text-anchor="end">۸.۵ ساعت</text>
+
+    <rect x="154" y="0" width="142" height="66" rx="12" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>
+    <text x="284" y="24" font-size="11" font-weight="700" fill="#166534" text-anchor="end">تست‌های هفته</text>
+    <text x="284" y="52" font-size="20" font-weight="900" fill="#14532d" text-anchor="end">۵۶۰ تست</text>
+
+    <rect x="308" y="0" width="142" height="66" rx="12" fill="#fef3c7" stroke="#fde68a" stroke-width="1"/>
+    <text x="438" y="24" font-size="11" font-weight="700" fill="#92400e" text-anchor="end">تطابق با برنامه</text>
+    <text x="438" y="52" font-size="20" font-weight="900" fill="#78350f" text-anchor="end">۹۴٪ (عالی)</text>
+  </g>
+
+  <!-- Bar Chart Canvas -->
+  <rect x="35" y="142" width="450" height="198" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="470" y="166" font-size="12" font-weight="800" fill="#0f172a" text-anchor="end">روند مطالعه دروس در روزهای هفته (ساعت)</text>
+
+  <!-- Chart Legends -->
+  <g transform="translate(35, 155)">
+    <circle cx="20" cy="8" r="4" fill="#10b981"/>
+    <text x="32" y="12" font-size="10" font-weight="700" fill="#475569">زیست</text>
+    <circle cx="70" cy="8" r="4" fill="#3b82f6"/>
+    <text x="82" y="12" font-size="10" font-weight="700" fill="#475569">شیمی</text>
+    <circle cx="120" cy="8" r="4" fill="#f59e0b"/>
+    <text x="132" y="12" font-size="10" font-weight="700" fill="#475569">فیزیک</text>
+    <circle cx="170" cy="8" r="4" fill="#8b5cf6"/>
+    <text x="182" y="12" font-size="10" font-weight="700" fill="#475569">ریاضی</text>
+  </g>
+
+  <!-- Horizontal Grid Lines -->
+  <line x1="55" y1="200" x2="465" y2="200" stroke="#f1f5f9" stroke-width="1"/>
+  <line x1="55" y1="240" x2="465" y2="240" stroke="#f1f5f9" stroke-width="1"/>
+  <line x1="55" y1="280" x2="465" y2="280" stroke="#f1f5f9" stroke-width="1"/>
+  <line x1="55" y1="315" x2="465" y2="315" stroke="#cbd5e1" stroke-width="1.5"/>
+
+  <!-- Bars for Days (Saturday to Friday) -->
+  <!-- شنبه -->
+  <rect x="425" y="210" width="16" height="105" rx="4" fill="url(#barBio)"/>
+  <rect x="405" y="235" width="16" height="80" rx="4" fill="url(#barChem)"/>
+  <text x="423" y="330" font-size="10" font-weight="700" fill="#64748b" text-anchor="middle">شنبه</text>
+
+  <!-- یکشنبه -->
+  <rect x="365" y="220" width="16" height="95" rx="4" fill="url(#barPhys)"/>
+  <rect x="345" y="245" width="16" height="70" rx="4" fill="url(#barMath)"/>
+  <text x="363" y="330" font-size="10" font-weight="700" fill="#64748b" text-anchor="middle">۱شنبه</text>
+
+  <!-- دوشنبه -->
+  <rect x="305" y="195" width="16" height="120" rx="4" fill="url(#barBio)"/>
+  <rect x="285" y="225" width="16" height="90" rx="4" fill="url(#barChem)"/>
+  <text x="303" y="330" font-size="10" font-weight="700" fill="#64748b" text-anchor="middle">۲شنبه</text>
+
+  <!-- سه‌شنبه -->
+  <rect x="245" y="215" width="16" height="100" rx="4" fill="url(#barPhys)"/>
+  <rect x="225" y="230" width="16" height="85" rx="4" fill="url(#barMath)"/>
+  <text x="243" y="330" font-size="10" font-weight="700" fill="#64748b" text-anchor="middle">۳شنبه</text>
+
+  <!-- چهارشنبه -->
+  <rect x="185" y="190" width="16" height="125" rx="4" fill="url(#barBio)"/>
+  <rect x="165" y="220" width="16" height="95" rx="4" fill="url(#barChem)"/>
+  <text x="183" y="330" font-size="10" font-weight="700" fill="#64748b" text-anchor="middle">۴شنبه</text>
+
+  <!-- پنجشنبه -->
+  <rect x="125" y="180" width="16" height="135" rx="4" fill="url(#barBio)"/>
+  <rect x="105" y="205" width="16" height="110" rx="4" fill="url(#barPhys)"/>
+  <text x="123" y="330" font-size="10" font-weight="700" fill="#64748b" text-anchor="middle">۵شنبه</text>
+
+  <!-- جمعه -->
+  <rect x="65" y="240" width="16" height="75" rx="4" fill="url(#barMath)"/>
+  <text x="73" y="330" font-size="10" font-weight="700" fill="#64748b" text-anchor="middle">جمعه</text>
+
+  <!-- AI Diagnosis Insight Box -->
+  <rect x="35" y="352" width="450" height="66" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <circle cx="462" cy="385" r="12" fill="#0284c7"/>
+  <text x="462" y="390" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle">AI</text>
+  <text x="440" y="378" font-size="12" font-weight="800" fill="#0f172a" text-anchor="end">تحلیل هوشمند و پیش‌بینی قبولی:</text>
+  <text x="440" y="398" font-size="11" font-weight="600" fill="#475569" text-anchor="end">«تسلط عالی در زیست ۳ و حرکت‌شناسی فیزیک · پیشنهاد تمرکز بر تست‌های اسید-باز شیمی»</text>
+</svg>
