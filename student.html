@@ -9,13 +9,13 @@
 
     <link rel="stylesheet" href="css/fonts.css?v=20261019_3">
     <link rel="stylesheet" href="css/student.css?v=20261022_8">
-    <link rel="stylesheet" href="css/gatekeeper.css?v=20261022_1">
+    <link rel="stylesheet" href="css/gatekeeper.css?v=20261023_1">
 </head>
 
 <body>
 
     <!-- Payeh Security Gatekeeper (Zero-Flicker Protection & 1-2s Intro Animation) -->
-    <div id="payeh-gatekeeper">
+    <div id="payeh-gatekeeper" data-expected-role="student">
         <div class="payeh-gatekeeper-content">
             <div id="payeh-gatekeeper-lottie" class="payeh-gatekeeper-lottie-box"></div>
             <h1 class="payeh-gatekeeper-brand-title">
@@ -50,10 +50,7 @@
     </div>
 
     <script src="js/lottie.min.js"></script>
-    <script src="js/gatekeeper.js?v=20261022_1"></script>
-    <script>
-        initPayehGatekeeper({ expectedRole: 'student' });
-    </script>
+    <script src="js/gatekeeper.js?v=20261023_1"></script>
 
 <div class="payeh-student">
 

@@ -13,21 +13,47 @@
 
     let splashLottieInstance = null;
     let offlineLottieInstance = null;
+    let isInitialized = false;
 
     /**
-     * Render Lottie Animation safely
+     * Render Lottie Animation safely with optimized viewBox and playback speed
      */
-    function playLottie(containerId, isLoop = true) {
+    function playLottie(containerId, isLoop = true, speed = 1.8) {
         const container = document.getElementById(containerId);
         if (!container || !window.lottie) return null;
+
+        // Clear any previous contents
+        container.innerHTML = "";
+
         try {
-            return window.lottie.loadAnimation({
+            const anim = window.lottie.loadAnimation({
                 container: container,
                 renderer: "svg",
                 loop: isLoop,
                 autoplay: true,
                 animationData: LOTTIE_DATA
             });
+
+            if (anim) {
+                // At 1.8x speed, 414 frames at 120fps takes ~1.9s.
+                // The cursive "hello" finishes writing around frame 300 (~1.3s),
+                // then rests stably on screen for ~0.6s before fadeout.
+                anim.setSpeed(speed);
+
+                const fitViewBox = () => {
+                    const svg = container.querySelector("svg");
+                    if (svg) {
+                        svg.setAttribute("viewBox", "80 185 340 130");
+                        svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+                    }
+                };
+
+                anim.addEventListener("DOMLoaded", fitViewBox);
+                setTimeout(fitViewBox, 20);
+                setTimeout(fitViewBox, 100);
+            }
+
+            return anim;
         } catch (e) {
             console.warn("Lottie render error:", e);
             return null;
@@ -42,8 +68,14 @@
         if (!overlay) return;
         overlay.classList.add("is-active");
 
+        // Hide gatekeeper splash if active so offline overlay is interactive
+        const gk = document.getElementById("payeh-gatekeeper");
+        if (gk) {
+            gk.style.display = "none";
+        }
+
         if (!offlineLottieInstance) {
-            offlineLottieInstance = playLottie("payeh-offline-lottie", true);
+            offlineLottieInstance = playLottie("payeh-offline-lottie", true, 1.4);
         } else {
             try { offlineLottieInstance.play(); } catch (_) {}
         }
@@ -60,6 +92,12 @@
         if (offlineLottieInstance) {
             try { offlineLottieInstance.pause(); } catch (_) {}
         }
+        const gk = document.getElementById("payeh-gatekeeper");
+        if (gk) {
+            gk.style.display = "none";
+        }
+        document.documentElement.classList.add("payeh-authenticated");
+        document.body.classList.add("payeh-authenticated");
     }
 
     // Export offline controls to global scope
@@ -72,28 +110,26 @@
     });
 
     window.addEventListener("online", () => {
-        // Test connectivity with a lightweight ping
-        fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" })
+        fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" })
             .then(res => {
                 if (res.ok) {
                     hideOfflineOverlay();
                 }
             })
-            .catch(() => {
-                // Still unreachable
-            });
+            .catch(() => {});
     });
 
     /**
-     * Setup Retry button
+     * Setup Retry button safely
      */
-    document.addEventListener("DOMContentLoaded", () => {
+    function bindRetryButton() {
         const retryBtn = document.getElementById("payeh-offline-retry");
-        if (retryBtn) {
+        if (retryBtn && !retryBtn.dataset.bound) {
+            retryBtn.dataset.bound = "1";
             retryBtn.addEventListener("click", () => {
                 retryBtn.disabled = true;
                 retryBtn.textContent = "در حال بررسی اتصال...";
-                fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" })
+                fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" })
                     .then(res => {
                         if (res.ok) {
                             hideOfflineOverlay();
@@ -110,7 +146,13 @@
                     });
             });
         }
-    });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", bindRetryButton);
+    } else {
+        bindRetryButton();
+    }
 
     /**
      * Intercept fetch errors for offline states
@@ -130,29 +172,64 @@
 
     /**
      * Main Gatekeeper & Auth Guard
-     * @param {Object} options
-     * @param {string} options.expectedRole - 'student' | 'consultant' | 'manager'
-     * @param {number} [options.minSplashMs=1500] - 1-2 seconds display time (default 1500ms)
+     * @param {Object} [options]
+     * @param {string} [options.expectedRole] - 'student' | 'consultant' | 'manager'
+     * @param {number} [options.minSplashMs=1900] - 1-2 seconds display time (default 1900ms)
      */
     window.initPayehGatekeeper = function (options = {}) {
-        const expectedRole = options.expectedRole || "student";
-        const minSplashMs = options.minSplashMs || 1500; // Exact 1.5s as requested (1-2 seconds)
+        if (isInitialized) return;
+        isInitialized = true;
+
+        const path = (window.location.pathname || "").toLowerCase();
+        const gkElement = document.getElementById("payeh-gatekeeper");
+        const attrRole = gkElement ? gkElement.getAttribute("data-expected-role") : null;
+
+        const expectedRole = options.expectedRole || attrRole || (
+            path.includes("consultant") ? "consultant" :
+            path.includes("manager") ? "manager" : "student"
+        );
+
+        // Exact 1.8-2 seconds display time for the intro animation
+        const minSplashMs = options.minSplashMs || 1900;
         const startTime = Date.now();
 
-        // 1. Play Intro Lottie Animation right away
-        splashLottieInstance = playLottie("payeh-gatekeeper-lottie", true);
+        // 1. Play Intro Lottie Animation immediately with retry if lottie script is initializing
+        const startLottie = () => {
+            if (!splashLottieInstance) {
+                splashLottieInstance = playLottie("payeh-gatekeeper-lottie", true, 1.8);
+            }
+        };
 
-        // 2. Perform background Auth check
+        if (window.lottie) {
+            startLottie();
+        } else {
+            const checkLottie = setInterval(() => {
+                if (window.lottie) {
+                    clearInterval(checkLottie);
+                    startLottie();
+                }
+            }, 30);
+            setTimeout(() => clearInterval(checkLottie), 2000);
+        }
+
+        // 2. Perform background Auth check with AbortController (3s timeout limit)
+        const controller = new AbortController();
+        const fetchTimeout = setTimeout(() => {
+            try { controller.abort(); } catch (_) {}
+        }, 3000);
+
         const authPromise = fetch(`/api/auth/me/?_t=${Date.now()}`, {
-            credentials: "same-origin",
-            cache: "no-store"
+            credentials: "include",
+            cache: "no-store",
+            signal: controller.signal
         })
             .then(res => {
+                clearTimeout(fetchTimeout);
                 if (!res.ok) throw new Error("Unauthorized");
                 return res.json();
             })
             .catch(err => {
-                // If offline, show offline overlay
+                clearTimeout(fetchTimeout);
                 if (!navigator.onLine) {
                     showOfflineOverlay();
                 }
@@ -160,53 +237,93 @@
             });
 
         // 3. Coordinate minimum splash time with auth resolution
-        authPromise.then(user => {
-            const elapsed = Date.now() - startTime;
-            const remaining = Math.max(0, minSplashMs - elapsed);
+        let handled = false;
+        const resolveGatekeeper = (user) => {
+            if (handled) return;
+            handled = true;
 
-            setTimeout(() => {
-                if (!user) {
-                    // Critical security fix: NEVER show the dashboard!
-                    // Immediately redirect to login.html
-                    window.location.replace(`login.html?_t=${Date.now()}&unauthorized=1`);
+            if (!user) {
+                // If offline, stay in offline mode
+                if (!navigator.onLine) {
+                    showOfflineOverlay();
                     return;
                 }
+                // Redirect to login if unauthenticated
+                window.location.replace(`login.html?_t=${Date.now()}&unauthorized=1`);
+                return;
+            }
 
-                // Check role matching
-                let roleValid = false;
-                if (expectedRole === "student" && (user.role === "student" || user.role === "instructor")) {
-                    roleValid = true;
-                } else if (expectedRole === "consultant" && user.role === "consultant") {
-                    roleValid = true;
-                } else if (expectedRole === "manager" && (user.role === "manager" || user.role === "admin")) {
-                    roleValid = true;
-                }
+            // Check role matching
+            const userRole = String(user.role || "").toLowerCase().trim();
+            let roleValid = false;
+            if (expectedRole === "student" && (userRole === "student" || userRole === "instructor")) {
+                roleValid = true;
+            } else if (expectedRole === "consultant" && userRole === "consultant") {
+                roleValid = true;
+            } else if (expectedRole === "manager" && (userRole === "manager" || userRole === "admin")) {
+                roleValid = true;
+            }
 
-                if (!roleValid) {
-                    // Wrong role redirect without showing dashboard
-                    const dest = user.role === "consultant" ? "consultant.html" : (user.role === "manager" ? "manager.html" : "student.html");
+            const currentFile = (window.location.pathname.split("/").pop() || "student.html").toLowerCase();
+
+            if (!roleValid) {
+                const dest = (userRole === "consultant") ? "consultant.html" : ((userRole === "manager" || userRole === "admin") ? "manager.html" : "student.html");
+                // Avoid reloading the same page to prevent infinite redirect loops
+                if (dest !== currentFile) {
                     window.location.replace(`${dest}?_t=${Date.now()}`);
                     return;
                 }
+            }
 
-                // Caching user for downstream scripts to prevent duplicate fetches
-                window.__currentUser = user;
+            // Cache user for downstream scripts to prevent duplicate fetches
+            window.__currentUser = user;
 
-                // Auth passed! Safely reveal the dashboard
-                document.documentElement.classList.add("payeh-authenticated");
-                document.body.classList.add("payeh-authenticated");
+            // Auth passed! Safely reveal the dashboard
+            document.documentElement.classList.add("payeh-authenticated");
+            document.body.classList.add("payeh-authenticated");
 
-                const gk = document.getElementById("payeh-gatekeeper");
-                if (gk) {
-                    gk.classList.add("is-dismissed");
-                    setTimeout(() => {
-                        if (splashLottieInstance) {
-                            try { splashLottieInstance.destroy(); } catch (_) {}
-                        }
-                        gk.remove();
-                    }, 500);
-                }
+            const gk = document.getElementById("payeh-gatekeeper");
+            if (gk) {
+                gk.classList.add("is-dismissed");
+                setTimeout(() => {
+                    if (splashLottieInstance) {
+                        try { splashLottieInstance.destroy(); } catch (_) {}
+                    }
+                    gk.remove();
+                }, 450);
+            }
+        };
+
+        authPromise.then(user => {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, minSplashMs - elapsed);
+            setTimeout(() => {
+                resolveGatekeeper(user);
             }, remaining);
         });
+
+        // Hard safety timeout: under no circumstance keep splash screen stuck beyond 3.5s!
+        setTimeout(() => {
+            if (!handled) {
+                if (!navigator.onLine) {
+                    showOfflineOverlay();
+                } else {
+                    resolveGatekeeper(window.__currentUser || null);
+                }
+            }
+        }, 3500);
     };
+
+    // Auto-initialize immediately if gatekeeper markup is present in DOM
+    function autoInit() {
+        if (document.getElementById("payeh-gatekeeper")) {
+            window.initPayehGatekeeper();
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", autoInit);
+    } else {
+        autoInit();
+    }
 })();

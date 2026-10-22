@@ -78,8 +78,9 @@ body:not(.payeh-authenticated) .payeh-manager {
 }
 
 .payeh-gatekeeper-lottie-box {
-    width: 220px;
-    height: 220px;
+    width: 280px;
+    max-width: 90vw;
+    height: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -161,7 +162,7 @@ body:not(.payeh-authenticated) .payeh-manager {
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    z-index: 9999998;
+    z-index: 10000000;
     background: rgba(7, 19, 51, 0.85);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -210,8 +211,9 @@ body:not(.payeh-authenticated) .payeh-manager {
 }
 
 .payeh-offline-lottie-box {
-    width: 160px;
-    height: 160px;
+    width: 240px;
+    max-width: 90vw;
+    height: 120px;
     margin: 0 auto 12px;
 }
 
