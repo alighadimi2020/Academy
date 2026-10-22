@@ -788,7 +788,10 @@ p {
 }
 
 .payeh-hero__title-sub {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     margin-top: 16px;
     font-size: clamp(2.3rem, 5.2vw, 4.2rem);
     color: #ffffff;
@@ -796,6 +799,28 @@ p {
         3px 3px 0px #04091a,
         5px 5px 0px #071330,
         7px 7px 18px rgba(0, 0, 0, 0.95);
+    flex-wrap: wrap;
+}
+
+.payeh-hero__title-logo {
+    height: 1.7em;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    vertical-align: middle;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 16px rgba(255, 122, 0, 0.35));
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-block;
+    margin-bottom: -0.06em;
+}
+
+.payeh-hero__title-logo:hover {
+    transform: scale(1.08) rotate(-3deg);
+}
+
+.payeh-hero__title-text {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /* Blinking Yellow Heart */
