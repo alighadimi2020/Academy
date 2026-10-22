@@ -872,10 +872,12 @@ def study_timers_today(request):
     ).filter(
         Q(week_start_date=this_saturday) | Q(week_start_date__isnull=True)
     )
-    existing_timers = list(StudyTimer.objects.filter(student=request.user, study_date=today).order_by("created_at", "id"))
-    existing_plan_ids = {t.plan_id for t in existing_timers if t.plan_id}
+    all_today_timers = list(StudyTimer.objects.filter(student=request.user, study_date=today))
+    existing_plan_ids = {t.plan_id for t in all_today_timers if t.plan_id}
+    existing_timers = [t for t in all_today_timers if not t.is_deleted]
+    existing_timers.sort(key=lambda t: (t.created_at, t.id))
     
-    # Auto-initialize today's scheduled sessions as boxes if not already created
+    # Auto-initialize today's scheduled sessions as boxes if not already created or deleted
     if len(existing_timers) < 30:
         created_any = False
         for session in scheduled_sessions:
@@ -978,7 +980,7 @@ def study_timer_action(request):
         timer_id = data.get("timer_id")
         plan_id = data.get("plan_id")
         action = str(data.get("action", "")).strip()
-        if action not in {"start", "pause", "finish", "edit"}:
+        if action not in {"start", "pause", "finish", "edit", "delete"}:
             raise ValueError("عملیات نامعتبر است.")
     except (ValueError, TypeError, json.JSONDecodeError):
         return error("درخواست نامعتبر است.", 400)
@@ -1003,6 +1005,12 @@ def study_timer_action(request):
                 return error("درس انتخاب‌شده پیدا نشد.", 404)
         else:
             return error("شناسه باکس الزامی است.", 400)
+
+        if action == "delete":
+            timer.is_deleted = True
+            timer.running_since = None
+            timer.save(update_fields=("is_deleted", "running_since", "updated_at"))
+            return JsonResponse({"ok": True, "id": timer.id, "deleted": True})
 
         # Before midnight check: once delivered, no more modifications allowed
         if timer.delivered_at:
@@ -1226,6 +1234,27 @@ def study_report_edit(request, report_id):
         "manual_edits": report.manual_edits,
         "edits_remaining": 5 - report.manual_edits
     })
+
+
+@require_POST
+@csrf_protect
+@transaction.atomic
+def study_report_delete(request, report_id):
+    from .study_models import StudyReport
+    if not authenticated_role(request, {"student", "consultant", "manager", "support"}):
+        return error("دسترسی ندارید.", 403)
+    try:
+        if request.user.role == "student":
+            report = StudyReport.objects.select_for_update().get(pk=report_id, student=request.user)
+        elif request.user.role == "consultant":
+            report = StudyReport.objects.select_for_update().get(pk=report_id, consultant=request.user)
+        else:
+            report = StudyReport.objects.select_for_update().get(pk=report_id)
+    except StudyReport.DoesNotExist:
+        return error("گزارش پیدا نشد.", 404)
+
+    report.delete()
+    return JsonResponse({"ok": True, "id": report_id, "message": "گزارش با موفقیت حذف شد."})
 
 
 @csrf_protect

@@ -8,7 +8,7 @@
     <title>پنل دانش‌آموز | آکادمی پایه</title>
 
     <link rel="stylesheet" href="css/fonts.css?v=20261019_3">
-    <link rel="stylesheet" href="css/student.css?v=20261022_6">
+    <link rel="stylesheet" href="css/student.css?v=20261022_7">
 </head>
 
 <body>
@@ -1208,7 +1208,28 @@
     </div>
 </div>
 
-<script src="js/student.js?v=20261022_6"></script>
+<!-- Modal: Delete Confirmation -->
+<div class="student-glass-modal-backdrop" id="studentConfirmDeleteModal" style="display:none;" aria-hidden="true">
+    <div class="student-glass-modal-dialog student-confirm-modal-dialog">
+        <header class="student-glass-modal-header">
+            <div class="student-glass-modal-title-group">
+                <span class="payeh-badge-glow" style="background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.3);color:#ef4444;">هشدار حذف</span>
+                <h3 id="studentConfirmDeleteTitle">تأیید حذف</h3>
+            </div>
+            <button type="button" class="student-glass-modal-close" id="studentConfirmDeleteClose" title="انصراف">×</button>
+        </header>
+        <div class="student-glass-modal-body" style="padding:20px 24px;">
+            <p id="studentConfirmDeleteMessage" style="font-size:14px;color:#334155;line-height:1.7;margin:0 0 20px 0;"></p>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button type="button" id="studentConfirmDeleteCancelBtn" class="student-confirm-btn student-confirm-btn--cancel">انصراف</button>
+                <button type="button" id="studentConfirmDeleteOkBtn" class="student-confirm-btn student-confirm-btn--danger">بله، حذف شود</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/curriculum-data.js?v=20261022_7"></script>
+<script src="js/student.js?v=20261022_7"></script>
 
 </body>
 </html>

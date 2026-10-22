@@ -2117,6 +2117,87 @@ const initStudentApp = async () => {
             ];
             const allAvailableSubjects = Array.from(new Set([...planSubjects, ...curriculumSubjects]));
 
+            const getCurriculumData = () => {
+                return Array.isArray(window.CURRICULUM_DATA) ? window.CURRICULUM_DATA : [];
+            };
+
+            const findCurriculumItem = (subjectName) => {
+                const data = getCurriculumData();
+                if (!subjectName || !data.length) return null;
+                const clean = subjectName.trim().replace(/\s+/g, " ");
+                let item = data.find(c => c.title === clean);
+                if (item) return item;
+                item = data.find(c => c.title.includes(clean) || clean.includes(c.title));
+                if (item) return item;
+
+                const numMatch = clean.match(/[1-3۱-۳]/)?.[0];
+                const stdNum = numMatch ? numMatch.replace("۱", "1").replace("۲", "2").replace("۳", "3") : null;
+                for (const c of data) {
+                    if ((clean.includes("شیمی") && c.title.includes("شیمی")) && (!stdNum || c.title.includes(stdNum) || c.grade === (stdNum === "1" ? "10" : stdNum === "2" ? "11" : "12"))) return c;
+                    if ((clean.includes("زیست") && c.title.includes("زیست")) && (!stdNum || c.title.includes(stdNum) || c.grade === (stdNum === "1" ? "10" : stdNum === "2" ? "11" : "12"))) return c;
+                    if ((clean.includes("فیزیک") && c.title.includes("فیزیک")) && (!stdNum || c.title.includes(stdNum) || c.grade === (stdNum === "1" ? "10" : stdNum === "2" ? "11" : "12"))) return c;
+                    if (((clean.includes("ریاضی") || clean.includes("حسابان")) && (c.title.includes("ریاضی") || c.title.includes("حسابان"))) && (!stdNum || c.title.includes(stdNum) || c.grade === (stdNum === "1" ? "10" : stdNum === "2" ? "11" : "12"))) return c;
+                    if ((clean.includes("فارسی") || clean.includes("ادبیات")) && (c.title.includes("فارسی") || c.title.includes("ادبیات"))) return c;
+                    if (clean.includes("عربی") && c.title.includes("عربی")) return c;
+                    if ((clean.includes("انگلیسی") || clean.includes("زبان")) && c.title.includes("انگلیسی")) return c;
+                    if ((clean.includes("دینی") || clean.includes("دین و زندگی")) && (c.title.includes("دین") || c.title.includes("دینی"))) return c;
+                }
+                return null;
+            };
+
+            const showConfirmWarning = (message, title = "تأیید حذف") => {
+                return new Promise((resolve) => {
+                    const modal = document.getElementById("studentConfirmDeleteModal");
+                    const titleEl = document.getElementById("studentConfirmDeleteTitle");
+                    const msgEl = document.getElementById("studentConfirmDeleteMessage");
+                    const okBtn = document.getElementById("studentConfirmDeleteOkBtn");
+                    const cancelBtn = document.getElementById("studentConfirmDeleteCancelBtn");
+                    const closeBtn = document.getElementById("studentConfirmDeleteClose");
+
+                    if (!modal || !okBtn || !cancelBtn) {
+                        resolve(window.confirm(message));
+                        return;
+                    }
+
+                    if (titleEl) titleEl.textContent = title;
+                    if (msgEl) msgEl.textContent = message;
+
+                    modal.style.display = "flex";
+                    modal.setAttribute("aria-hidden", "false");
+
+                    const cleanup = () => {
+                        modal.style.display = "none";
+                        modal.setAttribute("aria-hidden", "true");
+                        okBtn.removeEventListener("click", onOk);
+                        cancelBtn.removeEventListener("click", onCancel);
+                        if (closeBtn) closeBtn.removeEventListener("click", onCancel);
+                        modal.removeEventListener("click", onBackdrop);
+                    };
+
+                    const onOk = () => {
+                        cleanup();
+                        resolve(true);
+                    };
+
+                    const onCancel = () => {
+                        cleanup();
+                        resolve(false);
+                    };
+
+                    const onBackdrop = (e) => {
+                        if (e.target === modal) {
+                            cleanup();
+                            resolve(false);
+                        }
+                    };
+
+                    okBtn.addEventListener("click", onOk);
+                    cancelBtn.addEventListener("click", onCancel);
+                    if (closeBtn) closeBtn.addEventListener("click", onCancel);
+                    modal.addEventListener("click", onBackdrop);
+                });
+            };
+
             const formatDuration = (mins) => {
                 if (!mins || mins <= 0) return "تعیین‌نشده";
                 const h = Math.floor(mins / 60);
@@ -2299,33 +2380,200 @@ const initStudentApp = async () => {
                 topbar.append(titleWrap, actions);
                 box.append(topbar);
 
-                // Add Box Panel
+                // Add Box Panel (Curriculum Cascading)
                 if (isAddingBox && timersList.length < 30) {
                     const addPanel = document.createElement("div");
                     addPanel.className = "study-add-panel";
 
-                    const select = document.createElement("select");
-                    allAvailableSubjects.forEach(s => {
-                        const opt = document.createElement("option");
-                        opt.value = s;
-                        opt.textContent = s;
-                        select.append(opt);
-                    });
-                    const customOpt = document.createElement("option");
-                    customOpt.value = "__custom__";
-                    customOpt.textContent = "سایر دروس (تایپ دستی)...";
-                    select.append(customOpt);
+                    const cascadeWrap = document.createElement("div");
+                    cascadeWrap.className = "study-curriculum-cascade";
 
-                    const customInput = document.createElement("input");
-                    customInput.type = "text";
-                    customInput.maxLength = 80;
-                    customInput.placeholder = "نام درس دلخواه را بنویسید";
-                    customInput.style.display = "none";
+                    const cascadeRow = document.createElement("div");
+                    cascadeRow.className = "study-cascade-row";
 
-                    select.addEventListener("change", () => {
-                        customInput.style.display = select.value === "__custom__" ? "inline-block" : "none";
-                        if (select.value === "__custom__") customInput.focus();
+                    // Col 1: Book / Subject
+                    const colBook = document.createElement("div");
+                    colBook.className = "study-cascade-col";
+                    const labelBook = document.createElement("label");
+                    labelBook.className = "study-cascade-label";
+                    labelBook.textContent = "کتاب / درس:";
+                    const selectBook = document.createElement("select");
+
+                    const curriculumList = getCurriculumData();
+                    if (curriculumList.length) {
+                        const groupCurric = document.createElement("optgroup");
+                        groupCurric.label = "سرفصل‌های آموزشی پایه";
+                        curriculumList.forEach(c => {
+                            const opt = document.createElement("option");
+                            opt.value = c.title;
+                            opt.textContent = c.title;
+                            groupCurric.append(opt);
+                        });
+                        selectBook.append(groupCurric);
+                    }
+
+                    const otherPlanSubjs = allAvailableSubjects.filter(s => !curriculumList.some(c => c.title === s));
+                    if (otherPlanSubjs.length) {
+                        const groupOther = document.createElement("optgroup");
+                        groupOther.label = "سایر دروس هفتگی";
+                        otherPlanSubjs.forEach(s => {
+                            const opt = document.createElement("option");
+                            opt.value = s;
+                            opt.textContent = s;
+                            groupOther.append(opt);
+                        });
+                        selectBook.append(groupOther);
+                    }
+
+                    const customBookOpt = document.createElement("option");
+                    customBookOpt.value = "__custom__";
+                    customBookOpt.textContent = "✏ سایر دروس (تایپ دستی)...";
+                    selectBook.append(customBookOpt);
+
+                    const customBookInput = document.createElement("input");
+                    customBookInput.type = "text";
+                    customBookInput.maxLength = 80;
+                    customBookInput.placeholder = "نام درس دلخواه را بنویسید";
+                    customBookInput.style.display = "none";
+                    colBook.append(labelBook, selectBook, customBookInput);
+
+                    // Col 2: Chapter
+                    const colChapter = document.createElement("div");
+                    colChapter.className = "study-cascade-col";
+                    const labelChapter = document.createElement("label");
+                    labelChapter.className = "study-cascade-label";
+                    labelChapter.textContent = "فصل درس:";
+                    const selectChapter = document.createElement("select");
+                    const customChapterInput = document.createElement("input");
+                    customChapterInput.type = "text";
+                    customChapterInput.maxLength = 120;
+                    customChapterInput.placeholder = "نام فصل دلخواه را بنویسید";
+                    customChapterInput.style.display = "none";
+                    colChapter.append(labelChapter, selectChapter, customChapterInput);
+
+                    // Col 3: Topic / Lesson
+                    const colTopic = document.createElement("div");
+                    colTopic.className = "study-cascade-col";
+                    const labelTopic = document.createElement("label");
+                    labelTopic.className = "study-cascade-label";
+                    labelTopic.textContent = "مبحث / گفتار / درسنامه:";
+                    const selectTopic = document.createElement("select");
+                    const customTopicInput = document.createElement("input");
+                    customTopicInput.type = "text";
+                    customTopicInput.maxLength = 150;
+                    customTopicInput.placeholder = "توضیح یا مبحث دلخواه را بنویسید";
+                    customTopicInput.style.display = "none";
+                    colTopic.append(labelTopic, selectTopic, customTopicInput);
+
+                    cascadeRow.append(colBook, colChapter, colTopic);
+
+                    function updateChapters() {
+                        selectChapter.replaceChildren();
+                        customChapterInput.style.display = "none";
+                        const selectedBook = selectBook.value;
+                        if (selectedBook === "__custom__") {
+                            customBookInput.style.display = "block";
+                            colChapter.style.display = "none";
+                            colTopic.style.display = "none";
+                            return;
+                        }
+                        customBookInput.style.display = "none";
+                        colChapter.style.display = "flex";
+                        colTopic.style.display = "flex";
+
+                        const item = findCurriculumItem(selectedBook);
+                        const chapters = item ? (item.chapters || []) : [];
+
+                        const defaultOpt = document.createElement("option");
+                        defaultOpt.value = "";
+                        defaultOpt.textContent = "— کل کتاب / بدون فصل خاص —";
+                        selectChapter.append(defaultOpt);
+
+                        chapters.forEach(ch => {
+                            const opt = document.createElement("option");
+                            opt.value = ch.title;
+                            opt.textContent = ch.title;
+                            selectChapter.append(opt);
+                        });
+
+                        const allChOpt = document.createElement("option");
+                        allChOpt.value = "تمام فصل‌ها / مرور کلی";
+                        allChOpt.textContent = "تمام فصل‌ها / مرور کلی";
+                        selectChapter.append(allChOpt);
+
+                        const customChOpt = document.createElement("option");
+                        customChOpt.value = "__custom_ch__";
+                        customChOpt.textContent = "✏ تایپ دستی فصل...";
+                        selectChapter.append(customChOpt);
+
+                        updateTopics();
+                    }
+
+                    function updateTopics() {
+                        selectTopic.replaceChildren();
+                        customTopicInput.style.display = "none";
+
+                        const selectedBook = selectBook.value;
+                        const selectedChTitle = selectChapter.value;
+
+                        if (selectedChTitle === "__custom_ch__") {
+                            customChapterInput.style.display = "block";
+                            customChapterInput.focus();
+                        } else {
+                            customChapterInput.style.display = "none";
+                        }
+
+                        if (!selectedChTitle || selectedChTitle === "تمام فصل‌ها / مرور کلی" || selectedChTitle === "__custom_ch__") {
+                            const opt = document.createElement("option");
+                            opt.value = "";
+                            opt.textContent = selectedChTitle === "تمام فصل‌ها / مرور کلی" ? "مرور کلی و تست جامع" : "— بدون مبحث خاص —";
+                            selectTopic.append(opt);
+
+                            const customTopOpt = document.createElement("option");
+                            customTopOpt.value = "__custom_top__";
+                            customTopOpt.textContent = "✏ تایپ دستی مبحث...";
+                            selectTopic.append(customTopOpt);
+                            return;
+                        }
+
+                        const item = findCurriculumItem(selectedBook);
+                        const chapterObj = item?.chapters?.find(c => c.title === selectedChTitle);
+                        const topics = chapterObj ? (chapterObj.topics || []) : [];
+
+                        const defaultOpt = document.createElement("option");
+                        defaultOpt.value = "";
+                        defaultOpt.textContent = "— کل مباحث این فصل —";
+                        selectTopic.append(defaultOpt);
+
+                        topics.forEach(t => {
+                            const opt = document.createElement("option");
+                            opt.value = t;
+                            opt.textContent = t;
+                            selectTopic.append(opt);
+                        });
+
+                        const customTopOpt = document.createElement("option");
+                        customTopOpt.value = "__custom_top__";
+                        customTopOpt.textContent = "✏ تایپ دستی مبحث...";
+                        selectTopic.append(customTopOpt);
+                    }
+
+                    selectBook.addEventListener("change", updateChapters);
+                    selectChapter.addEventListener("change", updateTopics);
+                    selectTopic.addEventListener("change", () => {
+                        if (selectTopic.value === "__custom_top__") {
+                            customTopicInput.style.display = "block";
+                            customTopicInput.focus();
+                        } else {
+                            customTopicInput.style.display = "none";
+                        }
                     });
+
+                    updateChapters();
+
+                    // Actions Row
+                    const cascadeActions = document.createElement("div");
+                    cascadeActions.className = "study-cascade-actions";
 
                     const submitBtn = document.createElement("button");
                     submitBtn.type = "button";
@@ -2345,15 +2593,37 @@ const initStudentApp = async () => {
                     msg.style.color = "#c0392b";
 
                     submitBtn.addEventListener("click", async () => {
-                        let finalSubject = select.value === "__custom__" ? customInput.value.trim() : select.value.trim();
+                        let finalSubject = selectBook.value === "__custom__" 
+                            ? customBookInput.value.trim() 
+                            : selectBook.value.trim();
                         if (!finalSubject) {
-                            msg.textContent = "نام درس را وارد کنید.";
+                            msg.textContent = "نام درس را وارد یا انتخاب کنید.";
                             return;
                         }
                         if (finalSubject.length > 80) {
                             msg.textContent = "نام درس حداکثر ۸۰ کاراکتر است.";
                             return;
                         }
+
+                        let chVal = selectChapter.value === "__custom_ch__" 
+                            ? customChapterInput.value.trim() 
+                            : selectChapter.value.trim();
+                        let topVal = selectTopic.value === "__custom_top__" 
+                            ? customTopicInput.value.trim() 
+                            : selectTopic.value.trim();
+
+                        let finalTopic = "";
+                        if (chVal && topVal && topVal !== "— کل مباحث این فصل —") {
+                            finalTopic = `${chVal} - ${topVal}`;
+                        } else if (chVal) {
+                            finalTopic = chVal;
+                        } else if (topVal) {
+                            finalTopic = topVal;
+                        }
+                        if (finalTopic.length > 250) {
+                            finalTopic = finalTopic.substring(0, 250);
+                        }
+
                         submitBtn.disabled = true;
                         msg.textContent = "در حال ایجاد باکس...";
                         try {
@@ -2362,7 +2632,7 @@ const initStudentApp = async () => {
                                 method: "POST",
                                 credentials: "same-origin",
                                 headers: { "Content-Type": "application/json", "X-CSRFToken": token },
-                                body: JSON.stringify({ subject: finalSubject })
+                                body: JSON.stringify({ subject: finalSubject, topic: finalTopic })
                             });
                             const d = await r.json();
                             if (!r.ok) throw new Error(d.detail || "ایجاد باکس انجام نشد.");
@@ -2378,7 +2648,9 @@ const initStudentApp = async () => {
                         }
                     });
 
-                    addPanel.append(select, customInput, submitBtn, cancelBtn, msg);
+                    cascadeActions.append(submitBtn, cancelBtn, msg);
+                    cascadeWrap.append(cascadeRow, cascadeActions);
+                    addPanel.append(cascadeWrap);
                     box.append(addPanel);
                 }
 
@@ -2422,11 +2694,31 @@ const initStudentApp = async () => {
 
                     subjWrap.append(subjStrong, editSubjBtn);
 
+                    const headerActions = document.createElement("div");
+                    headerActions.className = "study-box-header-actions";
+
                     const tag = document.createElement("span");
                     tag.className = `study-box-tag ${timer.is_planned ? "study-box-tag--planned" : "study-box-tag--extra"}`;
                     tag.textContent = timer.is_planned ? "برنامهٔ امروز" : "مطالعهٔ آزاد";
 
-                    header.append(subjWrap, tag);
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.type = "button";
+                    deleteBtn.className = "study-box-delete-btn";
+                    deleteBtn.title = "حذف این باکس مطالعه";
+                    deleteBtn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+                    deleteBtn.disabled = Boolean(timer.delivered);
+
+                    deleteBtn.addEventListener("click", async () => {
+                        const confirmed = await showConfirmWarning(
+                            `آیا از حذف باکس مطالعه «${timer.subject}» اطمینان دارید؟ در صورت حذف، این باکس از برنامه امروز پاک خواهد شد.`,
+                            "تأیید حذف باکس مطالعه"
+                        );
+                        if (!confirmed) return;
+                        await performAction(timer.id, "delete");
+                    });
+
+                    headerActions.append(tag, deleteBtn);
+                    header.append(subjWrap, headerActions);
                     card.append(header);
 
                     // Inline Subject Edit Container (hidden by default)
@@ -2477,28 +2769,102 @@ const initStudentApp = async () => {
                     topicRow.append(topicInfo, editTopicBtn);
                     card.append(topicRow);
 
-                    // Inline Topic Edit Container (hidden by default)
+                    // Inline Topic & Chapter Edit Container with Curriculum picker
                     const topicEditRow = document.createElement("div");
-                    topicEditRow.className = "study-box-inline-edit";
+                    topicEditRow.className = "study-box-topic-edit-block";
                     topicEditRow.style.display = "none";
-                    topicEditRow.innerHTML = `
-                        <input type="text" class="study-box-inline-input" placeholder="مبحث یا فصل مطالعه (مثلاً: فصل ۲ - گوارش)" value="${timer.topic ? String(timer.topic).replace(/"/g, '&quot;') : ''}" maxlength="255">
-                        <button type="button" class="study-box-inline-save">ذخیره</button>
-                        <button type="button" class="study-box-inline-cancel">انصراف</button>
-                    `;
+
+                    const currItem = findCurriculumItem(timer.subject);
+                    const chapters = currItem ? (currItem.chapters || []) : [];
+
+                    const cascadeEditRow = document.createElement("div");
+                    cascadeEditRow.className = "study-topic-edit-row";
+
+                    const editChapterSelect = document.createElement("select");
+                    editChapterSelect.innerHTML = `<option value="">— انتخاب فصل از سرفصل‌ها —</option>` +
+                        chapters.map(ch => `<option value="${ch.title}">${ch.title}</option>`).join("") +
+                        `<option value="__custom_ch__">✏ سایر فصل‌ها (تایپ دستی)...</option>`;
+
+                    const editTopicSelect = document.createElement("select");
+                    editTopicSelect.innerHTML = `<option value="">— انتخاب مبحث / گفتار —</option>`;
+
+                    function populateEditTopics() {
+                        editTopicSelect.replaceChildren();
+                        const chTitle = editChapterSelect.value;
+                        const defaultOpt = document.createElement("option");
+                        defaultOpt.value = "";
+                        defaultOpt.textContent = "— انتخاب مبحث / گفتار —";
+                        editTopicSelect.append(defaultOpt);
+
+                        if (!chTitle || chTitle === "__custom_ch__") return;
+                        const chObj = chapters.find(c => c.title === chTitle);
+                        if (chObj && chObj.topics) {
+                            chObj.topics.forEach(t => {
+                                const opt = document.createElement("option");
+                                opt.value = t;
+                                opt.textContent = t;
+                                editTopicSelect.append(opt);
+                            });
+                        }
+                    }
+
+                    const textInput = document.createElement("input");
+                    textInput.type = "text";
+                    textInput.maxLength = 255;
+                    textInput.placeholder = "عنوان مبحث یا فصل...";
+                    textInput.value = timer.topic || "";
+
+                    editChapterSelect.addEventListener("change", () => {
+                        populateEditTopics();
+                        if (editChapterSelect.value && editChapterSelect.value !== "__custom_ch__") {
+                            textInput.value = editChapterSelect.value;
+                        }
+                    });
+
+                    editTopicSelect.addEventListener("change", () => {
+                        if (editTopicSelect.value) {
+                            const ch = editChapterSelect.value && editChapterSelect.value !== "__custom_ch__" ? editChapterSelect.value : "";
+                            textInput.value = ch ? `${ch} - ${editTopicSelect.value}` : editTopicSelect.value;
+                        }
+                    });
+
+                    if (chapters.length > 0) {
+                        cascadeEditRow.append(editChapterSelect, editTopicSelect);
+                    }
+                    cascadeEditRow.append(textInput);
+
+                    const editActionsRow = document.createElement("div");
+                    editActionsRow.className = "study-topic-edit-actions";
+
+                    const saveBtn = document.createElement("button");
+                    saveBtn.type = "button";
+                    saveBtn.className = "study-box-inline-save";
+                    saveBtn.textContent = "ذخیره مبحث";
+
+                    const cancelBtn = document.createElement("button");
+                    cancelBtn.type = "button";
+                    cancelBtn.className = "study-box-inline-cancel";
+                    cancelBtn.textContent = "انصراف";
+
+                    editActionsRow.append(cancelBtn, saveBtn);
+                    topicEditRow.append(cascadeEditRow, editActionsRow);
+
                     editTopicBtn.addEventListener("click", () => {
                         topicEditRow.style.display = topicEditRow.style.display === "none" ? "flex" : "none";
                         if (topicEditRow.style.display === "flex") {
-                            topicEditRow.querySelector(".study-box-inline-input").focus();
+                            textInput.focus();
                         }
                     });
-                    topicEditRow.querySelector(".study-box-inline-cancel").addEventListener("click", () => {
+
+                    cancelBtn.addEventListener("click", () => {
                         topicEditRow.style.display = "none";
                     });
-                    topicEditRow.querySelector(".study-box-inline-save").addEventListener("click", async () => {
-                        const newTopic = topicEditRow.querySelector(".study-box-inline-input").value.trim();
+
+                    saveBtn.addEventListener("click", async () => {
+                        const newTopic = textInput.value.trim();
                         await performAction(timer.id, "edit", null, timer.notes || "", { topic: newTopic });
                     });
+
                     card.append(topicEditRow);
 
                     if (timer.is_planned && timer.planned_minutes) {
@@ -2767,6 +3133,12 @@ const initStudentApp = async () => {
                     const d = await r.json();
                     if (!r.ok) throw new Error(d.detail || `خطا در ثبت (${r.status})`);
 
+                    if (actionName === "delete") {
+                        timersList = timersList.filter(t => t.id !== timerId);
+                        renderTodayBoxes();
+                        return true;
+                    }
+
                     // If starting, pause any other running timer locally
                     if (actionName === "start") {
                         timersList.forEach(t => {
@@ -2852,7 +3224,42 @@ const initStudentApp = async () => {
             date.className = "student-glass-card__date";
             date.textContent = formatJalali(x.study_date);
 
-            header.append(subj, date);
+            const delReportBtn = document.createElement("button");
+            delReportBtn.type = "button";
+            delReportBtn.className = "student-report-delete-btn";
+            delReportBtn.title = "حذف این گزارش مطالعه";
+            delReportBtn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+
+            delReportBtn.addEventListener("click", async (e) => {
+                e.stopPropagation();
+                const confirmed = await showConfirmWarning(
+                    `آیا از حذف گزارش مطالعه «${x.subject}» مربوط به تاریخ ${formatJalali(x.study_date)} اطمینان دارید؟`,
+                    "تأیید حذف گزارش مطالعه"
+                );
+                if (!confirmed) return;
+
+                try {
+                    const token = await csrf();
+                    const res = await fetch(`/api/consultations/study-reports/${x.id}/delete/`, {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: { "Content-Type": "application/json", "X-CSRFToken": token }
+                    });
+                    const d = await res.json();
+                    if (!res.ok) throw new Error(d.detail || "خطا در حذف گزارش");
+
+                    allReports = allReports.filter(r => r.id !== x.id);
+                    renderPastReportsRail(allReports);
+                    if (modal && modal.style.display === "flex" && modalBody) {
+                        modalBody.replaceChildren();
+                        allReports.forEach(rep => modalBody.append(createReportCard(rep)));
+                    }
+                } catch (err) {
+                    alert(err.message || "خطا در حذف گزارش");
+                }
+            });
+
+            header.append(subj, date, delReportBtn);
 
             const topicEl = document.createElement("div");
             topicEl.className = "student-glass-card__topic";

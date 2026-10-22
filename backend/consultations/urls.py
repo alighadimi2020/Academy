@@ -14,6 +14,7 @@ urlpatterns = [
     path("study-timers/create-box/", views.study_timer_create_box, name="study-timer-create-box"),
     path("study-reports/", views.study_reports, name="study-reports"),
     path("study-reports/<int:report_id>/edit/", views.study_report_edit, name="study-report-edit"),
+    path("study-reports/<int:report_id>/delete/", views.study_report_delete, name="study-report-delete"),
     path("marketplace/", views.marketplace, name="consultation-marketplace"),
     path("profile/", views.consultant_profile, name="consultant-own-profile"),
     path("manage/", views.manager_overview, name="consultation-manager-overview"),

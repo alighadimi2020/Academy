@@ -35,6 +35,7 @@ class StudyTimer(models.Model):
     manual_edits = models.PositiveSmallIntegerField(default=0)
     test_count = models.PositiveIntegerField(default=0)
     notes = models.CharField(max_length=1000, blank=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 

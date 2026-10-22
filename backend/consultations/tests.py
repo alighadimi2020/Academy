@@ -153,3 +153,38 @@ class StudyTimerAndReportsTests(TestCase):
         self.assertEqual(res.json()["manual_edits"], 1)
         self.assertEqual(res.json()["elapsed_seconds"], 2400)
 
+    def test_delete_study_timer(self):
+        self.client.force_login(self.student_user)
+        res = self.client.post("/api/consultations/study-timers/create-box/", data={"subject": "شیمی ۱", "topic": "فصل ۱"}, content_type="application/json")
+        self.assertEqual(res.status_code, 201)
+        t_id = res.json()["id"]
+
+        # Verify today timers contains this box
+        today_res = self.client.get("/api/consultations/study-timers/today/")
+        self.assertTrue(any(t["id"] == t_id for t in today_res.json()["results"]))
+
+        # Delete the timer box
+        del_res = self.client.post("/api/consultations/study-timers/action/", data={"timer_id": t_id, "action": "delete"}, content_type="application/json")
+        self.assertEqual(del_res.status_code, 200)
+        self.assertTrue(del_res.json()["deleted"])
+
+        # Verify today timers no longer returns the box
+        today_res2 = self.client.get("/api/consultations/study-timers/today/")
+        self.assertFalse(any(t["id"] == t_id for t in today_res2.json()["results"]))
+
+    def test_delete_study_report(self):
+        self.client.force_login(self.student_user)
+        report = StudyReport.objects.create(
+            student=self.student_user,
+            consultant=self.consultant_user,
+            study_date=_tehran_today(),
+            subject="زیست‌شناسی",
+            topic="فصل ۲",
+            minutes=75
+        )
+        res = self.client.post(f"/api/consultations/study-reports/{report.id}/delete/")
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(res.json()["ok"])
+        self.assertFalse(StudyReport.objects.filter(pk=report.id).exists())
+
+

@@ -5015,4 +5015,210 @@ body.payeh-sidebar-locked {
     }
 }
 
+/* ==========================================================================
+   Curriculum Cascading Picker & Delete Buttons with Confirmation
+   ========================================================================== */
+
+.study-box-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.study-box-delete-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1px solid #fee2e2;
+    background: #fef2f2;
+    color: #ef4444;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all .2s;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.study-box-delete-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+    transform: scale(1.06);
+}
+
+.study-box-delete-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.student-report-delete-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: rgba(254, 242, 242, 0.85);
+    color: #ef4444;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all .2s;
+    flex-shrink: 0;
+    padding: 0;
+    margin-right: auto;
+}
+
+.student-report-delete-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+    transform: scale(1.08);
+}
+
+/* Confirmation Modal Dialog */
+.student-confirm-modal-dialog {
+    max-width: 440px !important;
+    border-radius: 18px !important;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.2) !important;
+}
+
+.student-confirm-btn {
+    padding: 9px 18px;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all .2s;
+    border: none;
+}
+
+.student-confirm-btn--cancel {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+.student-confirm-btn--cancel:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.student-confirm-btn--danger {
+    background: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.student-confirm-btn--danger:hover {
+    background: #dc2626;
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+}
+
+/* Add Box Curriculum Cascade */
+.study-curriculum-cascade {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.study-cascade-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    width: 100%;
+}
+
+.study-cascade-col {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.study-cascade-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #334155;
+}
+
+.study-cascade-col select,
+.study-cascade-col input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #ccd8cf;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 12.5px;
+    color: #1e293b;
+    background: #fff;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    box-sizing: border-box;
+}
+
+.study-cascade-col select:focus,
+.study-cascade-col input:focus {
+    border-color: #278555;
+    box-shadow: 0 0 0 2px rgba(39, 133, 85, 0.15);
+}
+
+.study-cascade-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+/* Topic / Chapter Edit Block on Card */
+.study-box-topic-edit-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    background: #ffffff;
+    border: 1px solid #dce8e0;
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.study-topic-edit-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+    width: 100%;
+}
+
+.study-topic-edit-row select,
+.study-topic-edit-row input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ccd8cf;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12px;
+    color: #1e293b;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.study-topic-edit-row select:focus,
+.study-topic-edit-row input:focus {
+    border-color: #278555;
+    box-shadow: 0 0 0 2px rgba(39, 133, 85, 0.12);
+}
+
+.study-topic-edit-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+
 
