@@ -9,9 +9,51 @@
 
     <link rel="stylesheet" href="css/fonts.css?v=20261019_3">
     <link rel="stylesheet" href="css/student.css?v=20261022_8">
+    <link rel="stylesheet" href="css/gatekeeper.css?v=20261022_1">
 </head>
 
 <body>
+
+    <!-- Payeh Security Gatekeeper (Zero-Flicker Protection & 1-2s Intro Animation) -->
+    <div id="payeh-gatekeeper">
+        <div class="payeh-gatekeeper-content">
+            <div id="payeh-gatekeeper-lottie" class="payeh-gatekeeper-lottie-box"></div>
+            <h1 class="payeh-gatekeeper-brand-title">
+                <span>آکادمی</span> <span class="gold-text">پایه</span>
+            </h1>
+            <p class="payeh-gatekeeper-msg" id="payeh-gatekeeper-msg">در حال بررسی و ورود به پنل دانش‌آموز...</p>
+            <div class="payeh-gatekeeper-bar-wrap">
+                <div class="payeh-gatekeeper-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payeh Offline / Network Interruption Fullscreen Overlay -->
+    <div id="payeh-offline-overlay" role="alertdialog" aria-modal="true" aria-labelledby="payeh-offline-title">
+        <div class="payeh-offline-card">
+            <div id="payeh-offline-lottie" class="payeh-offline-lottie-box"></div>
+            <div class="payeh-offline-badge">
+                <span class="payeh-offline-dot-red"></span>
+                <span>قطعی موقت اینترنت</span>
+            </div>
+            <h2 class="payeh-offline-title" id="payeh-offline-title">اتصال به اینترنت برقرار نیست</h2>
+            <p class="payeh-offline-desc">ارتباط شما با سامانه قطع شده است. لطفاً اتصال اینترنت خود را بررسی کنید. به محض اتصال مجدد، سیستم به‌طور خودکار همگام خواهد شد.</p>
+            <button type="button" class="payeh-offline-retry-btn" id="payeh-offline-retry">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <span>تلاش مجدد برای اتصال</span>
+            </button>
+            <div class="payeh-offline-auto-check">
+                <div class="payeh-offline-spinner"></div>
+                <span>در حال پایش و اتصال خودکار شبکه...</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/lottie.min.js"></script>
+    <script src="js/gatekeeper.js?v=20261022_1"></script>
+    <script>
+        initPayehGatekeeper({ expectedRole: 'student' });
+    </script>
 
 <div class="payeh-student">
 

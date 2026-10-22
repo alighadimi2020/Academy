@@ -332,9 +332,12 @@ const initConsultantApp = async () => {
         finally { location.replace(`login.html?_t=${Date.now()}`); }
     });
     try {
-        const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
-        if (!meResponse.ok) { location.assign("login.html"); return; }
-        const user = await meResponse.json();
+        let user = window.__currentUser;
+        if (!user) {
+            const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
+            if (!meResponse.ok) { location.assign("login.html"); return; }
+            user = await meResponse.json();
+        }
         if (user.role !== "consultant") { location.assign(user.role === "student" ? "student.html" : "manager.html"); return; }
         const consultantName = user.full_name || "مشاور";
         ["consultant-account-name", "consultant-header-name"].forEach((id) => { const node = document.getElementById(id); if (node) node.textContent = consultantName; });

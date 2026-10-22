@@ -757,9 +757,12 @@ const initManagerApp = async () => {
         }
     });
 
-    const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
-    if (!meResponse.ok) { location.assign("login.html"); return; }
-    const me = await meResponse.json();
+    let me = window.__currentUser;
+    if (!me) {
+        const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
+        if (!meResponse.ok) { location.assign("login.html"); return; }
+        me = await meResponse.json();
+    }
     if (!["manager", "admin"].includes(me.role)) { location.assign(me.role === "student" ? "student.html" : "consultant.html"); return; }
 
     const mgrHeaderName = document.getElementById("manager-header-name");

@@ -1,0 +1,317 @@
+/* ==========================================================================
+   Payeh Academy - Gatekeeper & Offline Protection Stylesheet
+   Prevents any FOUC (Flash of Unauthenticated Content)
+   Provides 1-2s intro Lottie animation and offline network detection
+   ========================================================================== */
+
+/* 1. Prevent Dashboard Flash by default until authenticated */
+html:not(.payeh-authenticated) .payeh-student,
+html:not(.payeh-authenticated) .payeh-consultant,
+html:not(.payeh-authenticated) .payeh-manager,
+body:not(.payeh-authenticated) .payeh-student,
+body:not(.payeh-authenticated) .payeh-consultant,
+body:not(.payeh-authenticated) .payeh-manager {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+.payeh-authenticated .payeh-student,
+.payeh-authenticated .payeh-consultant,
+.payeh-authenticated .payeh-manager {
+    animation: payehAppFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes payehAppFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 2. Fullscreen Gatekeeper Intro Splash Screen */
+#payeh-gatekeeper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 9999999;
+    background: #FFFCF5;
+    background: radial-gradient(circle at 50% 35%, #FFFFFF 0%, #FFF8E7 60%, #FFF3D6 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    direction: rtl;
+    font-family: 'Vazirmatn', 'Vazir', -apple-system, BlinkMacSystemFont, sans-serif;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: all;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#payeh-gatekeeper.is-dismissed {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+.payeh-gatekeeper-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 360px;
+    padding: 24px;
+}
+
+.payeh-gatekeeper-lottie-box {
+    width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    filter: drop-shadow(0 12px 24px rgba(7, 83, 168, 0.12));
+}
+
+.payeh-gatekeeper-lottie-box svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.payeh-gatekeeper-brand-title {
+    margin: 10px 0 6px;
+    font-size: 22px;
+    font-weight: 900;
+    color: #07143D;
+    letter-spacing: -0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.payeh-gatekeeper-brand-title span.gold-text {
+    background: linear-gradient(135deg, #FFD600 0%, #D97706 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.payeh-gatekeeper-msg {
+    margin: 0 0 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748B;
+    line-height: 1.6;
+}
+
+.payeh-gatekeeper-bar-wrap {
+    width: 180px;
+    height: 5px;
+    border-radius: 99px;
+    background: rgba(7, 83, 168, 0.08);
+    overflow: hidden;
+    position: relative;
+}
+
+.payeh-gatekeeper-bar {
+    width: 45%;
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #0B3DFF 0%, #FFD600 100%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: payehGatekeeperSlide 1.2s infinite ease-in-out;
+}
+
+@keyframes payehGatekeeperSlide {
+    0% {
+        left: -45%;
+        width: 30%;
+    }
+    50% {
+        width: 60%;
+    }
+    100% {
+        left: 100%;
+        width: 30%;
+    }
+}
+
+/* 3. Offline / Network Interruption Fullscreen Overlay */
+#payeh-offline-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 9999998;
+    background: rgba(7, 19, 51, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    direction: rtl;
+    font-family: 'Vazirmatn', 'Vazir', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#payeh-offline-overlay.is-active {
+    display: flex !important;
+    opacity: 1 !important;
+}
+
+.payeh-offline-card {
+    background: #FFFFFF;
+    border: 1.5px solid rgba(255, 255, 255, 0.8);
+    border-radius: 26px;
+    padding: 34px 28px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: payehModalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes payehModalPop {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.payeh-offline-lottie-box {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 12px;
+}
+
+.payeh-offline-lottie-box svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.payeh-offline-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 14px;
+    border-radius: 99px;
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    color: #DC2626;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.payeh-offline-dot-red {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #DC2626;
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    animation: payehRedPulse 1.8s infinite;
+}
+
+@keyframes payehRedPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+.payeh-offline-title {
+    margin: 0 0 8px;
+    font-size: 19px;
+    font-weight: 900;
+    color: #0F172A;
+}
+
+.payeh-offline-desc {
+    margin: 0 0 22px;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: #64748B;
+    font-weight: 500;
+}
+
+.payeh-offline-retry-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 22px;
+    border-radius: 14px;
+    border: none;
+    background: #0B3DFF;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(11, 61, 255, 0.25);
+    transition: all 0.2s ease;
+}
+
+.payeh-offline-retry-btn:hover {
+    background: #0834D6;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(11, 61, 255, 0.35);
+}
+
+.payeh-offline-retry-btn:active {
+    transform: translateY(0);
+}
+
+.payeh-offline-auto-check {
+    margin-top: 14px;
+    font-size: 11.5px;
+    color: #94A3B8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.payeh-offline-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #CBD5E1;
+    border-top-color: #0B3DFF;
+    border-radius: 50%;
+    animation: payehSpin 0.8s linear infinite;
+}
+
+@keyframes payehSpin {
+    to { transform: rotate(360deg); }
+}

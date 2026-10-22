@@ -3410,9 +3410,12 @@ const initStudentApp = async () => {
     }
 
     try {
-        const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
-        if (!meResponse.ok) { location.assign("login.html"); return; }
-        const me = await meResponse.json();
+        let me = window.__currentUser;
+        if (!me) {
+            const meResponse = await fetch(`/api/auth/me/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
+            if (!meResponse.ok) { location.assign("login.html"); return; }
+            me = await meResponse.json();
+        }
         currentUserId = me.id;
         if (me.role !== "student") { location.assign(me.role === "consultant" ? "consultant.html" : "manager.html"); return; }
         currentUserData = me;
