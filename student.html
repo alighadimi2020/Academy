@@ -8,7 +8,7 @@
     <title>پنل دانش‌آموز | آکادمی پایه</title>
 
     <link rel="stylesheet" href="css/fonts.css?v=20261019_3">
-    <link rel="stylesheet" href="css/student.css?v=20261022_7">
+    <link rel="stylesheet" href="css/student.css?v=20261022_8">
 </head>
 
 <body>
@@ -300,9 +300,12 @@
 
                     <div class="payeh-student__hero-orbit">
 
-                        <div class="payeh-student__hero-circle">
-                            <span>پایه</span>
-                            <strong>۱۴۰۵</strong>
+                        <div class="payeh-student__hero-anim-card">
+                            <video src="assets/animations/student-study.mp4" autoplay loop muted playsinline preload="auto" class="payeh-student__hero-video" aria-label="مطالعه هدفمند امروز"></video>
+                            <div class="payeh-student__hero-anim-badge">
+                                <span class="payeh-pulse-dot"></span>
+                                <span>مطالعه هدفمند · امروز</span>
+                            </div>
                         </div>
 
                         <div class="payeh-student__hero-dot hero-dot-one"></div>
@@ -433,21 +436,17 @@
 
                         <div class="payeh-student__progress-message">
 
-                            <div class="payeh-student__progress-message-icon">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M12 3v18"></path>
-                                    <path d="M3 12h18"></path>
-                                    <circle cx="12" cy="12" r="9"></circle>
-                                </svg>
+                            <div class="payeh-student__progress-anim-wrap">
+                                <video src="assets/animations/ai-robot-analytics.mp4" autoplay loop muted playsinline preload="auto" class="payeh-student__progress-video" aria-label="تحلیل هوشمند روند پیشرفت"></video>
                             </div>
 
                             <div>
                                 <strong>
-                                    از امروز شروع کن
+                                    تحلیلگر هوشمند مسیر پیشرفت
                                 </strong>
 
                                 <span>
-                                    با ثبت اولین فعالیت، مسیر پیشرفتت اینجا نمایش داده می‌شود.
+                                    با ثبت هر فعالیت مطالعاتی، هوش مصنوعی روند پیشرفت، سهم دروس و نرخ رشد شما را تحلیل می‌کند.
                                 </span>
                             </div>
 
@@ -459,8 +458,19 @@
                     <div class="payeh-student__card payeh-student__consultant-card" id="student-consultant-panel">
                         <div class="payeh-student__card-header">
                             <div><span>ارتباط مستقیم</span><h3>مشاوران مجموعه</h3></div>
+                            <div class="payeh-live-chip">
+                                <span class="payeh-pulse-dot"></span>
+                                <span>نظارت زنده</span>
+                            </div>
                         </div>
-                        <p class="student-consultant-intro">رزومه و هزینهٔ پلن‌های مشاوران را ببینید و برای حداقل دو مشاورِ دارای ظرفیت درخواست ثبت کنید.</p>
+                        <div class="payeh-consultant-panel-preview">
+                            <div class="payeh-consultant-video-pill">
+                                <video src="assets/animations/study-discussion.mp4" autoplay loop muted playsinline preload="auto" class="payeh-dash-anim-video" aria-label="همفکری زنده با مشاور"></video>
+                            </div>
+                            <div class="payeh-consultant-panel-text">
+                                <p class="student-consultant-intro" style="margin:0;">رزومه و هزینهٔ پلن‌های مشاوران رتبه برتر را ببینید و برای شروع برنامه‌ریزی اختصاصی درخواست ثبت کنید.</p>
+                            </div>
+                        </div>
                         <div id="student-consultation-summary" class="student-consultation-summary" aria-live="polite"></div>
                         <a id="student-consultation-link" class="student-consultant-item__call student-consultation-link" href="consultations.html">مشاهده مشاوران و درخواست مشاوره</a>
                     </div>
@@ -603,6 +613,13 @@
 
                             <!-- The 2 Core Action Buttons Requested by User -->
                             <div class="payeh-myconsultant-actions">
+                                <div class="payeh-myconsultant-video-badge">
+                                    <video src="assets/animations/study-discussion.mp4" autoplay loop muted playsinline preload="auto" class="payeh-pill-video" aria-label="جلسات همفکری زنده"></video>
+                                    <div class="payeh-pill-label">
+                                        <span class="payeh-pulse-dot"></span>
+                                        <span>همفکری زنده با مشاور</span>
+                                    </div>
+                                </div>
                                 <button type="button" class="payeh-btn-consultant-primary" id="btn-consultant-open-chat">
                                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -897,10 +914,19 @@
                 <div class="payeh-ranking-wrapper">
                     <!-- Ranking Header -->
                     <div class="payeh-ranking-header-card">
-                        <div class="payeh-ranking-header__content">
-                            <span class="payeh-badge-glow">لیگ نخبگان کنکور پایه</span>
-                            <h2>رتبه‌بندی و جدول برترین‌های کشور</h2>
-                            <p>جایگاه خود را بر اساس ساعات مطالعه، تعداد تست و شاخص میانگین تست روزانه ارزیابی کنید.</p>
+                        <div class="payeh-ranking-header-flex">
+                            <div class="payeh-ranking-header__content">
+                                <span class="payeh-badge-glow">لیگ نخبگان کنکور پایه</span>
+                                <h2>رتبه‌بندی و جدول برترین‌های کشور</h2>
+                                <p>جایگاه خود را بر اساس ساعات مطالعه، تعداد تست و شاخص میانگین تست روزانه ارزیابی کنید.</p>
+                            </div>
+                            <div class="payeh-ranking-anim-pill">
+                                <video src="assets/animations/successful-target.mp4" autoplay loop muted playsinline preload="auto" class="payeh-pill-video" aria-label="هدف‌گذاری و رتبه ۱"></video>
+                                <div class="payeh-pill-label">
+                                    <span class="payeh-pulse-dot"></span>
+                                    <span>هدف‌گذاری و رتبه ۱</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="payeh-ranking-filter-tabs" role="tablist">
                             <button type="button" class="payeh-ranking-tab active" data-metric="hours">
@@ -964,10 +990,19 @@
                 <div class="payeh-perf-wrapper">
                     <!-- Top Performance Header -->
                     <div class="payeh-perf-header-card">
-                        <div>
-                            <span class="payeh-badge-glow">آنالیز هوشمند تحصیلی</span>
-                            <h2>گزارش جامع عملکرد و تحلیل ساعات مطالعه</h2>
-                            <p>ارزیابی نموداری روند مطالعه، ثبت تست و سهم دروس در بازه‌های روزانه تا ۶ ماهه</p>
+                        <div class="payeh-perf-header-flex">
+                            <div>
+                                <span class="payeh-badge-glow">آنالیز هوشمند تحصیلی</span>
+                                <h2>گزارش جامع عملکرد و تحلیل ساعات مطالعه</h2>
+                                <p>ارزیابی نموداری روند مطالعه، ثبت تست و سهم دروس در بازه‌های روزانه تا ۶ ماهه</p>
+                            </div>
+                            <div class="payeh-perf-anim-pill">
+                                <video src="assets/animations/ai-robot-analytics.mp4" autoplay loop muted playsinline preload="auto" class="payeh-pill-video" aria-label="تحلیلگر هوشمند AI"></video>
+                                <div class="payeh-pill-label">
+                                    <span class="payeh-pulse-dot"></span>
+                                    <span>تحلیلگر هوشمند AI</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
