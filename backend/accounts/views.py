@@ -478,8 +478,38 @@ def manager_user_list(request):
         users = users.filter(Q(full_name__icontains=query) | Q(phone__icontains=query))
     grade_labels = dict(User.GRADE_CHOICES)
     major_labels = dict(User.MAJOR_CHOICES)
+    users_slice = list(users[:500])
     results = []
-    for user in users[:500]:
+
+    assignment_map = {}
+    consultant_student_counts = {}
+
+    if role == "student":
+        from consultations.models import ConsultationRequest
+        student_ids = [u.id for u in users_slice]
+        active_requests = ConsultationRequest.objects.filter(
+            student_id__in=student_ids,
+            status=ConsultationRequest.Status.APPROVED
+        ).select_related("assigned_consultant__user")
+        for req in active_requests:
+            if req.assigned_consultant and req.assigned_consultant.user:
+                assignment_map[req.student_id] = {
+                    "assigned_consultant_id": req.assigned_consultant.user_id,
+                    "assigned_consultant_name": req.assigned_consultant.user.full_name or req.assigned_consultant.user.phone,
+                    "assigned_request_id": req.id,
+                }
+    elif role == "consultant":
+        from consultations.models import ConsultationRequest
+        from django.db.models import Count
+        consultant_user_ids = [u.id for u in users_slice]
+        counts = ConsultationRequest.objects.filter(
+            status=ConsultationRequest.Status.APPROVED,
+            assigned_consultant__user_id__in=consultant_user_ids
+        ).values("assigned_consultant__user_id").annotate(total=Count("id"))
+        for c in counts:
+            consultant_student_counts[c["assigned_consultant__user_id"]] = c["total"]
+
+    for user in users_slice:
         item = {
             "id": user.id,
             "full_name": user.full_name or "بدون نام",
@@ -489,12 +519,19 @@ def manager_user_list(request):
             "date_joined": user.date_joined.isoformat() if user.date_joined else None,
         }
         if role == "student":
+            assign_info = assignment_map.get(user.id, {})
             item.update({
                 "grade": user.grade,
                 "grade_label": grade_labels.get(user.grade, "ثبت نشده"),
                 "major_label": major_labels.get(user.major, ""),
                 "parent_phone": user.parent_phone,
+                "assigned_consultant_id": assign_info.get("assigned_consultant_id"),
+                "assigned_consultant_name": assign_info.get("assigned_consultant_name"),
+                "assigned_request_id": assign_info.get("assigned_request_id"),
             })
+        elif role == "consultant":
+            item["assigned_students_count"] = consultant_student_counts.get(user.id, 0)
+
         results.append(item)
     return JsonResponse({"results": results, "count": len(results)})
 
@@ -528,21 +565,44 @@ def change_password(request):
     if not old_password:
         return JsonResponse({"detail": "رمز عبور فعلی الزامی است."}, status=400)
 
+    # Brute-force protection: rate limit failed attempts per user
+    from django.core.cache import cache
+    cache_key = f"pwd_fail_count_{request.user.id}"
+    fail_count = cache.get(cache_key, 0)
+    if fail_count >= 5:
+        record_event(request, "auth.password.rate_limited", "auth", "denied", subject=request.user.phone)
+        return JsonResponse({"detail": "به دلیل تلاش‌های ناموفق مکرر، دسترسی تغییر رمز عبور موقتاً مسدود شد. لطفاً ۱۵ دقیقه دیگر تلاش کنید."}, status=429)
+
     if not request.user.check_password(old_password):
+        cache.set(cache_key, fail_count + 1, timeout=900)  # 15 minutes cooldown
         record_event(request, "auth.password.change_failed", "auth", "denied", subject=request.user.phone, details={"reason": "wrong_old_password"})
-        return JsonResponse({"detail": "رمز عبور فعلی اشتباه است."}, status=400)
+        remaining = max(0, 5 - (fail_count + 1))
+        msg = "رمز عبور فعلی اشتباه است."
+        if remaining <= 2:
+            msg += f" ({remaining} تلاش دیگر تا قفل موقت حساب)"
+        return JsonResponse({"detail": msg}, status=400)
+
+    # Clear fail count on correct old password
+    cache.delete(cache_key)
 
     if len(new_password) < 8:
         return JsonResponse({"detail": "رمز عبور جدید باید حداقل ۸ کاراکتر باشد."}, status=400)
 
+    if new_password == old_password:
+        return JsonResponse({"detail": "رمز عبور جدید نمی‌تواند همان رمز عبور قبلی شما باشد."}, status=400)
+
     if new_password != new_password_confirm:
         return JsonResponse({"detail": "تکرار رمز عبور جدید یکسان نیست."}, status=400)
+
+    if new_password.isdigit():
+        return JsonResponse({"detail": "رمز عبور نمی‌تواند صرفاً از ارقام عددی تشکیل شود. لطفاً از ترکیب حروف و ارقام استفاده کنید."}, status=400)
 
     request.user.set_password(new_password)
     request.user.save(update_fields=["password"])
     auth_login(request, request.user)
     record_event(request, "auth.password.changed", "auth", "success", subject=request.user.phone)
     return JsonResponse({"ok": True, "detail": "رمز عبور با موفقیت تغییر یافت."})
+
 
 
 @require_POST
@@ -584,4 +644,412 @@ def manager_set_user_password(request, user_id):
             "password": password
         }
     })
+
+
+@require_POST
+@csrf_protect
+def manager_create_consultant(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+    if request.user.role not in {"manager", "admin"}:
+        return JsonResponse({"detail": "دسترسی فقط مخصوص مدیر مجموعه است."}, status=403)
+
+    try:
+        data = json.loads(request.body or b"{}")
+        full_name = str(data.get("full_name", "")).strip()
+        raw_phone = str(data.get("phone", "")).strip()
+        password = str(data.get("password", "")).strip()
+    except (ValueError, json.JSONDecodeError):
+        return JsonResponse({"detail": "اطلاعات ارسالی نامعتبر است."}, status=400)
+
+    if not full_name:
+        return JsonResponse({"detail": "نام و نام خانوادگی مشاور الزامی است."}, status=400)
+    if len(full_name) > 100:
+        return JsonResponse({"detail": "نام و نام خانوادگی نمی‌تواند بیش از ۱۰۰ کاراکتر باشد."}, status=400)
+
+    try:
+        phone = valid_phone(raw_phone)
+    except ValueError as err:
+        return JsonResponse({"detail": str(err)}, status=400)
+
+    if not password:
+        password = phone
+    elif len(password) < 4:
+        password = phone
+
+    if User.objects.filter(phone=phone).exists():
+        return JsonResponse({"detail": "کاربری با این شماره موبایل از قبل در سامانه ثبت شده است."}, status=409)
+
+    from consultations.models import ConsultantProfile, ConsultantPlanPrice, PLAN_CHOICES
+
+    try:
+        with transaction.atomic():
+            user = User.objects.create_user(
+                phone=phone,
+                full_name=full_name,
+                password=password,
+                role="consultant",
+                is_active=True
+            )
+            profile, _ = ConsultantProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    "application_status": "approved",
+                    "available_slots": 50,
+                    "bio": f"مشاور آکادمی پایه - {full_name}",
+                }
+            )
+            for plan_key, _ in PLAN_CHOICES:
+                ConsultantPlanPrice.objects.get_or_create(
+                    consultant=profile,
+                    plan=plan_key,
+                    defaults={"price_toman": 0}
+                )
+
+            record_event(
+                request,
+                "manager.consultant.created",
+                "users",
+                "success",
+                subject=f"user:{user.id}",
+                details={"phone": user.phone, "name": user.full_name}
+            )
+
+        return JsonResponse({
+            "ok": True,
+            "detail": f"مشاور «{user.full_name}» با موفقیت افزوده شد.",
+            "consultant": {
+                "id": user.id,
+                "full_name": user.full_name,
+                "phone": user.phone,
+                "role": user.role,
+                "is_active": user.is_active,
+                "date_joined": user.date_joined.isoformat() if user.date_joined else None,
+                "assigned_students_count": 0,
+            }
+        }, status=201)
+    except Exception as exc:
+        return JsonResponse({"detail": f"خطا در ایجاد مشاور: {str(exc)}"}, status=500)
+
+
+@require_POST
+@csrf_protect
+def manager_delete_consultant(request, user_id):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+    if request.user.role not in {"manager", "admin"}:
+        return JsonResponse({"detail": "دسترسی فقط مخصوص مدیر مجموعه است."}, status=403)
+
+    try:
+        target_user = User.objects.get(pk=user_id, role="consultant")
+    except User.DoesNotExist:
+        return JsonResponse({"detail": "مشاور مورد نظر پیدا نشد."}, status=404)
+
+    from consultations.models import (
+        ConsultantProfile,
+        ConsultationRequest,
+        ConsultationPreference,
+        ConsultationMessage,
+        ConsultantManagerConversation,
+    )
+
+    try:
+        with transaction.atomic():
+            profile = getattr(target_user, "consultation_profile", None)
+            if profile:
+                # 1. Unassign all students assigned to this consultant
+                ConsultationRequest.objects.filter(assigned_consultant=profile).update(
+                    assigned_consultant=None,
+                    status=ConsultationRequest.Status.REJECTED,
+                    decision_note="مشاور از مجموعه حذف شد؛ لطفاً جهت تخصیص مشاور جدید با مدیریت تماس بگیرید."
+                )
+                # 2. Delete preferences referencing this consultant
+                ConsultationPreference.objects.filter(consultant=profile).delete()
+
+            # 3. Clean up messages and staff conversations
+            ConsultationMessage.objects.filter(sender=target_user).delete()
+            ConsultantManagerConversation.objects.filter(consultant=target_user).delete()
+
+            phone_saved = target_user.phone
+            name_saved = target_user.full_name or target_user.phone
+            target_user.delete()
+
+            record_event(
+                request,
+                "manager.consultant.deleted",
+                "users",
+                "success",
+                subject=f"user:{user_id}",
+                details={"phone": phone_saved, "name": name_saved}
+            )
+
+        return JsonResponse({
+            "ok": True,
+            "detail": f"مشاور «{name_saved}» با موفقیت حذف گردید."
+        })
+    except Exception as exc:
+        return JsonResponse({"detail": f"خطا در حذف مشاور: {str(exc)}"}, status=500)
+
+
+@require_POST
+@csrf_protect
+def manager_assign_student(request, student_id):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+    if request.user.role not in {"manager", "admin"}:
+        return JsonResponse({"detail": "دسترسی فقط مخصوص مدیر مجموعه است."}, status=403)
+
+    try:
+        student_user = User.objects.get(pk=student_id, role="student")
+    except User.DoesNotExist:
+        return JsonResponse({"detail": "دانش‌آموز مورد نظر پیدا نشد."}, status=404)
+
+    try:
+        data = json.loads(request.body or b"{}")
+        consultant_id = data.get("consultant_id")
+    except (ValueError, json.JSONDecodeError):
+        return JsonResponse({"detail": "اطلاعات ارسالی نامعتبر است."}, status=400)
+
+    from consultations.models import ConsultantProfile, ConsultationRequest
+
+    try:
+        with transaction.atomic():
+            if consultant_id:
+                try:
+                    consultant_user = User.objects.get(pk=consultant_id, role="consultant")
+                except User.DoesNotExist:
+                    return JsonResponse({"detail": "مشاور انتخاب‌شده پیدا نشد."}, status=404)
+
+                profile, _ = ConsultantProfile.objects.get_or_create(
+                    user=consultant_user,
+                    defaults={"application_status": "approved", "available_slots": 50}
+                )
+
+                now = timezone.now()
+                existing_req = ConsultationRequest.objects.filter(
+                    student=student_user,
+                    status__in=(ConsultationRequest.Status.PENDING, ConsultationRequest.Status.APPROVED)
+                ).first()
+
+                if existing_req:
+                    existing_req.assigned_consultant = profile
+                    existing_req.status = ConsultationRequest.Status.APPROVED
+                    existing_req.decided_at = now
+                    existing_req.decision_note = "تخصیص مستقیم توسط مدیر مجموعه"
+                    existing_req.save(update_fields=["assigned_consultant", "status", "decided_at", "decision_note"])
+                    req_id = existing_req.id
+                else:
+                    new_req = ConsultationRequest.objects.create(
+                        student=student_user,
+                        assigned_consultant=profile,
+                        plan="standard",
+                        status=ConsultationRequest.Status.APPROVED,
+                        decided_at=now,
+                        decision_note="تخصیص مستقیم توسط مدیر مجموعه"
+                    )
+                    req_id = new_req.id
+
+                record_event(
+                    request,
+                    "manager.student.assigned",
+                    "consultation",
+                    "success",
+                    subject=f"student:{student_id}",
+                    details={"consultant_id": consultant_id, "consultant_name": consultant_user.full_name}
+                )
+
+                return JsonResponse({
+                    "ok": True,
+                    "detail": f"دانش‌آموز «{student_user.full_name or student_user.phone}» با موفقیت به «{consultant_user.full_name or consultant_user.phone}» اختصاص یافت.",
+                    "assignment": {
+                        "student_id": student_user.id,
+                        "assigned_consultant_id": consultant_user.id,
+                        "assigned_consultant_name": consultant_user.full_name or consultant_user.phone,
+                        "assigned_request_id": req_id,
+                    }
+                })
+            else:
+                ConsultationRequest.objects.filter(
+                    student=student_user,
+                    status__in=(ConsultationRequest.Status.PENDING, ConsultationRequest.Status.APPROVED)
+                ).update(
+                    status=ConsultationRequest.Status.REJECTED,
+                    decision_note="لغو تخصیص توسط مدیر مجموعه",
+                    decided_at=timezone.now()
+                )
+
+                record_event(
+                    request,
+                    "manager.student.unassigned",
+                    "consultation",
+                    "success",
+                    subject=f"student:{student_id}"
+                )
+
+                return JsonResponse({
+                    "ok": True,
+                    "detail": f"تخصیص مشاور برای دانش‌آموز «{student_user.full_name or student_user.phone}» لغو شد.",
+                    "assignment": {
+                        "student_id": student_user.id,
+                        "assigned_consultant_id": None,
+                        "assigned_consultant_name": None,
+                        "assigned_request_id": None,
+                    }
+                })
+    except Exception as exc:
+        return JsonResponse({"detail": f"خطا در تخصیص مشاور: {str(exc)}"}, status=500)
+
+
+@require_POST
+@csrf_protect
+def manager_create_student(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+    if request.user.role not in {"manager", "admin"}:
+        return JsonResponse({"detail": "دسترسی فقط مخصوص مدیر مجموعه است."}, status=403)
+
+    try:
+        data = json.loads(request.body or b"{}")
+        full_name = str(data.get("full_name", "")).strip()
+        raw_phone = str(data.get("phone", "")).strip()
+        password = str(data.get("password", "")).strip()
+        grade = str(data.get("grade", "")).strip()
+        major = str(data.get("major", "")).strip()
+        parent_phone = str(data.get("parent_phone", "")).strip()
+    except (ValueError, json.JSONDecodeError):
+        return JsonResponse({"detail": "اطلاعات ارسالی نامعتبر است."}, status=400)
+
+    if not full_name:
+        return JsonResponse({"detail": "نام و نام خانوادگی دانش‌آموز الزامی است."}, status=400)
+    if len(full_name) > 100:
+        return JsonResponse({"detail": "نام و نام خانوادگی نمی‌تواند بیش از ۱۰۰ کاراکتر باشد."}, status=400)
+
+    try:
+        phone = valid_phone(raw_phone)
+    except ValueError as err:
+        return JsonResponse({"detail": str(err)}, status=400)
+
+    if not password:
+        password = phone
+    elif len(password) < 4:
+        password = phone
+
+    if User.objects.filter(phone=phone).exists():
+        return JsonResponse({"detail": "کاربری با این شماره موبایل از قبل در سامانه ثبت شده است."}, status=409)
+
+    valid_grades = {str(g) for g in range(2, 13)} | {"graduate"}
+    valid_majors = {"math", "experimental", "humanities", "technical"}
+
+    if grade and grade not in valid_grades:
+        grade = ""
+    if major and major not in valid_majors:
+        major = ""
+
+    normalized_parent_phone = ""
+    if parent_phone:
+        try:
+            normalized_parent_phone = valid_phone(parent_phone)
+        except ValueError:
+            normalized_parent_phone = normalize_digits(parent_phone)[:11]
+
+    try:
+        with transaction.atomic():
+            user = User.objects.create_user(
+                phone=phone,
+                full_name=full_name,
+                password=password,
+                role="student",
+                grade=grade,
+                major=major,
+                parent_phone=normalized_parent_phone,
+                is_active=True
+            )
+            record_event(
+                request,
+                "manager.student.created",
+                "users",
+                "success",
+                subject=f"user:{user.id}",
+                details={"phone": user.phone, "name": user.full_name}
+            )
+
+        grade_labels = dict(User.GRADE_CHOICES)
+        major_labels = dict(User.MAJOR_CHOICES)
+
+        return JsonResponse({
+            "ok": True,
+            "detail": f"دانش‌آموز «{user.full_name}» با موفقیت افزوده شد.",
+            "student": {
+                "id": user.id,
+                "full_name": user.full_name,
+                "phone": user.phone,
+                "role": user.role,
+                "grade": user.grade,
+                "grade_label": grade_labels.get(user.grade, "ثبت نشده"),
+                "major_label": major_labels.get(user.major, ""),
+                "parent_phone": user.parent_phone,
+                "is_active": user.is_active,
+                "date_joined": user.date_joined.isoformat() if user.date_joined else None,
+                "assigned_consultant_id": None,
+                "assigned_consultant_name": None,
+                "assigned_request_id": None,
+            }
+        }, status=201)
+    except Exception as exc:
+        return JsonResponse({"detail": f"خطا در ایجاد دانش‌آموز: {str(exc)}"}, status=500)
+
+
+@require_POST
+@csrf_protect
+def manager_delete_student(request, user_id):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+    if request.user.role not in {"manager", "admin"}:
+        return JsonResponse({"detail": "دسترسی فقط مخصوص مدیر مجموعه است."}, status=403)
+
+    try:
+        target_user = User.objects.get(pk=user_id, role="student")
+    except User.DoesNotExist:
+        return JsonResponse({"detail": "دانش‌آموز مورد نظر پیدا نشد."}, status=404)
+
+    from consultations.models import (
+        ConsultationRequest,
+        ConsultationPreference,
+        ConsultationMessage,
+    )
+
+    try:
+        with transaction.atomic():
+            # Clean up student consultation requests and messages
+            ConsultationMessage.objects.filter(sender=target_user).delete()
+            reqs = ConsultationRequest.objects.filter(student=target_user)
+            ConsultationPreference.objects.filter(request__in=reqs).delete()
+            reqs.delete()
+
+            # Clean up study sessions, timers, reports
+            from consultations.study_models import StudyReport, StudyTimer, StudySession
+            StudyReport.objects.filter(student=target_user).delete()
+            StudyTimer.objects.filter(student=target_user).delete()
+            StudySession.objects.filter(student=target_user).delete()
+
+            phone_saved = target_user.phone
+            name_saved = target_user.full_name or target_user.phone
+            target_user.delete()
+
+            record_event(
+                request,
+                "manager.student.deleted",
+                "users",
+                "success",
+                subject=f"user:{user_id}",
+                details={"phone": phone_saved, "name": name_saved}
+            )
+
+        return JsonResponse({
+            "ok": True,
+            "detail": f"دانش‌آموز «{name_saved}» با موفقیت حذف گردید."
+        })
+    except Exception as exc:
+        return JsonResponse({"detail": f"خطا در حذف دانش‌آموز: {str(exc)}"}, status=500)
+
 

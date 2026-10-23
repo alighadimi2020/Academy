@@ -2005,6 +2005,156 @@ const initStudentApp = async () => {
                 }
             });
         }
+
+        // Setup Password Visibility Toggle Buttons
+        document.querySelectorAll(".pwd-toggle-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const targetId = btn.getAttribute("data-target");
+                const input = document.getElementById(targetId);
+                if (!input) return;
+                const isPassword = input.type === "password";
+                input.type = isPassword ? "text" : "password";
+                btn.style.color = isPassword ? "#2563eb" : "#94a3b8";
+            });
+        });
+
+        // Password Strength Indicator for new password
+        const newPwdInput = document.getElementById("student-new-password");
+        const strengthBox = document.getElementById("pwd-strength-container");
+        const strengthBar = document.getElementById("pwd-strength-bar");
+        const strengthLabel = document.getElementById("pwd-strength-label");
+
+        if (newPwdInput && strengthBox && strengthBar && strengthLabel) {
+            newPwdInput.addEventListener("input", () => {
+                const val = newPwdInput.value;
+                if (!val) {
+                    strengthBox.style.display = "none";
+                    return;
+                }
+                strengthBox.style.display = "block";
+                let score = 0;
+                if (val.length >= 8) score++;
+                if (val.length >= 12) score++;
+                if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
+                if (/\d/.test(val)) score++;
+                if (/[^a-zA-Z0-9]/.test(val)) score++;
+
+                if (score <= 2) {
+                    strengthBar.style.width = "30%";
+                    strengthBar.style.background = "#ef4444";
+                    strengthLabel.style.color = "#ef4444";
+                    strengthLabel.textContent = "ضعیف (حداقل ۸ کاراکتر و ترکیب حروف و ارقام)";
+                } else if (score <= 4) {
+                    strengthBar.style.width = "65%";
+                    strengthBar.style.background = "#eab308";
+                    strengthLabel.style.color = "#eab308";
+                    strengthLabel.textContent = "متوسط و قابل قبول";
+                } else {
+                    strengthBar.style.width = "100%";
+                    strengthBar.style.background = "#22c55e";
+                    strengthLabel.style.color = "#22c55e";
+                    strengthLabel.textContent = "بسیار قوی و ایمن";
+                }
+            });
+        }
+
+        // Student Change Password Form Submit Handler
+        const pwdForm = document.getElementById("student-password-form");
+        const pwdStatus = document.getElementById("student-pwd-status");
+        const pwdBtn = document.getElementById("student-pwd-save-btn");
+
+        if (pwdForm) {
+            pwdForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const errOld = document.getElementById("err-student-old-password");
+                const errNew = document.getElementById("err-student-new-password");
+                const errConfirm = document.getElementById("err-student-new-password-confirm");
+                if (errOld) errOld.textContent = "";
+                if (errNew) errNew.textContent = "";
+                if (errConfirm) errConfirm.textContent = "";
+
+                if (pwdStatus) {
+                    pwdStatus.textContent = "";
+                    pwdStatus.className = "payeh-profile-save-status";
+                }
+
+                const oldPassword = document.getElementById("student-old-password")?.value || "";
+                const newPassword = document.getElementById("student-new-password")?.value || "";
+                const newPasswordConfirm = document.getElementById("student-new-password-confirm")?.value || "";
+
+                let hasErr = false;
+                if (!oldPassword) {
+                    if (errOld) errOld.textContent = "رمز عبور فعلی الزامی است.";
+                    hasErr = true;
+                }
+                if (!newPassword) {
+                    if (errNew) errNew.textContent = "رمز عبور جدید الزامی است.";
+                    hasErr = true;
+                } else if (newPassword.length < 8) {
+                    if (errNew) errNew.textContent = "رمز عبور جدید باید حداقل ۸ کاراکتر باشد.";
+                    hasErr = true;
+                } else if (/^\d+$/.test(newPassword)) {
+                    if (errNew) errNew.textContent = "رمز عبور نمی‌تواند فقط عدد باشد (از ترکیب حروف نیز استفاده کنید).";
+                    hasErr = true;
+                } else if (oldPassword && newPassword === oldPassword) {
+                    if (errNew) errNew.textContent = "رمز جدید نمی‌تواند همان رمز قبلی شما باشد.";
+                    hasErr = true;
+                }
+                if (!newPasswordConfirm) {
+                    if (errConfirm) errConfirm.textContent = "تکرار رمز عبور جدید الزامی است.";
+                    hasErr = true;
+                } else if (newPassword && newPasswordConfirm !== newPassword) {
+                    if (errConfirm) errConfirm.textContent = "تکرار رمز عبور جدید با رمز مطابقت ندارد.";
+                    hasErr = true;
+                }
+
+                if (hasErr) return;
+
+                if (pwdBtn) {
+                    pwdBtn.disabled = true;
+                    pwdBtn.innerHTML = `<span>در حال بررسی و تغییر رمز...</span>`;
+                }
+
+                try {
+                    const csrfToken = await getCsrfToken();
+                    const res = await fetch("/api/auth/password/change/", {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken
+                        },
+                        body: JSON.stringify({
+                            old_password: oldPassword,
+                            new_password: newPassword,
+                            new_password_confirm: newPasswordConfirm
+                        })
+                    });
+
+                    const resData = await res.json();
+                    if (!res.ok) {
+                        throw new Error(resData.detail || "تغییر رمز عبور انجام نشد.");
+                    }
+
+                    if (pwdStatus) {
+                        pwdStatus.textContent = "✓ " + (resData.detail || "رمز عبور با موفقیت تغییر یافت.");
+                        pwdStatus.className = "payeh-profile-save-status is-success";
+                    }
+                    pwdForm.reset();
+                    if (strengthBox) strengthBox.style.display = "none";
+                } catch (err) {
+                    if (pwdStatus) {
+                        pwdStatus.textContent = err.message || "خطا در تغییر رمز عبور.";
+                        pwdStatus.className = "payeh-profile-save-status is-error";
+                    }
+                } finally {
+                    if (pwdBtn) {
+                        pwdBtn.disabled = false;
+                        pwdBtn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>تغییر و ثبت رمز عبور جدید</span>`;
+                    }
+                }
+            });
+        }
     };
 
     const studentSidebarOverlay = document.getElementById("studentSidebarOverlay");

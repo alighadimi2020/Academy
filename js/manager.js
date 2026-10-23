@@ -52,8 +52,8 @@ const initManagerApp = async () => {
     const renderUsers = (role) => {
         const isStudent = role === "student";
         const target = document.getElementById(isStudent ? "student-user-list" : "consultant-user-list");
-        const query = document.getElementById(isStudent ? "student-search" : "consultant-search").value.trim().toLocaleLowerCase();
-        const filtered = state[isStudent ? "students" : "consultants"].filter((user) => `${user.full_name} ${user.phone} ${user.grade_label || ""} ${user.major_label || ""}`.toLocaleLowerCase().includes(query));
+        const query = (document.getElementById(isStudent ? "student-search" : "consultant-search")?.value || "").trim().toLocaleLowerCase();
+        const filtered = state[isStudent ? "students" : "consultants"].filter((user) => `${user.full_name} ${user.phone} ${user.grade_label || ""} ${user.major_label || ""} ${user.assigned_consultant_name || ""}`.toLocaleLowerCase().includes(query));
         target.replaceChildren();
         const message = document.getElementById(isStudent ? "student-list-message" : "consultant-list-message");
         message.textContent = filtered.length ? `${numberFa(filtered.length)} مورد` : (query ? "موردی با این جست‌وجو پیدا نشد." : `هنوز ${isStudent ? "دانش‌آموزی" : "مشاوری"} ثبت نشده است.`);
@@ -65,31 +65,75 @@ const initManagerApp = async () => {
             identity.append(make("h3", "", user.full_name), make("span", user.is_active ? "manager-user-state is-active" : "manager-user-state", user.is_active ? "فعال" : "غیرفعال"));
             header.append(avatar, identity); card.append(header);
             const fields = make("dl", "manager-user-card__fields");
-            const addField = (label, value, link = false) => {
+            const addField = (label, value, link = false, isBadge = false) => {
                 if (!value) return;
                 const wrapper = document.createElement("div"); wrapper.append(make("dt", "", label));
                 const dd = document.createElement("dd");
-                if (link) { const anchor = make("a", "", value); anchor.href = `tel:${value}`; dd.append(anchor); } else dd.textContent = value;
+                if (link) { const anchor = make("a", "", value); anchor.href = `tel:${value}`; dd.append(anchor); }
+                else if (isBadge) {
+                    const badge = make("span", "", value);
+                    badge.style.cssText = value.includes("بدون") ? "background:#f1f5f9; color:#64748b; padding:2px 8px; border-radius:6px; font-weight:700; font-size:11px;" : "background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:6px; font-weight:800; font-size:11px;";
+                    dd.append(badge);
+                } else dd.textContent = value;
                 wrapper.append(dd); fields.append(wrapper);
             };
             addField("شماره موبایل", user.phone, true);
-            if (isStudent) { addField("پایه تحصیلی", user.grade_label); addField("رشته", user.major_label); addField("شماره والد", user.parent_phone, true); }
-            else if (user.date_joined) addField("تاریخ عضویت", toPersianDate(user.date_joined));
+            if (isStudent) {
+                addField("پایه تحصیلی", user.grade_label);
+                addField("رشته", user.major_label);
+                addField("شماره والد", user.parent_phone, true);
+                addField("مشاور اختصاصی", user.assigned_consultant_name || "بدون مشاور (نیاز به تخصیص)", false, true);
+            } else {
+                addField("دانش‌آموزان تحت پوشش", `${numberFa(user.assigned_students_count || 0)} دانش‌آموز`);
+                if (user.date_joined) addField("تاریخ عضویت", toPersianDate(user.date_joined));
+            }
             card.append(fields);
-            if (!isStudent) {
-                const actionRow = document.createElement("div");
-                actionRow.style.cssText = "margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: flex-end;";
+
+            const actionRow = document.createElement("div");
+            actionRow.style.cssText = "margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap;";
+
+            if (isStudent) {
+                const assignBtn = document.createElement("button");
+                assignBtn.type = "button";
+                assignBtn.style.cssText = "background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px;";
+                assignBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span>${user.assigned_consultant_name ? "تغییر مشاور" : "تخصیص مشاور"}</span>
+                `;
+                assignBtn.onclick = () => openAssignStudentModal(user);
+
+                const delBtn = document.createElement("button");
+                delBtn.type = "button";
+                delBtn.style.cssText = "background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px;";
+                delBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <span>حذف</span>
+                `;
+                delBtn.onclick = () => openDeleteStudentModal(user);
+
+                actionRow.append(assignBtn, delBtn);
+            } else {
                 const resetBtn = document.createElement("button");
                 resetBtn.type = "button";
                 resetBtn.style.cssText = "background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px;";
                 resetBtn.innerHTML = `
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    <span>تنظیم مجدد رمز عبور</span>
+                    <span>تنظیم مجدد رمز</span>
                 `;
                 resetBtn.onclick = () => openResetPasswordModal(user);
-                actionRow.append(resetBtn);
-                card.append(actionRow);
+
+                const delBtn = document.createElement("button");
+                delBtn.type = "button";
+                delBtn.style.cssText = "background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px;";
+                delBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <span>حذف مشاور</span>
+                `;
+                delBtn.onclick = () => openDeleteConsultantModal(user);
+
+                actionRow.append(resetBtn, delBtn);
             }
+            card.append(actionRow);
             target.append(card);
         });
     };
@@ -97,7 +141,7 @@ const initManagerApp = async () => {
     const loadUsers = async (role) => {
         const isStudent = role === "student";
         const message = document.getElementById(isStudent ? "student-list-message" : "consultant-list-message");
-        message.textContent = "در حال دریافت فهرست…";
+        if (message) message.textContent = "در حال دریافت فهرست…";
         try {
             const response = await fetch(`/api/manager/users/?role=${role}`, { credentials: "same-origin" });
             const data = await response.json();
@@ -106,7 +150,10 @@ const initManagerApp = async () => {
             renderUsers(role);
             const count = document.getElementById(isStudent ? "manager-student-count" : "manager-consultant-count");
             if (count) count.textContent = numberFa(data.count || 0);
-        } catch (error) { message.textContent = error.message || "ارتباط با سرور برقرار نشد."; }
+            if (typeof updateNetworkGraphData === "function") {
+                updateNetworkGraphData();
+            }
+        } catch (error) { if (message) message.textContent = error.message || "ارتباط با سرور برقرار نشد."; }
     };
     document.getElementById("student-search")?.addEventListener("input", () => renderUsers("student"));
     document.getElementById("consultant-search")?.addEventListener("input", () => renderUsers("consultant"));
@@ -685,6 +732,352 @@ const initManagerApp = async () => {
             submitBtn.disabled = false;
         }
     });
+
+    // --- Consultant Management ---
+    const openAddConsultantModal = () => {
+        document.getElementById("form-add-consultant")?.reset();
+        document.getElementById("add-consultant-password").value = generateRandomPassword();
+        const errEl = document.getElementById("add-consultant-error");
+        if (errEl) errEl.style.display = "none";
+        openModal("modal-add-consultant");
+    };
+
+    document.getElementById("btn-open-add-consultant")?.addEventListener("click", openAddConsultantModal);
+
+    document.getElementById("btn-gen-pwd-add-consultant")?.addEventListener("click", () => {
+        document.getElementById("add-consultant-password").value = generateRandomPassword();
+    });
+
+    document.getElementById("form-add-consultant")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const full_name = document.getElementById("add-consultant-name")?.value.trim();
+        const phone = document.getElementById("add-consultant-phone")?.value.trim();
+        const password = document.getElementById("add-consultant-password")?.value.trim() || phone;
+        const errEl = document.getElementById("add-consultant-error");
+        const submitBtn = document.getElementById("btn-submit-add-consultant");
+
+        submitBtn.disabled = true;
+        if (errEl) errEl.style.display = "none";
+
+        try {
+            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const res = await fetch("/api/manager/consultants/create/", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
+                body: JSON.stringify({ full_name, phone, password })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || "خطا در ایجاد مشاور");
+            closeModal("modal-add-consultant");
+            await loadUsers("consultant");
+            showCredentialsModal(data.consultant || { full_name, phone, password });
+        } catch (err) {
+            if (errEl) { errEl.style.display = "block"; errEl.textContent = err.message; }
+            else alert(err.message);
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    let consultantToDelete = null;
+    const openDeleteConsultantModal = (user) => {
+        consultantToDelete = user;
+        document.getElementById("delete-consultant-id").value = user.id;
+        document.getElementById("delete-consultant-name").textContent = user.full_name || user.phone;
+        const errEl = document.getElementById("delete-consultant-error");
+        if (errEl) errEl.style.display = "none";
+        openModal("modal-delete-consultant");
+    };
+
+    document.getElementById("btn-confirm-delete-consultant")?.addEventListener("click", async () => {
+        if (!consultantToDelete) return;
+        const btn = document.getElementById("btn-confirm-delete-consultant");
+        const errEl = document.getElementById("delete-consultant-error");
+        btn.disabled = true;
+        if (errEl) errEl.style.display = "none";
+
+        try {
+            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const res = await fetch(`/api/manager/consultants/${consultantToDelete.id}/delete/`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken }
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || "حذف مشاور انجام نشد");
+            closeModal("modal-delete-consultant");
+            await loadUsers("consultant");
+            await loadUsers("student");
+        } catch (err) {
+            if (errEl) { errEl.style.display = "block"; errEl.textContent = err.message; }
+            else alert(err.message);
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    // --- Student Management ---
+    const openAddStudentModal = () => {
+        document.getElementById("form-add-student")?.reset();
+        document.getElementById("add-student-password").value = generateRandomPassword();
+        const errEl = document.getElementById("add-student-error");
+        if (errEl) errEl.style.display = "none";
+        openModal("modal-add-student");
+    };
+
+    document.getElementById("btn-open-add-student")?.addEventListener("click", openAddStudentModal);
+
+    document.getElementById("btn-gen-pwd-add-student")?.addEventListener("click", () => {
+        document.getElementById("add-student-password").value = generateRandomPassword();
+    });
+
+    document.getElementById("form-add-student")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const full_name = document.getElementById("add-student-name")?.value.trim();
+        const phone = document.getElementById("add-student-phone")?.value.trim();
+        const grade = document.getElementById("add-student-grade")?.value || "";
+        const major = document.getElementById("add-student-major")?.value || "";
+        const parent_phone = document.getElementById("add-student-parent-phone")?.value.trim() || "";
+        const password = document.getElementById("add-student-password")?.value.trim() || phone;
+        const errEl = document.getElementById("add-student-error");
+        const submitBtn = document.getElementById("btn-submit-add-student");
+
+        submitBtn.disabled = true;
+        if (errEl) errEl.style.display = "none";
+
+        try {
+            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const res = await fetch("/api/manager/students/create/", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
+                body: JSON.stringify({ full_name, phone, password, grade, major, parent_phone })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || "خطا در ایجاد دانش‌آموز");
+            closeModal("modal-add-student");
+            await loadUsers("student");
+            showCredentialsModal(data.student || { full_name, phone, password });
+        } catch (err) {
+            if (errEl) { errEl.style.display = "block"; errEl.textContent = err.message; }
+            else alert(err.message);
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    let studentToDelete = null;
+    const openDeleteStudentModal = (user) => {
+        studentToDelete = user;
+        document.getElementById("delete-student-id").value = user.id;
+        document.getElementById("delete-student-name").textContent = user.full_name || user.phone;
+        const errEl = document.getElementById("delete-student-error");
+        if (errEl) errEl.style.display = "none";
+        openModal("modal-delete-student");
+    };
+
+    document.getElementById("btn-confirm-delete-student")?.addEventListener("click", async () => {
+        if (!studentToDelete) return;
+        const btn = document.getElementById("btn-confirm-delete-student");
+        const errEl = document.getElementById("delete-student-error");
+        btn.disabled = true;
+        if (errEl) errEl.style.display = "none";
+
+        try {
+            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const res = await fetch(`/api/manager/students/${studentToDelete.id}/delete/`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken }
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || "حذف دانش‌آموز انجام نشد");
+            closeModal("modal-delete-student");
+            await loadUsers("student");
+        } catch (err) {
+            if (errEl) { errEl.style.display = "block"; errEl.textContent = err.message; }
+            else alert(err.message);
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    // --- Assign Consultant to Student ---
+    const openAssignStudentModal = (student) => {
+        document.getElementById("assign-student-id").value = student.id;
+        document.getElementById("assign-student-name").textContent = student.full_name || student.phone;
+        const select = document.getElementById("assign-consultant-select");
+        if (select) {
+            select.replaceChildren();
+            const emptyOpt = document.createElement("option");
+            emptyOpt.value = "";
+            emptyOpt.textContent = "— بدون مشاور اختصاصی (لغو انتساب) —";
+            select.append(emptyOpt);
+
+            state.consultants.forEach((c) => {
+                const opt = document.createElement("option");
+                opt.value = c.id;
+                opt.textContent = `${c.full_name} (${c.phone}) — ${c.assigned_students_count || 0} دانش‌آموز`;
+                if (c.id === student.assigned_consultant_id) {
+                    opt.selected = true;
+                }
+                select.append(opt);
+            });
+        }
+        const errEl = document.getElementById("assign-modal-error");
+        if (errEl) errEl.style.display = "none";
+        openModal("modal-assign-student");
+    };
+
+    document.getElementById("form-assign-student")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const studentId = document.getElementById("assign-student-id").value;
+        const consultantId = document.getElementById("assign-consultant-select").value || null;
+        const submitBtn = document.getElementById("btn-submit-assign");
+        const errEl = document.getElementById("assign-modal-error");
+
+        submitBtn.disabled = true;
+        if (errEl) errEl.style.display = "none";
+
+        try {
+            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const res = await fetch(`/api/manager/students/${studentId}/assign/`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
+                body: JSON.stringify({ consultant_id: consultantId })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || "تخصیص مشاور انجام نشد");
+            closeModal("modal-assign-student");
+            await loadUsers("student");
+            await loadUsers("consultant");
+        } catch (err) {
+            if (errEl) { errEl.style.display = "block"; errEl.textContent = err.message; }
+            else alert(err.message);
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    // --- Student Network View Toggle ---
+    const viewToggleBtn = document.getElementById("btn-toggle-student-view");
+    const networkGraphBox = document.getElementById("student-network-graph-container");
+    const studentCardGrid = document.getElementById("student-card-grid-container");
+    const viewModeLabel = document.getElementById("student-view-mode-label");
+
+    viewToggleBtn?.addEventListener("click", () => {
+        const isGraphVisible = networkGraphBox.style.display !== "none";
+        if (isGraphVisible) {
+            networkGraphBox.style.display = "none";
+            studentCardGrid.style.display = "block";
+            if (viewModeLabel) viewModeLabel.textContent = "نمای گراف شبکه 🌐";
+        } else {
+            networkGraphBox.style.display = "block";
+            studentCardGrid.style.display = "none";
+            if (viewModeLabel) viewModeLabel.textContent = "نمای کارت‌های لیست 📋";
+            renderNetworkGraph();
+        }
+    });
+
+    const renderNetworkGraph = () => {
+        const canvas = document.getElementById("student-network-canvas");
+        const statsEl = document.getElementById("graph-stats-summary");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width || 800;
+        canvas.height = rect.height || 540;
+
+        const consultants = state.consultants || [];
+        const students = state.students || [];
+        if (statsEl) statsEl.textContent = `${consultants.length} مشاور | ${students.length} دانش‌آموز`;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+
+        const cRadius = Math.min(canvas.width, canvas.height) * 0.28;
+        const consultantNodes = consultants.map((c, idx) => {
+            const angle = (idx / (consultants.length || 1)) * 2 * Math.PI;
+            return {
+                ...c,
+                x: cx + cRadius * Math.cos(angle),
+                y: cy + cRadius * Math.sin(angle),
+                radius: 22
+            };
+        });
+
+        const studentNodes = students.map((s, idx) => {
+            const matchedC = consultantNodes.find(c => c.id === s.assigned_consultant_id);
+            if (matchedC) {
+                const subAngle = (idx * 0.8) + Math.atan2(matchedC.y - cy, matchedC.x - cx);
+                const dist = 65 + (idx % 3) * 20;
+                return {
+                    ...s,
+                    x: matchedC.x + dist * Math.cos(subAngle),
+                    y: matchedC.y + dist * Math.sin(subAngle),
+                    matchedC
+                };
+            } else {
+                const angle = (idx / (students.length || 1)) * 2 * Math.PI;
+                const dist = Math.min(canvas.width, canvas.height) * 0.42;
+                return {
+                    ...s,
+                    x: cx + dist * Math.cos(angle),
+                    y: cy + dist * Math.sin(angle),
+                    matchedC: null
+                };
+            }
+        });
+
+        studentNodes.forEach(s => {
+            if (s.matchedC) {
+                ctx.beginPath();
+                ctx.strokeStyle = "rgba(37, 99, 235, 0.35)";
+                ctx.lineWidth = 1.5;
+                ctx.moveTo(s.matchedC.x, s.matchedC.y);
+                ctx.lineTo(s.x, s.y);
+                ctx.stroke();
+            }
+        });
+
+        studentNodes.forEach(s => {
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, 8, 0, 2 * Math.PI);
+            ctx.fillStyle = s.matchedC ? "#10b981" : "#94a3b8";
+            ctx.fill();
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = "#334155";
+            ctx.font = "bold 10px Vazirmatn, sans-serif";
+            ctx.fillText(s.full_name || s.phone, s.x, s.y + 14);
+        });
+
+        consultantNodes.forEach(c => {
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, c.radius, 0, 2 * Math.PI);
+            ctx.fillStyle = "#2563eb";
+            ctx.fill();
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 11px Vazirmatn, sans-serif";
+            ctx.fillText((c.full_name || "م").charAt(0), c.x, c.y);
+
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 11px Vazirmatn, sans-serif";
+            ctx.fillText(c.full_name, c.x, c.y + c.radius + 12);
+        });
+    };
 
     // Manager Self Change Password Form Handler
     const pwdForm = document.getElementById("manager-change-password-form");

@@ -354,7 +354,17 @@
             </section>
 
             <section class="manager-page" id="page-consultants">
-                <div class="manager-page__intro"><div><span class="manager-page__eyebrow">مدیریت کاربران</span><h2>مشاوران فعال</h2><p>فهرست و مشخصات حساب‌های مشاوران فعال آکادمی پایه</p></div></div>
+                <div class="manager-page__intro" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+                    <div>
+                        <span class="manager-page__eyebrow">مدیریت کاربران</span>
+                        <h2>مشاوران فعال</h2>
+                        <p>فهرست و مشخصات حساب‌های مشاوران فعال آکادمی پایه</p>
+                    </div>
+                    <button type="button" id="btn-open-add-consultant" class="manager-btn-primary" style="display:inline-flex; align-items:center; gap:8px; background:#0b3dff; color:#fff; border:none; padding:10px 18px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:0 4px 14px rgba(11,61,255,0.25); transition:transform 0.15s ease;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>+ افزودن مشاور جدید</span>
+                    </button>
+                </div>
                 <div class="manager-user-list-panel"><label class="manager-user-search"><span class="visually-hidden">جست‌وجوی مشاوران</span><input id="consultant-search" type="search" maxlength="100" placeholder="جست‌وجو در مشاوران فعال با نام یا شماره موبایل"></label><p id="consultant-list-message" class="manager-list-message" role="status" aria-live="polite">در حال دریافت مشاوران…</p><div id="consultant-user-list" class="manager-user-list"></div></div>
             </section>
 
@@ -434,8 +444,45 @@
             </section>
 
             <section class="manager-page" id="page-students">
-                <div class="manager-page__intro"><div><span class="manager-page__eyebrow">مدیریت کاربران</span><h2>دانش‌آموزان</h2><p>فهرست حساب‌های دانش‌آموزی مجموعه</p></div></div>
-                <div class="manager-user-list-panel"><label class="manager-user-search"><span class="visually-hidden">جست‌وجوی دانش‌آموزان</span><input id="student-search" type="search" maxlength="100" placeholder="جست‌وجو با نام یا شماره موبایل"></label><p id="student-list-message" class="manager-list-message" role="status" aria-live="polite">در حال دریافت دانش‌آموزان…</p><div id="student-user-list" class="manager-user-list"></div></div>
+                <div class="manager-page__intro" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+                    <div>
+                        <span class="manager-page__eyebrow">مدیریت کاربران</span>
+                        <h2>دانش‌آموزان</h2>
+                        <p>فهرست حساب‌های دانش‌آموزی مجموعه و تخصیص مستقیم به مشاوران</p>
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                        <button type="button" id="btn-toggle-student-view" style="display:inline-flex; align-items:center; gap:8px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; padding:10px 16px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; transition:all 0.15s ease;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                            <span id="student-view-mode-label">نمای گراف شبکه 🌐</span>
+                        </button>
+                        <button type="button" id="btn-open-add-student" class="manager-btn-primary" style="display:inline-flex; align-items:center; gap:8px; background:#0b3dff; color:#fff; border:none; padding:10px 18px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:0 4px 14px rgba(11,61,255,0.25); transition:transform 0.15s ease;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>+ افزودن دانش‌آموز جدید</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Interactive Network Graph View Container -->
+                <div id="student-network-graph-container" style="display:none; margin-bottom:24px; background:#ffffff; border:1px solid #e2e8f0; border-radius:20px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.03); position:relative; overflow:hidden;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span style="font-weight:800; font-size:15px; color:#0f172a;">گراف تعاملی ارتباطات مشاوران و دانش‌آموزان</span>
+                            <span style="font-size:12px; background:#f1f5f9; color:#475569; padding:3px 10px; border-radius:20px;" id="graph-stats-summary">در حال بارگذاری…</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:14px; font-size:12px; color:#64748b; flex-wrap:wrap;">
+                            <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; border-radius:50%; background:#2563eb; display:inline-block;"></span> مشاوران</span>
+                            <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:50%; background:#10b981; display:inline-block;"></span> دانش‌آموزان تحت پوشش</span>
+                            <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:50%; background:#94a3b8; display:inline-block;"></span> دانش‌آموزان آزاد (بدون مشاور)</span>
+                            <button type="button" id="btn-reset-graph-zoom" style="background:#f8fafc; border:1px solid #cbd5e1; padding:4px 10px; border-radius:8px; font-size:11px; cursor:pointer;">بازنشانی نما</button>
+                        </div>
+                    </div>
+                    <div style="position:relative; width:100%; height:540px; background:#f8fafc; border-radius:14px; border:1px solid #e2e8f0; overflow:hidden;" id="graph-viewport-box">
+                        <canvas id="student-network-canvas" style="width:100%; height:100%; display:block; cursor:grab;"></canvas>
+                        <div id="graph-tooltip" style="position:absolute; display:none; pointer-events:none; background:rgba(15,23,42,0.92); backdrop-filter:blur(6px); color:#fff; padding:8px 14px; border-radius:10px; font-size:12px; z-index:10; box-shadow:0 8px 20px rgba(0,0,0,0.25); max-width:280px; line-height:1.6;"></div>
+                    </div>
+                </div>
+
+                <div id="student-card-grid-container" class="manager-user-list-panel"><label class="manager-user-search"><span class="visually-hidden">جست‌وجوی دانش‌آموزان</span><input id="student-search" type="search" maxlength="100" placeholder="جست‌وجو با نام یا شماره موبایل"></label><p id="student-list-message" class="manager-list-message" role="status" aria-live="polite">در حال دریافت دانش‌آموزان…</p><div id="student-user-list" class="manager-user-list"></div></div>
             </section>
 
             <section class="manager-page" id="page-conversations">
@@ -673,6 +720,216 @@
                 <button type="button" class="modal-close-btn" data-modal="modal-reset-pwd" style="flex:1; background:#f1f5f9; color:#475569; padding:10px; border-radius:10px; font-weight:700; font-size:13px; border:none; cursor:pointer;">انصراف</button>
                 <button type="submit" id="btn-submit-reset-pwd" style="flex:2; background:#2563eb; color:#fff; padding:10px; border-radius:10px; font-weight:800; font-size:13px; border:none; cursor:pointer;">
                     ثبت و فعال‌سازی رمز جدید
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal 4: Add New Consultant Manually -->
+<div id="modal-add-consultant" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#ffffff; border-radius:20px; width:100%; max-width:460px; box-shadow:0 20px 40px rgba(0,0,0,0.2); overflow:hidden;">
+        <div style="background:#f8fafc; border-bottom:1px solid #e2e8f0; padding:18px 24px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:36px; height:36px; border-radius:10px; background:#eff6ff; color:#2563eb; display:flex; align-items:center; justify-content:center;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                </div>
+                <div>
+                    <h3 style="margin:0; font-size:16px; font-weight:800; color:#0f172a;">افزودن مشاور جدید</h3>
+                    <p style="margin:2px 0 0; font-size:12px; color:#64748b;">تعریف دستی حساب کاربری مشاور توسط مدیر</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close-btn" data-modal="modal-add-consultant" style="background:transparent; border:none; cursor:pointer; font-size:20px; color:#94a3b8; padding:4px;">✕</button>
+        </div>
+        <form id="form-add-consultant" style="padding:24px; display:flex; flex-direction:column; gap:16px;">
+            <div>
+                <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px;">نام و نام خانوادگی مشاور <span style="color:#dc2626;">*</span></label>
+                <input type="text" id="add-consultant-name" required placeholder="مثلاً: علی رضایی" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; font-weight:600; outline:none; background:#fff;">
+            </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px;">شماره همراه (نام کاربری ورود) <span style="color:#dc2626;">*</span></label>
+                <input type="tel" id="add-consultant-phone" required placeholder="۰۹۱۲۳۴۵۶۷۸۹" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; font-weight:700; direction:ltr; text-align:right; font-family:monospace; outline:none; background:#fff;">
+            </div>
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <label style="font-size:12px; font-weight:700; color:#475569;">رمز عبور ورود</label>
+                    <button type="button" id="btn-gen-pwd-add-consultant" style="background:transparent; border:none; color:#2563eb; font-size:11px; font-weight:800; cursor:pointer; padding:0;">⚡ تولید رمز پیشنهادی</button>
+                </div>
+                <input type="text" id="add-consultant-password" placeholder="در صورت خالی بودن، شماره موبایل ست می‌شود" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; font-weight:700; direction:ltr; font-family:monospace; outline:none; background:#fff;">
+                <small style="color:#64748b; font-size:11px; margin-top:4px; display:block;">مشاور با این شماره و رمز بلافاصله می‌تواند وارد پنل مشاور شود.</small>
+            </div>
+            <p id="add-consultant-error" style="display:none; color:#dc2626; font-size:12px; background:#fef2f2; padding:8px 12px; border-radius:8px; margin:0;"></p>
+            <div style="display:flex; gap:10px; margin-top:8px;">
+                <button type="button" class="modal-close-btn" data-modal="modal-add-consultant" style="flex:1; background:#f1f5f9; color:#475569; padding:10px; border-radius:10px; font-weight:700; font-size:13px; border:none; cursor:pointer;">انصراف</button>
+                <button type="submit" id="btn-submit-add-consultant" style="flex:2; background:#0b3dff; color:#fff; padding:10px; border-radius:10px; font-weight:800; font-size:13px; border:none; cursor:pointer;">
+                    ایجاد حساب مشاور
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal 5: Delete Consultant Confirmation -->
+<div id="modal-delete-consultant" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#ffffff; border-radius:20px; width:100%; max-width:440px; box-shadow:0 20px 40px rgba(0,0,0,0.2); overflow:hidden;">
+        <div style="background:#fef2f2; border-bottom:1px solid #fee2e2; padding:20px 24px; text-align:center;">
+            <div style="width:50px; height:50px; border-radius:50%; background:#dc2626; color:#fff; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </div>
+            <h3 style="margin:0 0 4px; font-size:17px; font-weight:800; color:#991b1b;">حذف کامل مشاور</h3>
+            <p style="margin:0; font-size:13px; color:#b91c1c;">این عملیات غیرقابل بازگشت است</p>
+        </div>
+        <div style="padding:22px; display:flex; flex-direction:column; gap:16px;">
+            <p style="margin:0; font-size:13px; line-height:1.7; color:#334155;">
+                آیا از حذف حساب مشاور <strong id="delete-consultant-name" style="color:#0f172a;">---</strong> اطمینان دارید؟
+                <br>
+                <span style="color:#dc2626; font-size:12px; font-weight:700;">توجه: ارتباط کلیه دانش‌آموزان منتسب به این مشاور لغو خواهد شد و حساب مشاور به طور کامل حذف می‌گردد.</span>
+            </p>
+            <input type="hidden" id="delete-consultant-id">
+            <p id="delete-consultant-error" style="display:none; color:#dc2626; font-size:12px; background:#fef2f2; padding:8px 12px; border-radius:8px; margin:0;"></p>
+            <div style="display:flex; gap:10px; margin-top:4px;">
+                <button type="button" class="modal-close-btn" data-modal="modal-delete-consultant" style="flex:1; background:#f1f5f9; color:#475569; padding:10px; border-radius:10px; font-weight:700; font-size:13px; border:none; cursor:pointer;">انصراف</button>
+                <button type="button" id="btn-confirm-delete-consultant" style="flex:2; background:#dc2626; color:#fff; padding:10px; border-radius:10px; font-weight:800; font-size:13px; border:none; cursor:pointer;">
+                    بله، مشاور حذف شود
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 6: Add New Student Manually -->
+<div id="modal-add-student" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#ffffff; border-radius:20px; width:100%; max-width:480px; box-shadow:0 20px 40px rgba(0,0,0,0.2); overflow:hidden;">
+        <div style="background:#f8fafc; border-bottom:1px solid #e2e8f0; padding:18px 24px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:36px; height:36px; border-radius:10px; background:#ecfdf5; color:#059669; display:flex; align-items:center; justify-content:center;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                </div>
+                <div>
+                    <h3 style="margin:0; font-size:16px; font-weight:800; color:#0f172a;">افزودن دانش‌آموز جدید</h3>
+                    <p style="margin:2px 0 0; font-size:12px; color:#64748b;">تعریف دستی حساب کاربری دانش‌آموز توسط مدیر</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close-btn" data-modal="modal-add-student" style="background:transparent; border:none; cursor:pointer; font-size:20px; color:#94a3b8; padding:4px;">✕</button>
+        </div>
+        <form id="form-add-student" style="padding:24px; display:flex; flex-direction:column; gap:14px;">
+            <div>
+                <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">نام و نام خانوادگی دانش‌آموز <span style="color:#dc2626;">*</span></label>
+                <input type="text" id="add-student-name" required placeholder="مثلاً: سارا محمدی" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; font-weight:600; outline:none; background:#fff;">
+            </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">شماره همراه دانش‌آموز <span style="color:#dc2626;">*</span></label>
+                <input type="tel" id="add-student-phone" required placeholder="۰۹۱۲۳۴۵۶۷۸۹" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; font-weight:700; direction:ltr; text-align:right; font-family:monospace; outline:none; background:#fff;">
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">پایه تحصیلی</label>
+                    <select id="add-student-grade" style="width:100%; padding:9px 10px; border:1px solid #cbd5e1; border-radius:10px; font-size:12px; background:#fff; font-family:inherit;">
+                        <option value="">انتخاب پایه…</option>
+                        <option value="12">دوازدهم (کنکوری)</option>
+                        <option value="11">یازدهم</option>
+                        <option value="10">دهم</option>
+                        <option value="9">نهم</option>
+                        <option value="8">هشتم</option>
+                        <option value="7">هفتم</option>
+                        <option value="graduate">فارغ‌التحصیل (پشت کنکور)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">رشته تحصیلی</label>
+                    <select id="add-student-major" style="width:100%; padding:9px 10px; border:1px solid #cbd5e1; border-radius:10px; font-size:12px; background:#fff; font-family:inherit;">
+                        <option value="">انتخاب رشته…</option>
+                        <option value="experimental">علوم تجربی</option>
+                        <option value="math">ریاضی و فیزیک</option>
+                        <option value="humanities">علوم انسانی</option>
+                        <option value="technical">فنی و حرفه‌ای</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">شماره تماس اولیا (اختیاری)</label>
+                <input type="tel" id="add-student-parent-phone" placeholder="۰۹۱۲..." style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; direction:ltr; text-align:right; font-family:monospace; outline:none; background:#fff;">
+            </div>
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                    <label style="font-size:12px; font-weight:700; color:#475569;">رمز عبور ورود دانش‌آموز</label>
+                    <button type="button" id="btn-gen-pwd-add-student" style="background:transparent; border:none; color:#2563eb; font-size:11px; font-weight:800; cursor:pointer; padding:0;">⚡ تولید رمز</button>
+                </div>
+                <input type="text" id="add-student-password" placeholder="در صورت خالی بودن، شماره موبایل ست می‌شود" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; font-weight:700; direction:ltr; font-family:monospace; outline:none; background:#fff;">
+                <small style="color:#64748b; font-size:11px; margin-top:4px; display:block;">دانش‌آموز بلافاصله با این اطلاعات می‌تواند در صفحه ورود لاگین کند.</small>
+            </div>
+            <p id="add-student-error" style="display:none; color:#dc2626; font-size:12px; background:#fef2f2; padding:8px 12px; border-radius:8px; margin:0;"></p>
+            <div style="display:flex; gap:10px; margin-top:6px;">
+                <button type="button" class="modal-close-btn" data-modal="modal-add-student" style="flex:1; background:#f1f5f9; color:#475569; padding:10px; border-radius:10px; font-weight:700; font-size:13px; border:none; cursor:pointer;">انصراف</button>
+                <button type="submit" id="btn-submit-add-student" style="flex:2; background:#059669; color:#fff; padding:10px; border-radius:10px; font-weight:800; font-size:13px; border:none; cursor:pointer;">
+                    ایجاد حساب دانش‌آموز
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal 7: Delete Student Confirmation -->
+<div id="modal-delete-student" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#ffffff; border-radius:20px; width:100%; max-width:440px; box-shadow:0 20px 40px rgba(0,0,0,0.2); overflow:hidden;">
+        <div style="background:#fef2f2; border-bottom:1px solid #fee2e2; padding:20px 24px; text-align:center;">
+            <div style="width:50px; height:50px; border-radius:50%; background:#dc2626; color:#fff; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </div>
+            <h3 style="margin:0 0 4px; font-size:17px; font-weight:800; color:#991b1b;">حذف کامل حساب دانش‌آموز</h3>
+            <p style="margin:0; font-size:13px; color:#b91c1c;">کلیه سوابق تحصیلی دانش‌آموز حذف خواهد شد</p>
+        </div>
+        <div style="padding:22px; display:flex; flex-direction:column; gap:16px;">
+            <p style="margin:0; font-size:13px; line-height:1.7; color:#334155;">
+                آیا از حذف حساب دانش‌آموز <strong id="delete-student-name" style="color:#0f172a;">---</strong> اطمینان دارید؟
+                <br>
+                <span style="color:#dc2626; font-size:12px; font-weight:700;">توجه: گزارش‌های مطالعه، تایمرها، جلسات، پیام‌ها و تخصیص مشاور این دانش‌آموز به طور کامل پاک می‌شوند.</span>
+            </p>
+            <input type="hidden" id="delete-student-id">
+            <p id="delete-student-error" style="display:none; color:#dc2626; font-size:12px; background:#fef2f2; padding:8px 12px; border-radius:8px; margin:0;"></p>
+            <div style="display:flex; gap:10px; margin-top:4px;">
+                <button type="button" class="modal-close-btn" data-modal="modal-delete-student" style="flex:1; background:#f1f5f9; color:#475569; padding:10px; border-radius:10px; font-weight:700; font-size:13px; border:none; cursor:pointer;">انصراف</button>
+                <button type="button" id="btn-confirm-delete-student" style="flex:2; background:#dc2626; color:#fff; padding:10px; border-radius:10px; font-weight:800; font-size:13px; border:none; cursor:pointer;">
+                    بله، دانش‌آموز حذف شود
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 8: Assign Consultant to Student -->
+<div id="modal-assign-student" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#ffffff; border-radius:20px; width:100%; max-width:460px; box-shadow:0 20px 40px rgba(0,0,0,0.2); overflow:hidden;">
+        <div style="background:#f8fafc; border-bottom:1px solid #e2e8f0; padding:18px 24px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:36px; height:36px; border-radius:10px; background:#eff6ff; color:#2563eb; display:flex; align-items:center; justify-content:center;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <div>
+                    <h3 style="margin:0; font-size:16px; font-weight:800; color:#0f172a;">تخصیص / تغییر مشاور</h3>
+                    <p style="margin:2px 0 0; font-size:12px; color:#64748b;">تعیین مشاور اختصاصی برای دانش‌آموز</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close-btn" data-modal="modal-assign-student" style="background:transparent; border:none; cursor:pointer; font-size:20px; color:#94a3b8; padding:4px;">✕</button>
+        </div>
+        <form id="form-assign-student" style="padding:24px; display:flex; flex-direction:column; gap:16px;">
+            <input type="hidden" id="assign-student-id">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px; font-size:13px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#64748b;">دانش‌آموز:</span>
+                <strong id="assign-student-name" style="color:#0f172a;">---</strong>
+            </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px;">انتخاب مشاور اختصاصی:</label>
+                <select id="assign-consultant-select" required style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; font-weight:600; background:#fff; font-family:inherit;">
+                    <option value="">در حال بارگذاری مشاوران…</option>
+                </select>
+                <small style="color:#64748b; font-size:11px; margin-top:5px; display:block;">پس از تخصیص، دانش‌آموز در پنل خود مستقیماً با این مشاور در ارتباط خواهد بود.</small>
+            </div>
+            <p id="assign-modal-error" style="display:none; color:#dc2626; font-size:12px; background:#fef2f2; padding:8px 12px; border-radius:8px; margin:0;"></p>
+            <div style="display:flex; gap:10px; margin-top:6px;">
+                <button type="button" class="modal-close-btn" data-modal="modal-assign-student" style="flex:1; background:#f1f5f9; color:#475569; padding:10px; border-radius:10px; font-weight:700; font-size:13px; border:none; cursor:pointer;">انصراف</button>
+                <button type="submit" id="btn-submit-assign" style="flex:2; background:#2563eb; color:#fff; padding:10px; border-radius:10px; font-weight:800; font-size:13px; border:none; cursor:pointer;">
+                    ثبت تخصیص مشاور
                 </button>
             </div>
         </form>
