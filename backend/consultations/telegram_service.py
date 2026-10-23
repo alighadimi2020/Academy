@@ -24,11 +24,18 @@ def get_bot_username():
     return getattr(settings, "TELEGRAM_BOT_USERNAME", "").strip()
 
 
-def call_telegram_api(method: str, payload: dict = None) -> dict:
+def call_telegram_api(method: str, payload: dict = None, timeout: int = 25) -> dict:
     token = get_bot_token()
     if not token:
         logger.warning("Telegram Bot Token is not configured.")
         return {"ok": False, "description": "TELEGRAM_BOT_TOKEN not configured."}
+
+    # Ensure socket timeout exceeds long-polling wait duration
+    if payload and "timeout" in payload:
+        try:
+            timeout = max(timeout, int(payload["timeout"]) + 15)
+        except (ValueError, TypeError):
+            pass
 
     url = f"https://api.telegram.org/bot{token}/{method}"
     data = json.dumps(payload or {}).encode("utf-8")
@@ -44,7 +51,7 @@ def call_telegram_api(method: str, payload: dict = None) -> dict:
         opener = urllib.request.build_opener()
 
     try:
-        with opener.open(req, timeout=15) as response:
+        with opener.open(req, timeout=timeout) as response:
             body = response.read().decode("utf-8")
             return json.loads(body)
     except urllib.error.HTTPError as e:
