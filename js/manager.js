@@ -1079,6 +1079,65 @@ const initManagerApp = async () => {
         });
     };
 
+    // Manager Self Change Password Visibility Toggle
+    document.querySelectorAll(".mgr-pwd-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const targetId = btn.getAttribute("data-target");
+            const input = document.getElementById(targetId);
+            if (!input) return;
+            const isPassword = input.type === "password";
+            input.type = isPassword ? "text" : "password";
+            btn.style.color = isPassword ? "#2563eb" : "#94a3b8";
+        });
+    });
+
+    // Manager Password Strength Meter
+    const mgrNewPwdInput = document.getElementById("mgr-new-pwd");
+    const mgrStrengthBox = document.getElementById("mgr-strength-container");
+    const mgrBar1 = document.getElementById("mgr-strength-bar-1");
+    const mgrBar2 = document.getElementById("mgr-strength-bar-2");
+    const mgrBar3 = document.getElementById("mgr-strength-bar-3");
+    const mgrStrengthText = document.getElementById("mgr-strength-text");
+
+    if (mgrNewPwdInput && mgrStrengthBox) {
+        mgrNewPwdInput.addEventListener("input", () => {
+            const val = mgrNewPwdInput.value;
+            if (!val) {
+                mgrStrengthBox.style.display = "none";
+                return;
+            }
+            mgrStrengthBox.style.display = "block";
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (val.length >= 12) score++;
+            if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
+            if (/\d/.test(val)) score++;
+            if (/[^a-zA-Z0-9]/.test(val)) score++;
+
+            // Reset bars
+            mgrBar1.style.background = "#e2e8f0";
+            mgrBar2.style.background = "#e2e8f0";
+            mgrBar3.style.background = "#e2e8f0";
+
+            if (score <= 2) {
+                mgrBar1.style.background = "#ef4444";
+                mgrStrengthText.style.color = "#ef4444";
+                mgrStrengthText.textContent = "رمز عبور ضعیف (استفاده از حداقل ۸ کاراکتر و ترکیب حروف و ارقام الزامی است)";
+            } else if (score <= 4) {
+                mgrBar1.style.background = "#eab308";
+                mgrBar2.style.background = "#eab308";
+                mgrStrengthText.style.color = "#d97706";
+                mgrStrengthText.textContent = "رمز عبور متوسط و قابل قبول";
+            } else {
+                mgrBar1.style.background = "#22c55e";
+                mgrBar2.style.background = "#22c55e";
+                mgrBar3.style.background = "#22c55e";
+                mgrStrengthText.style.color = "#16a34a";
+                mgrStrengthText.textContent = "رمز عبور بسیار قوی و ایمن";
+            }
+        });
+    }
+
     // Manager Self Change Password Form Handler
     const pwdForm = document.getElementById("manager-change-password-form");
     const pwdMsg = document.getElementById("manager-pwd-message");
@@ -1128,6 +1187,7 @@ const initManagerApp = async () => {
             pwdMsg.style.color = "#16a34a";
             pwdMsg.textContent = data.detail || "رمز عبور مدیر با موفقیت تغییر کرد.";
             pwdForm.reset();
+            if (mgrStrengthBox) mgrStrengthBox.style.display = "none";
         } catch (err) {
             pwdMsg.style.background = "#fef2f2";
             pwdMsg.style.color = "#dc2626";
