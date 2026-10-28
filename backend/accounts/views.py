@@ -189,6 +189,17 @@ def verify_registration(request):
     )
 
 
+def custom_csrf_failure(request, reason=""):
+    if request.path.startswith("/api/"):
+        response = JsonResponse(
+            {"detail": f"اعتبارسنجی امنیتی نشست (CSRF) با خطا مواجه شد. لطفاً صفحه را بازنگری کنید. ({reason})"},
+            status=403
+        )
+        return _add_no_cache_headers(response)
+    from django.views.csrf import csrf_failure
+    return csrf_failure(request, reason)
+
+
 @require_GET
 @never_cache
 @ensure_csrf_cookie
@@ -200,6 +211,7 @@ def csrf_token(request):
 
 @require_POST
 @never_cache
+@ensure_csrf_cookie
 @csrf_protect
 def login_user(request):
     try:
@@ -243,7 +255,12 @@ def login_user(request):
     auth_login(request, user)
     record_event(request, "auth.login.succeeded", "auth", "success", subject=user.phone, details={"role": user.role})
     request.session.set_expiry(1209600 if data.get("remember") else 0)
-    response = JsonResponse({"detail": "ورود موفق بود.", "role": user.role})
+    from django.middleware.csrf import get_token
+    response = JsonResponse({
+        "detail": "ورود موفق بود.",
+        "role": user.role,
+        "csrfToken": get_token(request),
+    })
     return _add_no_cache_headers(response)
 
 

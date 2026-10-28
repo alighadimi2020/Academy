@@ -80,11 +80,53 @@ const initStudentApp = async () => {
         if (match) return match[1];
         try {
             const res = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
-            const d = await res.json();
-            return d.csrfToken;
+            const text = await res.text();
+            const d = JSON.parse(text);
+            return d.csrfToken || "";
         } catch {
             return "";
         }
+    };
+
+    const safeParseJson = async (response) => {
+        try {
+            const text = await response.text();
+            if (!text || !text.trim()) return {};
+            return JSON.parse(text);
+        } catch (err) {
+            return { detail: "خطای پردازش پاسخ سرور" };
+        }
+    };
+
+    const secureFetch = async (url, options = {}, retries = 1) => {
+        let token = await getCsrfToken();
+        const headers = {
+            "Content-Type": "application/json",
+            "X-CSRFToken": token,
+            ...(options.headers || {})
+        };
+        const fetchOpts = {
+            credentials: "same-origin",
+            ...options,
+            headers
+        };
+        let res = await fetch(url, fetchOpts);
+
+        // If CSRF 403, force refresh CSRF token from server and retry once
+        if (res.status === 403 && retries > 0) {
+            try {
+                const csrfRes = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
+                const csrfText = await csrfRes.text();
+                const csrfData = JSON.parse(csrfText);
+                if (csrfData && csrfData.csrfToken) {
+                    headers["X-CSRFToken"] = csrfData.csrfToken;
+                    res = await fetch(url, { ...fetchOpts, headers });
+                }
+            } catch (_) {}
+        }
+
+        const data = await safeParseJson(res);
+        return { ok: res.ok, status: res.status, data };
     };
 
     // Vector Cartoon Character Generator (STRICTLY NO EMOJIS)
@@ -2255,10 +2297,10 @@ const initStudentApp = async () => {
 
         try {
             const [response, timerResponse] = await Promise.all([
-                fetch("/api/consultations/study-sessions/", { credentials: "same-origin" }),
-                fetch("/api/consultations/study-timers/today/", { credentials: "same-origin" })
+                fetch(`/api/consultations/study-sessions/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }),
+                fetch(`/api/consultations/study-timers/today/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" })
             ]);
-            const payload = await response.json(), timerData = await timerResponse.json();
+            const payload = await safeParseJson(response), timerData = await safeParseJson(timerResponse);
             if (!response.ok) throw new Error(payload.detail || "برنامه دریافت نشد.");
 
             const sessions = payload.results || [];
@@ -2496,7 +2538,7 @@ const initStudentApp = async () => {
                 }
             }
 
-            const csrf = async () => (await fetch("/api/auth/csrf/", { credentials: "same-origin" })).json().then(x => x.csrfToken);
+            const csrf = getCsrfToken;
 
             let isAddingBox = false;
 
@@ -2787,17 +2829,13 @@ const initStudentApp = async () => {
                         submitBtn.disabled = true;
                         msg.textContent = "در حال ایجاد باکس...";
                         try {
-                            const token = await csrf();
-                            const r = await fetch("/api/consultations/study-timers/create-box/", {
+                            const res = await secureFetch("/api/consultations/study-timers/create-box/", {
                                 method: "POST",
-                                credentials: "same-origin",
-                                headers: { "Content-Type": "application/json", "X-CSRFToken": token },
                                 body: JSON.stringify({ subject: finalSubject, topic: finalTopic })
                             });
-                            const d = await r.json();
-                            if (!r.ok) throw new Error(d.detail || "ایجاد باکس انجام نشد.");
+                            if (!res.ok) throw new Error(res.data.detail || "ایجاد باکس انجام نشد.");
                             timersList.push({
-                                ...d,
+                                ...res.data,
                                 clientSince: null
                             });
                             isAddingBox = false;
@@ -3280,18 +3318,14 @@ const initStudentApp = async () => {
                     card.style.pointerEvents = "none";
                 }
                 try {
-                    const token = await csrf();
-                    if (!token) throw new Error("توکن امنیتی دریافت نشد؛ صفحه را تازه کنید.");
                     const payload = { timer_id: timerId, action: actionName, notes: notesVal, ...extra };
                     if (minutes !== null) payload.minutes = minutes;
-                    const r = await fetch("/api/consultations/study-timers/action/", {
+                    const res = await secureFetch("/api/consultations/study-timers/action/", {
                         method: "POST",
-                        credentials: "same-origin",
-                        headers: { "Content-Type": "application/json", "X-CSRFToken": token },
                         body: JSON.stringify(payload)
                     });
-                    const d = await r.json();
-                    if (!r.ok) throw new Error(d.detail || `خطا در ثبت (${r.status})`);
+                    if (!res.ok) throw new Error(res.data.detail || `خطا در ثبت (${res.status})`);
+                    const d = res.data;
 
                     if (actionName === "delete") {
                         timersList = timersList.filter(t => t.id !== timerId);
@@ -3346,7 +3380,8 @@ const initStudentApp = async () => {
 
             // Load delivered study report history & render in glassmorphic rail
             try {
-                const reports = await fetch(`/api/consultations/study-reports/?_t=${Date.now()}`, { credentials: "same-origin" }).then(r => r.json());
+                const repRes = await fetch(`/api/consultations/study-reports/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
+                const reports = await safeParseJson(repRes);
                 renderPastReportsRail(reports.results || []);
             } catch (err) {
                 console.error("Error loading past study reports:", err);
@@ -3399,14 +3434,10 @@ const initStudentApp = async () => {
                 if (!confirmed) return;
 
                 try {
-                    const token = await csrf();
-                    const res = await fetch(`/api/consultations/study-reports/${x.id}/delete/`, {
-                        method: "POST",
-                        credentials: "same-origin",
-                        headers: { "Content-Type": "application/json", "X-CSRFToken": token }
+                    const res = await secureFetch(`/api/consultations/study-reports/${x.id}/delete/`, {
+                        method: "POST"
                     });
-                    const d = await res.json();
-                    if (!res.ok) throw new Error(d.detail || "خطا در حذف گزارش");
+                    if (!res.ok) throw new Error(res.data.detail || "خطا در حذف گزارش");
 
                     allReports = allReports.filter(r => r.id !== x.id);
                     renderPastReportsRail(allReports);
