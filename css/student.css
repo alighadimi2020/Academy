@@ -284,6 +284,27 @@ a {
     font-size: 11px;
 }
 
+.payeh-header-logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.payeh-header-logout-btn:hover {
+    background: #fecaca;
+    color: #991b1b;
+    transform: translateY(-1px);
+}
+
 .payeh-student__menu {
     display: none;
     width: 42px;

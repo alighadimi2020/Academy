@@ -153,7 +153,7 @@
                 </div>
             </div>
 
-            <button class="payeh-consultant__logout" type="button">
+            <button class="payeh-consultant__logout payeh-logout-btn" type="button">
                 <svg viewBox="0 0 24 24">
                     <path d="M10 17l5-5-5-5"></path>
                     <path d="M15 12H3"></path>
@@ -187,12 +187,23 @@
 
             </div>
 
-            <div class="payeh-consultant__header-profile">
-                <div class="payeh-consultant__header-avatar">پ</div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button type="button" class="payeh-header-logout-btn payeh-logout-btn" id="consultantHeaderLogoutBtn" title="خروج از حساب کاربری">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>خروج</span>
+                </button>
 
-                <div>
-                    <strong id="consultant-header-name">مشاور</strong>
-                    <span>مشاور تحصیلی</span>
+                <div class="payeh-consultant__header-profile">
+                    <div class="payeh-consultant__header-avatar">پ</div>
+
+                    <div>
+                        <strong id="consultant-header-name">مشاور</strong>
+                        <span>مشاور تحصیلی</span>
+                    </div>
                 </div>
             </div>
 
@@ -819,6 +830,28 @@
                         <button class="consultant-write-article" type="submit" id="consultant-pwd-btn">ذخیره رمز عبور جدید</button>
                     </form>
                 </div>
+
+                <div class="consultant-article-card" style="margin-top: 24px; border-color: rgba(239, 68, 68, 0.25);">
+                    <div class="consultant-article-card__header">
+                        <div>
+                            <span style="color: #b91c1c;">نشست فعال</span>
+                            <h3 style="color: #b91c1c;">خروج از حساب کاربری</h3>
+                        </div>
+                    </div>
+                    <p class="consultant-article-hint">
+                        در صورت اتمام کار با پنل یا استفاده از رایانه عمومی، با فشردن دکمه زیر به صورت کامل از حساب کاربری خارج شوید. برای ورود مجدد نیاز به وارد کردن نام کاربری و رمز عبور خواهد بود.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <button type="button" class="payeh-profile-submit-btn payeh-logout-btn" style="background:#dc2626; border-color:#dc2626; color:#fff; border-radius:12px; padding:12px 24px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span>خروج امن از حساب کاربری</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
         </section>
@@ -828,7 +861,7 @@
 </div>
 
 <script src="js/curriculum-data.js?v=20261017_25"></script>
-<script src="js/consultant.js?v=20261022_6"></script>
+<script src="js/consultant.js?v=20261114_1"></script>
 
 </body>
 </html>

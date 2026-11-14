@@ -32,21 +32,31 @@ document.addEventListener("DOMContentLoaded", () => {
     phoneInput.addEventListener("input", normalizePhoneInput);
     phoneInput.addEventListener("paste", () => setTimeout(normalizePhoneInput, 0));
     
-    fetch(`${apiBase}me/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" })
-        .then(r => r.ok ? r.json() : null)
-        .then(user => {
-            if (user && user.role) {
-                const destinations = {
-                    student: "student.html",
-                    consultant: "consultant.html",
-                    instructor: "student.html",
-                    admin: "manager.html",
-                    manager: "manager.html",
-                    applicant: "consultant-register.html#status",
-                };
-                window.location.assign(destinations[user.role] || "manager.html");
-            }
-        }).catch(() => {});
+    const urlParams = new URLSearchParams(window.location.search);
+    const isLoggedOut = urlParams.has("logged_out");
+
+    if (isLoggedOut) {
+        if (message) {
+            message.textContent = "با موفقیت از حساب کاربری خارج شدید.";
+            message.className = "payeh-login__message is-success";
+        }
+    } else {
+        fetch(`${apiBase}me/?_t=${Date.now()}`, { credentials: "include", cache: "no-store" })
+            .then(r => r.ok ? r.json() : null)
+            .then(user => {
+                if (user && user.role) {
+                    const destinations = {
+                        student: "student.html",
+                        consultant: "consultant.html",
+                        instructor: "student.html",
+                        admin: "manager.html",
+                        manager: "manager.html",
+                        applicant: "consultant-register.html#status",
+                    };
+                    window.location.assign(destinations[user.role] || "manager.html");
+                }
+            }).catch(() => {});
+    }
 
     passwordToggle?.addEventListener("click", () => {
         const visible = passwordInput.type === "password";

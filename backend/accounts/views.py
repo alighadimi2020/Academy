@@ -6,9 +6,10 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.hashers import check_password, make_password
 from django.db import IntegrityError, transaction
 from django.utils import timezone
+from django.conf import settings
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie, csrf_exempt
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from django.http import JsonResponse
 
 
@@ -480,14 +481,15 @@ def update_student_profile(request):
 
 
 @require_GET
+@never_cache
 def manager_user_list(request):
     if not request.user.is_authenticated or not request.user.is_active:
-        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+        return _add_no_cache_headers(JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401))
     if request.user.role not in {"manager", "admin"}:
-        return JsonResponse({"detail": "دسترسی مشاهده فهرست کاربران را ندارید."}, status=403)
+        return _add_no_cache_headers(JsonResponse({"detail": "دسترسی مشاهده فهرست کاربران را ندارید."}, status=403))
     role = request.GET.get("role", "")
     if role not in {"student", "consultant"}:
-        return JsonResponse({"detail": "نوع فهرست معتبر نیست."}, status=400)
+        return _add_no_cache_headers(JsonResponse({"detail": "نوع فهرست معتبر نیست."}, status=400))
     query = request.GET.get("q", "").strip()[:100]
     users = User.objects.filter(role=role).order_by("full_name", "id")
     if query:
@@ -550,18 +552,30 @@ def manager_user_list(request):
             item["assigned_students_count"] = consultant_student_counts.get(user.id, 0)
 
         results.append(item)
-    return JsonResponse({"results": results, "count": len(results)})
+    return _add_no_cache_headers(JsonResponse({"results": results, "count": len(results)}))
 
 
-@require_POST
+@require_http_methods(["GET", "POST"])
 @never_cache
-@csrf_protect
+@csrf_exempt
 def logout_user(request):
     if request.user.is_authenticated:
         record_event(request, "auth.logout", "auth", "success", subject=request.user.phone)
     auth_logout(request)
     request.session.flush()
-    response = JsonResponse({"detail": "خروج انجام شد."})
+    response = JsonResponse({"ok": True, "detail": "خروج انجام شد."})
+    response.delete_cookie(
+        settings.SESSION_COOKIE_NAME,
+        path=getattr(settings, "SESSION_COOKIE_PATH", "/"),
+        domain=getattr(settings, "SESSION_COOKIE_DOMAIN", None),
+        samesite=getattr(settings, "SESSION_COOKIE_SAMESITE", "Lax"),
+    )
+    response.delete_cookie(
+        getattr(settings, "CSRF_COOKIE_NAME", "csrftoken"),
+        path=getattr(settings, "CSRF_COOKIE_PATH", "/"),
+        domain=getattr(settings, "CSRF_COOKIE_DOMAIN", None),
+        samesite=getattr(settings, "CSRF_COOKIE_SAMESITE", "Lax"),
+    )
     return _add_no_cache_headers(response)
 
 
@@ -664,6 +678,7 @@ def manager_set_user_password(request, user_id):
 
 
 @require_POST
+@never_cache
 @csrf_protect
 def manager_create_consultant(request):
     if not request.user.is_authenticated or not request.user.is_active:
@@ -809,6 +824,7 @@ def manager_delete_consultant(request, user_id):
 
 
 @require_POST
+@never_cache
 @csrf_protect
 def manager_assign_student(request, student_id):
     if not request.user.is_authenticated or not request.user.is_active:

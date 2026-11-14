@@ -221,18 +221,14 @@
             </div>
 
 
-            <button class="payeh-student__logout" type="button">
-
+            <button class="payeh-student__logout payeh-logout-btn" id="studentSidebarLogoutBtn" type="button">
                 <svg viewBox="0 0 24 24">
                     <path d="M10 17l5-5-5-5"></path>
                     <path d="M15 12H3"></path>
                     <path d="M21 3v18"></path>
                 </svg>
-
-                <span>خروج</span>
-
+                <span>خروج از حساب</span>
             </button>
-
         </div>
 
     </aside>
@@ -258,7 +254,6 @@
 
                 </button>
 
-
                 <div>
 
                     <h1 id="studentPageTitle">
@@ -271,18 +266,21 @@
 
             </div>
 
-
-            <div class="payeh-student__header-profile">
-
-                <div class="payeh-student__header-avatar">
-                    ط
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="payeh-student__header-profile">
+                    <div class="payeh-student__header-avatar">
+                        ط
+                    </div>
+                    <div>
+                        <strong id="student-account-name">دانش‌آموز</strong>
+                        <span>دانش‌آموز</span>
+                    </div>
                 </div>
 
-                <div>
-                    <strong id="student-account-name">دانش‌آموز</strong>
-                    <span>دانش‌آموز</span>
-                </div>
-
+                <button class="payeh-header-logout-btn payeh-logout-btn" id="studentHeaderLogoutBtn" type="button" title="خروج از حساب کاربری">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <span>خروج</span>
+                </button>
             </div>
 
         </header>
@@ -1322,6 +1320,31 @@
                             </div>
                         </form>
                     </div>
+
+                    <!-- Account Session & Logout Card -->
+                    <div class="payeh-profile-form-card" style="margin-top: 24px; border-color: rgba(239, 68, 68, 0.2);">
+                        <div class="payeh-profile-section-title" style="color: #b91c1c;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <h3 style="color: #b91c1c;">نشست فعال و خروج از حساب</h3>
+                        </div>
+                        <p style="font-size:13px; color:#64748b; margin-top:-10px; margin-bottom:20px; line-height:1.6;">
+                            در صورت اتمام کار با سامانه یا استفاده از دستگاه مشترک، با کلیک بر روی دکمه زیر به صورت کامل از حساب خارج شوید. برای ورود مجدد نیاز به وارد کردن نام کاربری و رمز عبور خواهد بود.
+                        </p>
+                        <div class="payeh-profile-actions" style="margin-top:16px;">
+                            <button type="button" class="payeh-profile-submit-btn payeh-logout-btn" style="background:#dc2626; border-color:#dc2626;">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <span>خروج امن از حساب کاربری</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1367,7 +1390,7 @@
 </div>
 
 <script src="js/curriculum-data.js?v=20261022_7"></script>
-<script src="js/student.js?v=20261028_10"></script>
+<script src="js/student.js?v=20261114_1"></script>
 
 </body>
 </html>

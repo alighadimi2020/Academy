@@ -143,7 +143,7 @@ const initManagerApp = async () => {
         const message = document.getElementById(isStudent ? "student-list-message" : "consultant-list-message");
         if (message) message.textContent = "در حال دریافت فهرست…";
         try {
-            const response = await fetch(`/api/manager/users/?role=${role}`, { credentials: "same-origin" });
+            const response = await fetch(`/api/manager/users/?role=${role}&_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
             const data = await response.json();
             if (!response.ok) throw new Error(data.detail || "دریافت فهرست انجام نشد.");
             state[isStudent ? "students" : "consultants"] = data.results || [];
@@ -466,6 +466,9 @@ const initManagerApp = async () => {
         managerSidebar?.classList.remove("is-open");
         if (pageName === "students" || pageName === "consultants") {
             loadUsers(pageName === "students" ? "student" : "consultant");
+            if (pageName === "students") {
+                loadUsers("consultant");
+            }
         }
         if (pageName === "consultant-applications" || pageName === "dashboard") {
             loadConsultantApplications();
@@ -770,6 +773,16 @@ const initManagerApp = async () => {
             const data = await res.json();
             if (!res.ok) throw new Error(data.detail || "خطا در ایجاد مشاور");
             closeModal("modal-add-consultant");
+            if (data.consultant) {
+                const exists = state.consultants.some(c => c.id === data.consultant.id || c.phone === data.consultant.phone);
+                if (!exists) {
+                    state.consultants.unshift({
+                        ...data.consultant,
+                        assigned_students_count: 0
+                    });
+                    renderUsers("consultant");
+                }
+            }
             await loadUsers("consultant");
             showCredentialsModal(data.consultant || { full_name, phone, password });
         } catch (err) {
@@ -904,30 +917,44 @@ const initManagerApp = async () => {
     });
 
     // --- Assign Consultant to Student ---
-    const openAssignStudentModal = (student) => {
+    const populateConsultantSelect = (student) => {
+        const select = document.getElementById("assign-consultant-select");
+        if (!select) return;
+        select.replaceChildren();
+        const emptyOpt = document.createElement("option");
+        emptyOpt.value = "";
+        emptyOpt.textContent = "— بدون مشاور اختصاصی (لغو انتساب) —";
+        select.append(emptyOpt);
+
+        state.consultants.forEach((c) => {
+            const opt = document.createElement("option");
+            opt.value = c.id;
+            opt.textContent = `${c.full_name} (${c.phone}) — ${c.assigned_students_count || 0} دانش‌آموز`;
+            if (c.id === student.assigned_consultant_id) {
+                opt.selected = true;
+            }
+            select.append(opt);
+        });
+    };
+
+    const openAssignStudentModal = async (student) => {
         document.getElementById("assign-student-id").value = student.id;
         document.getElementById("assign-student-name").textContent = student.full_name || student.phone;
-        const select = document.getElementById("assign-consultant-select");
-        if (select) {
-            select.replaceChildren();
-            const emptyOpt = document.createElement("option");
-            emptyOpt.value = "";
-            emptyOpt.textContent = "— بدون مشاور اختصاصی (لغو انتساب) —";
-            select.append(emptyOpt);
-
-            state.consultants.forEach((c) => {
-                const opt = document.createElement("option");
-                opt.value = c.id;
-                opt.textContent = `${c.full_name} (${c.phone}) — ${c.assigned_students_count || 0} دانش‌آموز`;
-                if (c.id === student.assigned_consultant_id) {
-                    opt.selected = true;
-                }
-                select.append(opt);
-            });
-        }
         const errEl = document.getElementById("assign-modal-error");
         if (errEl) errEl.style.display = "none";
+        
+        populateConsultantSelect(student);
         openModal("modal-assign-student");
+
+        // Dynamically ensure fresh consultants list from server
+        try {
+            const res = await fetch(`/api/manager/users/?role=consultant&_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
+            if (res.ok) {
+                const data = await res.json();
+                state.consultants = data.results || [];
+                populateConsultantSelect(student);
+            }
+        } catch (_) {}
     };
 
     document.getElementById("form-assign-student")?.addEventListener("submit", async (e) => {

@@ -2281,9 +2281,46 @@ const initStudentApp = async () => {
         }
     });
     window.addEventListener("hashchange", () => selectPage(location.hash.slice(1) || "dashboard"));
-    document.querySelector(".payeh-student__logout")?.addEventListener("click", async () => {
-        try { const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then((response) => response.json()); await fetch("/api/auth/logout/", { method: "POST", credentials: "same-origin", headers: { "X-CSRFToken": csrf.csrfToken } }); }
-        finally { location.replace(`login.html?_t=${Date.now()}`); }
+    async function performLogout() {
+        try {
+            let csrfToken = "";
+            try {
+                const csrfRes = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
+                if (csrfRes.ok) {
+                    const data = await csrfRes.json();
+                    csrfToken = data.csrfToken || "";
+                }
+            } catch (_) {}
+
+            await fetch(`/api/auth/logout/?_t=${Date.now()}`, {
+                method: "POST",
+                credentials: "same-origin",
+                cache: "no-store",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(csrfToken ? { "X-CSRFToken": csrfToken } : {})
+                }
+            }).catch(() => fetch(`/api/auth/logout/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }));
+        } catch (_) {}
+
+        try {
+            document.cookie = "sessionid=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+            document.cookie = "csrftoken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+            localStorage.clear();
+            sessionStorage.clear();
+        } catch (_) {}
+
+        window.__currentUser = null;
+        window.location.replace(`login.html?_t=${Date.now()}&logged_out=1`);
+    }
+
+    document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".payeh-student__logout, .payeh-logout-btn, #studentHeaderLogoutBtn");
+        if (btn) {
+            e.preventDefault();
+            btn.setAttribute("disabled", "true");
+            performLogout();
+        }
     });
 
     async function loadStudyPlan() {
