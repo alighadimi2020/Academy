@@ -233,6 +233,8 @@ def login_user(request):
                 phone = identifier
         else:
             matched_user = User.objects.filter(phone__iexact=identifier).first()
+            if not matched_user:
+                matched_user = User.objects.filter(full_name__iexact=identifier).first()
             if matched_user:
                 phone = matched_user.phone
             else:
