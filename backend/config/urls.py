@@ -69,6 +69,7 @@ urlpatterns = [
     path("api/manager/students/create/", account_views.manager_create_student, name="manager-create-student"),
     path("api/manager/students/<int:user_id>/delete/", account_views.manager_delete_student, name="manager-delete-student"),
     path("api/manager/students/<int:student_id>/assign/", account_views.manager_assign_student, name="manager-assign-student"),
+    path("api/manager/activity-logs/", account_views.manager_activity_logs, name="manager-activity-logs"),
     path("api/auth/register/", account_views.start_registration, name="register"),
     path("api/auth/register/verify/", account_views.verify_registration, name="register-verify"),
     path("api/blog/posts/", blog_views.published_posts, name="blog-posts"),

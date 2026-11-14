@@ -718,3 +718,192 @@ input[inputmode="numeric"]::placeholder,
     font-family: "Vazirmatn", "Peyda", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
+/* ==========================================================================
+   Manager Activity Logs & Audit Timeline
+   ========================================================================== */
+.manager-activity-card {
+    min-height: 280px;
+    padding: 24px;
+    background: var(--manager-surface);
+    border: 1px solid var(--manager-border);
+    border-radius: var(--manager-radius);
+    box-shadow: var(--manager-shadow);
+}
+
+.manager-activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--manager-border);
+    margin-bottom: 18px;
+}
+
+.manager-activity-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.manager-activity-header p {
+    margin: 3px 0 0;
+    font-size: 0.78rem;
+    color: var(--manager-text-muted);
+}
+
+.manager-activity-refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.manager-activity-refresh-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.manager-activity-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-left: 6px;
+}
+
+.manager-activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.manager-activity-item:hover {
+    background: #f1f5f9;
+    transform: translateY(-1px);
+}
+
+.manager-activity-actor-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    color: #fff;
+    background: #2563eb;
+}
+
+/* Specific colors for manager actors */
+.manager-actor--parsa { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.manager-actor--amir { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.manager-actor--ahmadloo { background: linear-gradient(135deg, #059669, #047857); }
+.manager-actor--default { background: linear-gradient(135deg, #475569, #334155); }
+
+.manager-activity-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.manager-activity-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.manager-activity-actor-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.manager-activity-role-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.manager-activity-time {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.manager-activity-desc {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #334155;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.manager-activity-empty {
+    text-align: center;
+    padding: 30px 20px;
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+/* Dedicated activity logs page styles */
+.manager-logs-table-wrap {
+    background: #fff;
+    border: 1px solid var(--manager-border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 18px;
+    box-shadow: var(--manager-shadow);
+}
+
+.manager-logs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    text-align: right;
+}
+
+.manager-logs-table th {
+    background: #f8fafc;
+    color: #475569;
+    padding: 14px 18px;
+    font-weight: 800;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.manager-logs-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.manager-logs-table tr:hover td {
+    background: #f8fafc;
+}
+

@@ -124,6 +124,15 @@
                 <span>درخواست‌ها و قیمت مشاوره</span>
             </a>
 
+            <a href="#activity-logs" class="payeh-manager__nav-item" data-page="activity-logs">
+                <span class="payeh-manager__nav-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                </span>
+                <span>لاگ و تغییرات مدیران</span>
+            </a>
+
             <a href="#conversations" class="payeh-manager__nav-item" data-page="conversations">
                 <span class="payeh-manager__nav-icon">
                     <svg viewBox="0 0 24 24">
@@ -231,8 +240,7 @@
                 <div class="manager-page__intro">
                     <div>
                         <span class="manager-page__eyebrow">مدیریت آکادمی</span>
-                        <h2>خوش آمدید، آقای احمدلو</h2>
-
+                        <h2 id="manager-welcome-heading">خوش آمدید به پنل مدیریت</h2>
                     </div>
                 </div>
 
@@ -256,7 +264,6 @@
                     <article class="manager-stat">
                         <div class="manager-stat__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap preview-icon"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
-
                         </div>
                         <div>
                             <span>دانش‌آموزان</span>
@@ -311,18 +318,28 @@
 
                 <div class="manager-dashboard-grid">
 
-                    <article class="manager-panel-card">
+                    <article class="manager-activity-card">
 
-                        <div class="manager-panel-card__header">
+                        <div class="manager-activity-header">
                             <div>
-                                <span>وضعیت سیستم</span>
-                                <h3>اطلاعات کلی</h3>
+                                <h3>
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                    </svg>
+                                    <span>آخرین فعالیت‌ها و تغییرات مدیران مجموعه</span>
+                                </h3>
+                                <p>ردیابی زنده اقداماتی که توسط مدیران (پارسا، امیر، احمدلو) در سیستم انجام می‌شود</p>
                             </div>
+                            <button type="button" class="manager-activity-refresh-btn" id="btn-refresh-activities" title="بروزرسانی لحظه‌ای فعالیت‌ها">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                                </svg>
+                                <span>بروزرسانی زنده</span>
+                            </button>
                         </div>
 
-                        <div class="manager-empty">
-                            <strong>پنل آماده است</strong>
-
+                        <div class="manager-activity-timeline" id="manager-dashboard-activity-list">
+                            <div class="manager-activity-empty">در حال دریافت آخرین فعالیت‌های مدیران...</div>
                         </div>
 
                     </article>
@@ -331,20 +348,25 @@
 
                         <div class="manager-panel-card__header">
                             <div>
-                                <span>کاربر فعلی</span>
+                                <span>مدیر آنلاین فعلی</span>
                             </div>
                         </div>
 
                         <div class="manager-user-preview">
 
-                            <div class="manager-user-preview__avatar">
-                                آ                            </div>
-
-                            <div>
-                                <strong>آقای احمدلو</strong>
-                                <span>مدیر آکادمی پایه</span>
+                            <div class="manager-user-preview__avatar" id="manager-dashboard-avatar">
+                                م
                             </div>
 
+                            <div>
+                                <strong id="manager-dashboard-name">مدیر مجموعه</strong>
+                                <span id="manager-dashboard-role-desc">مدیر آکادمی پایه</span>
+                            </div>
+
+                        </div>
+
+                        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #f1f5f9; font-size: 0.78rem; color: #64748b; line-height: 1.6;">
+                            تمامی مدیران مجموعه به دیتابیس مشترک متصل بوده و اقدامات شما و سایر همکاران به صورت بلادرنگ ثبت و همگام می‌گردد.
                         </div>
 
                     </article>
@@ -510,6 +532,49 @@
                     </div>
                 </div>
                 <iframe class="manager-blog-review-frame" src="blog-review.html?embedded=manager" title="درخواست‌های وبلاگ برای بررسی مدیر" loading="lazy"></iframe>
+            </section>
+
+            <!-- DEDICATED ACTIVITY LOGS & AUDIT TRAIL SECTION -->
+            <section class="manager-page" id="page-activity-logs">
+                <div class="manager-page__intro" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+                    <div>
+                        <span class="manager-page__eyebrow">امنیت و شفافیت سامانه</span>
+                        <h2>تاریخچه و لاگ کامل تغییرات مدیران</h2>
+                        <p>مشاهده دقیق تمامی اقدامات، ثبت‌ها، حذف‌ها و تخصیص‌های انجام‌شده توسط مدیران مجموعه</p>
+                    </div>
+                    <button type="button" class="manager-activity-refresh-btn" id="btn-refresh-logs-page" style="padding: 10px 18px; font-size: 0.84rem;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                        </svg>
+                        <span>بروزرسانی داده‌ها</span>
+                    </button>
+                </div>
+
+                <div class="manager-user-list-panel">
+                    <label class="manager-user-search">
+                        <span class="visually-hidden">جست‌وجو در لاگ فعالیت‌ها</span>
+                        <input id="activity-log-search" type="search" maxlength="100" placeholder="جست‌وجو در لاگ بر اساس نام مدیر، شماره تماس یا شرح اقدام">
+                    </label>
+
+                    <p id="activity-log-message" class="manager-list-message" role="status" aria-live="polite">در حال دریافت سوابق...</p>
+
+                    <div class="manager-logs-table-wrap" id="manager-logs-table-container">
+                        <table class="manager-logs-table">
+                            <thead>
+                                <tr>
+                                    <th>مدیر اقدام‌کننده</th>
+                                    <th>نوع عملیات</th>
+                                    <th>شرح دقیق اقدام انجام‌شده</th>
+                                    <th>زمان ثبت</th>
+                                    <th>وضعیت</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manager-logs-table-body">
+                                <tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">در حال بارگذاری لاگ‌ها...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
             <section class="manager-page" id="page-settings">
@@ -959,7 +1024,7 @@
     </div>
 </div>
 
-<script src="js/manager.js?v=20261114_1"></script>
+<script src="js/manager.js?v=20261115_1"></script>
 
 </body>
 </html>

@@ -9,6 +9,7 @@ const initManagerApp = async () => {
         consultants: "مشاوران فعال",
         "consultant-applications": "درخواست‌های همکاری و رزومه‌ها",
         students: "دانش‌آموزان",
+        "activity-logs": "لاگ و تغییرات مدیران",
         conversations: "گفت‌وگو با مشاوران",
         articles: "مقالات",
         settings: "تنظیمات"
@@ -47,7 +48,7 @@ const initManagerApp = async () => {
             return String(dateInput);
         }
     };
-    const state = { students: [], consultants: [], applications: [], activeAppStatusFilter: "all" };
+    const state = { students: [], consultants: [], applications: [], activeAppStatusFilter: "all", activityLogs: [] };
 
     const renderUsers = (role) => {
         const isStudent = role === "student";
@@ -456,6 +457,140 @@ const initManagerApp = async () => {
         renderConsultantApplications();
     });
 
+    const getActorColorClass = (name) => {
+        const s = String(name || "").toLowerCase();
+        if (s.includes("پارسا") || s.includes("parsa")) return "manager-actor--parsa";
+        if (s.includes("امیر") || s.includes("amir")) return "manager-actor--amir";
+        if (s.includes("احمدلو") || s.includes("ahmadloo") || s.includes("علیرضا")) return "manager-actor--ahmadloo";
+        return "manager-actor--default";
+    };
+
+    const renderDashboardActivities = (logs) => {
+        const container = document.getElementById("manager-dashboard-activity-list");
+        if (!container) return;
+        if (!logs || logs.length === 0) {
+            container.innerHTML = '<div class="manager-activity-empty">هنوز فعالیتی از سوی مدیران در سامانه ثبت نشده است.</div>';
+            return;
+        }
+
+        container.innerHTML = "";
+        logs.slice(0, 8).forEach((item) => {
+            const row = make("div", "manager-activity-item");
+            const avatar = make("div", `manager-activity-actor-avatar ${getActorColorClass(item.actor_name)}`);
+            avatar.textContent = (item.actor_name || "م").trim().charAt(0) || "م";
+
+            const body = make("div", "manager-activity-body");
+            const top = make("div", "manager-activity-top");
+
+            const tag = make("span", "manager-activity-actor-tag");
+            tag.innerHTML = `<strong>${item.actor_name || "مدیر مجموعه"}</strong> <span class="manager-activity-role-badge">مدیر</span>`;
+
+            const time = make("span", "manager-activity-time", item.time_ago || toPersianDateTime(item.created_at));
+            top.appendChild(tag);
+            top.appendChild(time);
+
+            const desc = make("p", "manager-activity-desc", item.description || item.action_title);
+
+            body.appendChild(top);
+            body.appendChild(desc);
+
+            row.appendChild(avatar);
+            row.appendChild(body);
+            container.appendChild(row);
+        });
+    };
+
+    const renderLogsTable = (logs) => {
+        const tbody = document.getElementById("manager-logs-table-body");
+        const msg = document.getElementById("activity-log-message");
+        if (!tbody) return;
+
+        const search = (document.getElementById("activity-log-search")?.value || "").trim().toLowerCase();
+        const filtered = search ? logs.filter(l => 
+            (l.actor_name || "").toLowerCase().includes(search) ||
+            (l.actor_phone || "").toLowerCase().includes(search) ||
+            (l.action_title || "").toLowerCase().includes(search) ||
+            (l.description || "").toLowerCase().includes(search)
+        ) : logs;
+
+        if (filtered.length === 0) {
+            if (msg) {
+                msg.textContent = search ? "موردی مطابق با عبارت جست‌وجو یافت نشد." : "هیچ فعالیتی ثبت نشده است.";
+                msg.style.display = "block";
+            }
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">${search ? "موردی با جست‌وجوی شما یافت نشد." : "هیچ لاگی ثبت نشده است."}</td></tr>`;
+            return;
+        }
+
+        if (msg) msg.style.display = "none";
+        tbody.innerHTML = "";
+
+        filtered.forEach((item) => {
+            const tr = document.createElement("tr");
+
+            const tdActor = document.createElement("td");
+            tdActor.innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="manager-activity-actor-avatar ${getActorColorClass(item.actor_name)}" style="width:30px; height:30px; font-size:12px; border-radius:8px;">${(item.actor_name || "م").charAt(0)}</span>
+                    <div>
+                        <strong>${item.actor_name || "مدیر"}</strong>
+                        <div style="font-size:11px; color:#94a3b8;" class="en-digits">${item.actor_phone || ""}</div>
+                    </div>
+                </div>
+            `;
+
+            const tdAction = document.createElement("td");
+            tdAction.innerHTML = `<span style="font-weight:700; color:#1e293b;">${item.action_title}</span>`;
+
+            const tdDesc = document.createElement("td");
+            tdDesc.style.lineHeight = "1.6";
+            tdDesc.textContent = item.description;
+
+            const tdTime = document.createElement("td");
+            tdTime.innerHTML = `
+                <div>${toPersianDateTime(item.created_at)}</div>
+                <div style="font-size:11px; color:#94a3b8;">${item.time_ago}</div>
+            `;
+
+            const tdStatus = document.createElement("td");
+            const isSuccess = item.outcome === "success";
+            tdStatus.innerHTML = `<span style="display:inline-block; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700; background:${isSuccess ? '#ecfdf5' : '#fef2f2'}; color:${isSuccess ? '#059669' : '#dc2626'};">${isSuccess ? 'موفق' : 'رد/خطا'}</span>`;
+
+            tr.appendChild(tdActor);
+            tr.appendChild(tdAction);
+            tr.appendChild(tdDesc);
+            tr.appendChild(tdTime);
+            tr.appendChild(tdStatus);
+
+            tbody.appendChild(tr);
+        });
+    };
+
+    const loadActivityLogs = async () => {
+        try {
+            const res = await fetch(`/api/manager/activity-logs/?_t=${Date.now()}`, {
+                credentials: "same-origin",
+                cache: "no-store"
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            const logs = data.results || [];
+            state.activityLogs = logs;
+            renderDashboardActivities(logs);
+            renderLogsTable(logs);
+        } catch (_) {}
+    };
+
+    document.getElementById("activity-log-search")?.addEventListener("input", () => {
+        renderLogsTable(state.activityLogs || []);
+    });
+    document.getElementById("btn-refresh-activities")?.addEventListener("click", () => {
+        loadActivityLogs();
+    });
+    document.getElementById("btn-refresh-logs-page")?.addEventListener("click", () => {
+        loadActivityLogs();
+    });
+
     const showPage = (pageName) => {
         const targetPage = document.getElementById(`page-${pageName}`);
         if (!targetPage) return;
@@ -472,6 +607,9 @@ const initManagerApp = async () => {
         }
         if (pageName === "consultant-applications" || pageName === "dashboard") {
             loadConsultantApplications();
+        }
+        if (pageName === "activity-logs" || pageName === "dashboard") {
+            loadActivityLogs();
         }
         if (pageName === "conversations") loadManagerChatRooms();
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -723,6 +861,7 @@ const initManagerApp = async () => {
             const data = await res.json();
             if (!res.ok) throw new Error(data.detail || "تنظیم رمز جدید انجام نشد.");
             closeModal("modal-reset-pwd");
+            loadActivityLogs();
             showCredentialsModal(data.credentials || { full_name: document.getElementById("reset-consultant-name").value, phone: "---", password });
         } catch (err) {
             if (errEl) {
@@ -784,6 +923,7 @@ const initManagerApp = async () => {
                 }
             }
             await loadUsers("consultant");
+            loadActivityLogs();
             showCredentialsModal(data.consultant || { full_name, phone, password });
         } catch (err) {
             if (errEl) { errEl.style.display = "block"; errEl.textContent = err.message; }
@@ -822,6 +962,7 @@ const initManagerApp = async () => {
             closeModal("modal-delete-consultant");
             await loadUsers("consultant");
             await loadUsers("student");
+            loadActivityLogs();
         } catch (err) {
             if (errEl) { errEl.style.display = "block"; errEl.textContent = err.message; }
             else alert(err.message);
@@ -871,6 +1012,7 @@ const initManagerApp = async () => {
             if (!res.ok) throw new Error(data.detail || "خطا در ایجاد دانش‌آموز");
             closeModal("modal-add-student");
             await loadUsers("student");
+            loadActivityLogs();
             showCredentialsModal(data.student || { full_name, phone, password });
         } catch (err) {
             if (errEl) { errEl.style.display = "block"; errEl.textContent = err.message; }
@@ -908,6 +1050,7 @@ const initManagerApp = async () => {
             if (!res.ok) throw new Error(data.detail || "حذف دانش‌آموز انجام نشد");
             closeModal("modal-delete-student");
             await loadUsers("student");
+            loadActivityLogs();
         } catch (err) {
             if (errEl) { errEl.style.display = "block"; errEl.textContent = err.message; }
             else alert(err.message);
@@ -980,6 +1123,7 @@ const initManagerApp = async () => {
             closeModal("modal-assign-student");
             await loadUsers("student");
             await loadUsers("consultant");
+            loadActivityLogs();
         } catch (err) {
             if (errEl) { errEl.style.display = "block"; errEl.textContent = err.message; }
             else alert(err.message);
@@ -1249,16 +1393,32 @@ const initManagerApp = async () => {
     const mgrProfileName = document.getElementById("manager-profile-name");
     const mgrProfilePhone = document.getElementById("manager-profile-phone");
     const mgrHeaderAvatar = document.getElementById("manager-header-avatar");
+    const mgrWelcomeHeading = document.getElementById("manager-welcome-heading");
+    const mgrDashName = document.getElementById("manager-dashboard-name");
+    const mgrDashAvatar = document.getElementById("manager-dashboard-avatar");
+
     const managerName = me.full_name || "مدیر مجموعه";
     if (mgrHeaderName) mgrHeaderName.textContent = managerName;
     if (mgrProfileName) mgrProfileName.textContent = managerName;
     if (mgrProfilePhone) mgrProfilePhone.textContent = me.phone || "---";
     if (mgrHeaderAvatar) mgrHeaderAvatar.textContent = managerName.trim().charAt(0) || "م";
+    if (mgrWelcomeHeading) mgrWelcomeHeading.textContent = `خوش آمدید، ${managerName}`;
+    if (mgrDashName) mgrDashName.textContent = managerName;
+    if (mgrDashAvatar) {
+        mgrDashAvatar.textContent = managerName.trim().charAt(0) || "م";
+        mgrDashAvatar.className = `manager-user-preview__avatar ${getActorColorClass(managerName)}`;
+    }
 
     loadPageFromHash();
     loadUsers("student");
     loadUsers("consultant");
     loadConsultantApplications();
+    loadActivityLogs();
+
+    // Background sync: poll activity logs and shared user updates every 30 seconds
+    setInterval(() => {
+        loadActivityLogs();
+    }, 30000);
 };
 
 if (document.readyState === "loading") {

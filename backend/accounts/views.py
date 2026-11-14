@@ -667,7 +667,21 @@ def manager_set_user_password(request, user_id):
 
     target_user.set_password(password)
     target_user.save(update_fields=["password"])
-    record_event(request, "manager.user.password_reset", "users", "success", subject=f"user:{target_user.pk}", details={"phone": target_user.phone})
+    actor_name = request.user.full_name or request.user.phone or "مدیر"
+    target_name = target_user.full_name or target_user.phone
+    record_event(
+        request,
+        "manager.user.password_reset",
+        "users",
+        "success",
+        subject=f"user:{target_user.pk}",
+        details={
+            "phone": target_user.phone,
+            "target_name": target_name,
+            "actor_name": actor_name,
+            "description": f"تنظیم مجدد رمز عبور برای «{target_name}» ({target_user.phone})",
+        }
+    )
     return JsonResponse({
         "ok": True,
         "detail": f"رمز عبور جدید برای {target_user.full_name or target_user.phone} با موفقیت تنظیم شد.",
@@ -740,13 +754,19 @@ def manager_create_consultant(request):
                     defaults={"price_toman": 0}
                 )
 
+            actor_name = request.user.full_name or request.user.phone or "مدیر"
             record_event(
                 request,
                 "manager.consultant.created",
                 "users",
                 "success",
                 subject=f"user:{user.id}",
-                details={"phone": user.phone, "name": user.full_name}
+                details={
+                    "phone": user.phone,
+                    "name": user.full_name,
+                    "actor_name": actor_name,
+                    "description": f"ثبت مشاور جدید «{user.full_name}» با شماره {user.phone}",
+                }
             )
 
         return JsonResponse({
@@ -808,13 +828,19 @@ def manager_delete_consultant(request, user_id):
             name_saved = target_user.full_name or target_user.phone
             target_user.delete()
 
+            actor_name = request.user.full_name or request.user.phone or "مدیر"
             record_event(
                 request,
                 "manager.consultant.deleted",
                 "users",
                 "success",
                 subject=f"user:{user_id}",
-                details={"phone": phone_saved, "name": name_saved}
+                details={
+                    "phone": phone_saved,
+                    "name": name_saved,
+                    "actor_name": actor_name,
+                    "description": f"حذف مشاور «{name_saved}» ({phone_saved})",
+                }
             )
 
         return JsonResponse({
@@ -884,13 +910,23 @@ def manager_assign_student(request, student_id):
                     )
                     req_id = new_req.id
 
+                actor_name = request.user.full_name or request.user.phone or "مدیر"
+                s_name = student_user.full_name or student_user.phone
+                c_name = consultant_user.full_name or consultant_user.phone
                 record_event(
                     request,
                     "manager.student.assigned",
                     "consultation",
                     "success",
                     subject=f"student:{student_id}",
-                    details={"consultant_id": consultant_id, "consultant_name": consultant_user.full_name}
+                    details={
+                        "student_id": student_id,
+                        "student_name": s_name,
+                        "consultant_id": consultant_id,
+                        "consultant_name": c_name,
+                        "actor_name": actor_name,
+                        "description": f"تخصیص دانش‌آموز «{s_name}» به مشاور «{c_name}»",
+                    }
                 )
 
                 return JsonResponse({
@@ -913,12 +949,20 @@ def manager_assign_student(request, student_id):
                     decided_at=timezone.now()
                 )
 
+                actor_name = request.user.full_name or request.user.phone or "مدیر"
+                s_name = student_user.full_name or student_user.phone
                 record_event(
                     request,
                     "manager.student.unassigned",
                     "consultation",
                     "success",
-                    subject=f"student:{student_id}"
+                    subject=f"student:{student_id}",
+                    details={
+                        "student_id": student_id,
+                        "student_name": s_name,
+                        "actor_name": actor_name,
+                        "description": f"لغو تخصیص مشاور از دانش‌آموز «{s_name}»",
+                    }
                 )
 
                 return JsonResponse({
@@ -999,13 +1043,19 @@ def manager_create_student(request):
                 parent_phone=normalized_parent_phone,
                 is_active=True
             )
+            actor_name = request.user.full_name or request.user.phone or "مدیر"
             record_event(
                 request,
                 "manager.student.created",
                 "users",
                 "success",
                 subject=f"user:{user.id}",
-                details={"phone": user.phone, "name": user.full_name}
+                details={
+                    "phone": user.phone,
+                    "name": user.full_name,
+                    "actor_name": actor_name,
+                    "description": f"ثبت دانش‌آموز جدید «{user.full_name}» با شماره {user.phone}",
+                }
             )
 
         grade_labels = dict(User.GRADE_CHOICES)
@@ -1071,13 +1121,19 @@ def manager_delete_student(request, user_id):
             name_saved = target_user.full_name or target_user.phone
             target_user.delete()
 
+            actor_name = request.user.full_name or request.user.phone or "مدیر"
             record_event(
                 request,
                 "manager.student.deleted",
                 "users",
                 "success",
                 subject=f"user:{user_id}",
-                details={"phone": phone_saved, "name": name_saved}
+                details={
+                    "phone": phone_saved,
+                    "name": name_saved,
+                    "actor_name": actor_name,
+                    "description": f"حذف دانش‌آموز «{name_saved}» ({phone_saved})",
+                }
             )
 
         return JsonResponse({
@@ -1086,5 +1142,111 @@ def manager_delete_student(request, user_id):
         })
     except Exception as exc:
         return JsonResponse({"detail": f"خطا در حذف دانش‌آموز: {str(exc)}"}, status=500)
+
+
+@require_GET
+@never_cache
+def manager_activity_logs(request):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return JsonResponse({"detail": "وارد حساب کاربری شوید."}, status=401)
+    if request.user.role not in {"manager", "admin"}:
+        return JsonResponse({"detail": "دسترسی فقط مخصوص مدیر مجموعه است."}, status=403)
+
+    from .models import AuditEvent
+    from django.db.models import Q
+    from django.utils import timezone
+
+    ACTION_MAP = {
+        "manager.consultant.created": "ثبت مشاور جدید",
+        "manager.consultant.deleted": "حذف مشاور",
+        "manager.student.created": "ثبت دانش‌آموز جدید",
+        "manager.student.deleted": "حذف دانش‌آموز",
+        "manager.student.assigned": "تخصیص مشاور به دانش‌آموز",
+        "manager.student.unassigned": "لغو تخصیص مشاور",
+        "manager.user.password_reset": "تغییر رمز عبور کاربر",
+        "manager.application.approve": "تأیید متقاضی مشاوره",
+        "manager.application.reject": "رد متقاضی مشاوره",
+        "auth.login.succeeded": "ورود به سیستم مدیریت",
+        "auth.logout": "خروج از سیستم",
+        "auth.password.changed": "تغییر رمز عبور مدیر",
+    }
+
+    # Fetch recent manager actions or auth actions by managers
+    qs = AuditEvent.objects.select_related("actor").filter(
+        Q(action__startswith="manager.") | 
+        Q(actor__role__in=["manager", "admin"])
+    ).order_by("-created_at", "-id")[:60]
+
+    now = timezone.now()
+    results = []
+    for ev in qs:
+        actor = ev.actor
+        actor_name = (
+            getattr(actor, "full_name", "") or 
+            getattr(actor, "phone", "") or 
+            ev.details.get("actor_name") or 
+            "مدیر مجموعه"
+        )
+        actor_phone = getattr(actor, "phone", "")
+        actor_role = getattr(actor, "role", "manager")
+
+        action_title = ACTION_MAP.get(ev.action, ev.action)
+        desc = ev.details.get("description", "")
+        if not desc:
+            if ev.action == "manager.consultant.created":
+                desc = f"ثبت مشاور جدید «{ev.details.get('name', '')}»"
+            elif ev.action == "manager.consultant.deleted":
+                desc = f"حذف مشاور «{ev.details.get('name', '')}»"
+            elif ev.action == "manager.student.created":
+                desc = f"ثبت دانش‌آموز جدید «{ev.details.get('name', '')}»"
+            elif ev.action == "manager.student.deleted":
+                desc = f"حذف دانش‌آموز «{ev.details.get('name', '')}»"
+            elif ev.action == "manager.student.assigned":
+                desc = f"تخصیص دانش‌آموز «{ev.details.get('student_name', '')}» به مشاور «{ev.details.get('consultant_name', '')}»"
+            elif ev.action == "manager.student.unassigned":
+                desc = f"لغو تخصیص مشاور از دانش‌آموز «{ev.details.get('student_name', '')}»"
+            elif ev.action == "manager.user.password_reset":
+                desc = f"تنظیم مجدد رمز عبور برای «{ev.details.get('target_name', ev.details.get('phone', ''))}»"
+            elif ev.action == "auth.login.succeeded":
+                desc = f"ورود موفق مدیر «{actor_name}» به پنل مدیریت"
+            elif ev.action == "auth.logout":
+                desc = f"خروج مدیر «{actor_name}» از پنل مدیریت"
+            elif ev.action == "auth.password.changed":
+                desc = f"تغییر رمز عبور حساب توسط «{actor_name}»"
+            else:
+                desc = ev.action
+
+        diff = now - ev.created_at
+        seconds = int(diff.total_seconds())
+        if seconds < 60:
+            time_ago = "همین الان"
+        elif seconds < 3600:
+            time_ago = f"{seconds // 60} دقیقه پیش"
+        elif seconds < 86400:
+            time_ago = f"{seconds // 3600} ساعت پیش"
+        else:
+            time_ago = f"{seconds // 86400} روز پیش"
+
+        results.append({
+            "id": ev.id,
+            "created_at": ev.created_at.isoformat(),
+            "actor_id": getattr(actor, "id", None),
+            "actor_name": actor_name,
+            "actor_phone": actor_phone,
+            "actor_role": actor_role,
+            "action": ev.action,
+            "action_title": action_title,
+            "outcome": ev.outcome,
+            "description": desc,
+            "time_ago": time_ago,
+            "ip_address": ev.ip_address or "",
+            "details": ev.details,
+        })
+
+    return _add_no_cache_headers(JsonResponse({
+        "results": results,
+        "count": len(results),
+        "last_updated": now.isoformat(),
+    }))
 
 

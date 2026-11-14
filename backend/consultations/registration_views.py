@@ -433,7 +433,20 @@ def manager_decide_consultant_application(request, application_id):
                 profile.resume_file = app.resume_file
             profile.save()
 
-            record_event(request, "consultant.application.approved", "consultation", "success", subject=f"user:{user.pk}", details={"phone": user.phone})
+            actor_name = request.user.full_name or request.user.phone or "مدیر"
+            record_event(
+                request,
+                "manager.application.approve",
+                "users",
+                "success",
+                subject=f"user:{user.pk}",
+                details={
+                    "phone": user.phone,
+                    "applicant_name": app.full_name,
+                    "actor_name": actor_name,
+                    "description": f"تأیید درخواست همکاری مشاور «{app.full_name}» ({user.phone})",
+                }
+            )
             return JsonResponse({
                 "ok": True,
                 "detail": f"مشاور {app.full_name} تأیید شد و حساب کاربری او فعال گردید.",
@@ -457,7 +470,20 @@ def manager_decide_consultant_application(request, application_id):
                 profile.application_status = "rejected"
                 profile.save(update_fields=["application_status"])
 
-            record_event(request, "consultant.application.rejected", "consultation", "denied", subject=f"user:{app.user.pk}")
+            actor_name = request.user.full_name or request.user.phone or "مدیر"
+            record_event(
+                request,
+                "manager.application.reject",
+                "users",
+                "success",
+                subject=f"user:{app.user.pk}",
+                details={
+                    "phone": getattr(app, "phone", ""),
+                    "applicant_name": app.full_name,
+                    "actor_name": actor_name,
+                    "description": f"رد درخواست همکاری مشاور «{app.full_name}»",
+                }
+            )
             return JsonResponse({"ok": True, "detail": f"درخواست مشاور {app.full_name} رد شد."})
 
 
