@@ -703,19 +703,21 @@ def study_session_weeks(request):
 
     def _gregorian_to_jalali(gy, gm, gd):
         g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
-        gy2 = gy - 1600 if gm > 2 else gy - 1601
-        days = 365 * gy2 + (gy2 + 3) // 4 - (gy2 + 99) // 100 + (gy2 + 399) // 400 - 80 + gd + g_d_m[gm - 1]
-        jy = 979 + 33 * (days // 12053) + 4 * ((days % 12053) // 1461)
+        gy2 = (gy + 1) if (gm > 2) else gy
+        days = 355666 + (365 * gy) + ((gy2 + 3) // 4) - ((gy2 + 99) // 100) + ((gy2 + 399) // 400) + gd + g_d_m[gm - 1]
+        jy = -1595 + (33 * (days // 12053))
+        days %= 12053
+        jy += 4 * (days // 1461)
         days %= 1461
-        if days >= 366:
+        if days > 365:
             jy += (days - 1) // 365
             days = (days - 1) % 365
-        for i in range(11):
-            d = 31 if i < 6 else 30
-            if days < d:
-                return jy, i + 1, days + 1
-            days -= d
-        return jy, 12, days + 1
+        jm = (1 + (days // 31)) if (days < 186) else (7 + ((days - 186) // 30))
+        jd = 1 + ((days % 31) if (days < 186) else ((days - 186) % 30))
+        return jy, jm, jd
+
+    def _to_fa_digits(val):
+        return str(val).translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
 
     fa_months = ['', 'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند']
 
@@ -730,7 +732,7 @@ def study_session_weeks(request):
 
         s_y, s_m, s_d = _gregorian_to_jalali(curr.year, curr.month, curr.day)
         f_y, f_m, f_d = _gregorian_to_jalali(fri.year, fri.month, fri.day)
-        w_label = f"شنبه {s_d} {fa_months[s_m]} تا جمعه {f_d} {fa_months[f_m]}"
+        w_label = f"شنبه {_to_fa_digits(s_d)} {fa_months[s_m]} تا جمعه {_to_fa_digits(f_d)} {fa_months[f_m]}"
 
         weeks_list.append({
             "week_start": curr.isoformat(),

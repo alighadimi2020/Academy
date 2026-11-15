@@ -21,6 +21,7 @@ const initConsultantApp = async () => {
     let currentStudentFeedbacks = [];
     let reportsDateSortOrder = "desc";
     let reportsDateRange = { start: null, end: null };
+    let refreshCurriculumBooksForCurrentStudent = () => {};
 
     // ==========================================
     // STANDALONE JALALI CONVERSION HELPERS
@@ -2292,6 +2293,7 @@ const initConsultantApp = async () => {
         if (plannerPicker) {
             plannerPicker.value = String(student.student_id);
         }
+        refreshCurriculumBooksForCurrentStudent();
 
         // Reset tabs to requested activeTab
         const targetTab = (activeTab === "reports") ? "reports" : "planner";
@@ -2584,8 +2586,10 @@ const initConsultantApp = async () => {
         const pad = n => String(n).padStart(2, '0');
         const satIso = `${sat.getFullYear()}-${pad(sat.getMonth() + 1)}-${pad(sat.getDate())}`;
 
-        const faSat = new Intl.DateTimeFormat('fa-IR', { month: 'short', day: 'numeric' }).format(sat);
-        const faFri = new Intl.DateTimeFormat('fa-IR', { month: 'short', day: 'numeric' }).format(fri);
+        const sJ = gregorianToJalali(sat.getFullYear(), sat.getMonth() + 1, sat.getDate());
+        const fJ = gregorianToJalali(fri.getFullYear(), fri.getMonth() + 1, fri.getDate());
+        const faSat = `${numberFa(sJ.jd)} ${jalaliMonthNames[sJ.jm - 1]}`;
+        const faFri = `${numberFa(fJ.jd)} ${jalaliMonthNames[fJ.jm - 1]}`;
 
         let label = "";
         if (offset === 0) label = `این هفته (شنبه ${faSat} تا جمعه ${faFri})`;
@@ -2891,17 +2895,67 @@ const initConsultantApp = async () => {
         let isManualMode = false;
         let lastAutoInstruction = "";
 
-        // Build options for BookPicker
-        const bookOptions = [];
-        curriculumData.forEach((book) => {
-            bookOptions.push({
-                value: book.id,
-                label: book.title,
-                group: book.category || "سایر دروس",
-                icon: book.icon || "book",
-                bookObj: book
+        function getSortedBookOptions(student = currentDossierStudent) {
+            const rawMajor = (student?.student_major || "").trim().toLowerCase();
+            const isHumanities = rawMajor.includes("humanities") || rawMajor.includes("انسانی");
+            const isMath = rawMajor.includes("math") || rawMajor.includes("ریاضی");
+            const isExperimental = rawMajor.includes("experimental") || rawMajor.includes("تجربی");
+
+            const items = [];
+            curriculumData.forEach((book) => {
+                let priority = 2;
+                const bMajor = book.major || "";
+                const bCat = book.category || "";
+
+                if (isHumanities) {
+                    if (bMajor === "humanities" || [
+                        "علوم و فنون ادبی", "جامعه‌شناسی", "فلسفه و منطق",
+                        "تاریخ", "جغرافیا", "روان‌شناسی", "اقتصاد",
+                        "عربی تخصصی انسانی", "ریاضی و آمار انسانی"
+                    ].includes(bCat)) {
+                        priority = 0;
+                    } else if (bCat === "دروس عمومی") {
+                        priority = 1;
+                    } else {
+                        priority = 3;
+                    }
+                } else if (isMath) {
+                    if (bMajor === "math" || [
+                        "حسابان", "هندسه", "ریاضیات", "فیزیک", "شیمی"
+                    ].includes(bCat)) {
+                        priority = 0;
+                    } else if (bCat === "دروس عمومی") {
+                        priority = 1;
+                    } else {
+                        priority = 3;
+                    }
+                } else if (isExperimental) {
+                    if (bMajor === "experimental" || [
+                        "زیست‌شناسی", "شیمی", "فیزیک", "ریاضیات", "زمین‌شناسی"
+                    ].includes(bCat)) {
+                        priority = 0;
+                    } else if (bCat === "دروس عمومی") {
+                        priority = 1;
+                    } else {
+                        priority = 3;
+                    }
+                }
+
+                items.push({
+                    value: book.id,
+                    label: book.title,
+                    group: book.category || "سایر دروس",
+                    icon: book.icon || "book",
+                    bookObj: book,
+                    priority
+                });
             });
-        });
+
+            items.sort((a, b) => a.priority - b.priority);
+            return items;
+        }
+
+        let bookOptions = getSortedBookOptions(currentDossierStudent);
 
         function updateSelection() {
             if (isManualMode) {
@@ -3022,6 +3076,17 @@ const initConsultantApp = async () => {
             }
         });
         bookPicker.setOptions(bookOptions);
+
+        refreshCurriculumBooksForCurrentStudent = () => {
+            bookOptions = getSortedBookOptions(currentDossierStudent);
+            bookPicker.setOptions(bookOptions);
+            bookPicker.reset();
+            chapterPicker.reset();
+            chapterPicker.setDisabled(true);
+            topicPicker.reset();
+            topicPicker.setDisabled(true);
+            updateSelection();
+        };
 
         const chapterPicker = new CustomGlassSelect(chapterBox, {
             placeholder: "-- انتخاب فصل (الزامی) --",
