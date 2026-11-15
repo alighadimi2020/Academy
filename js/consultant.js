@@ -2083,7 +2083,7 @@ const initConsultantApp = async () => {
         if (!target) return;
         const selectedStudentId = document.getElementById("planner-student")?.value || "";
         try {
-            const response = await fetch("/api/consultations/requests/", { credentials: "same-origin" });
+            const response = await fetch(`/api/consultations/requests/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" });
             const data = await response.json();
             if (!response.ok) throw new Error(data.detail || "دریافت دانش‌آموزان انجام نشد.");
             

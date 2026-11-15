@@ -188,3 +188,36 @@ class StudyTimerAndReportsTests(TestCase):
         self.assertFalse(StudyReport.objects.filter(pk=report.id).exists())
 
 
+
+class ManagerAssignmentFlowTests(TestCase):
+    def test_assignment_visibility_planning_chat_and_reassignment(self):
+        manager = User.objects.create_user(phone="09120000001", password="pass", role="manager")
+        student = User.objects.create_user(phone="09120000002", password="pass", role="student", full_name="دانش آموز")
+        consultant = User.objects.create_user(phone="09120000003", password="pass", role="consultant", full_name="مشاور اول")
+        other = User.objects.create_user(phone="09120000004", password="pass", role="consultant", full_name="مشاور دوم")
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(manager)
+        token = client.get('/api/auth/csrf/').json()['csrfToken']
+        assign_url = f'/api/manager/students/{student.pk}/assign/'
+        response = client.post(assign_url, {'consultant_id': consultant.pk}, content_type='application/json', HTTP_X_CSRFTOKEN=token)
+        self.assertEqual(response.status_code, 200, response.content)
+        request_id = response.json()['assignment']['assigned_request_id']
+        client.force_login(consultant)
+        self.assertEqual(client.get('/api/consultations/requests/').json()['results'][0]['student_id'], student.pk)
+        token = client.get('/api/auth/csrf/').json()['csrfToken']
+        response = client.post('/api/consultations/study-sessions/create/', {'student_id': student.pk, 'weekday': 0, 'subject': 'ریاضی', 'planned_minutes': 60}, content_type='application/json', HTTP_X_CSRFTOKEN=token)
+        self.assertEqual(response.status_code, 201, response.content)
+        chat_url = f'/api/consultations/requests/{request_id}/messages/'
+        self.assertEqual(client.post(chat_url, {'body': 'سلام'}, content_type='application/json', HTTP_X_CSRFTOKEN=token).status_code, 201)
+        client.force_login(student)
+        self.assertEqual(client.get('/api/consultations/requests/').json()['results'][0]['assigned_consultant_id'], consultant.pk)
+        self.assertEqual(client.get('/api/consultations/study-sessions/').json()['results'][0]['subject'], 'ریاضی')
+        self.assertEqual(client.get(chat_url).json()['results'][0]['body'], 'سلام')
+        client.force_login(manager)
+        token = client.get('/api/auth/csrf/').json()['csrfToken']
+        self.assertEqual(client.post(assign_url, {'consultant_id': other.pk}, content_type='application/json', HTTP_X_CSRFTOKEN=token).status_code, 200)
+        client.force_login(consultant)
+        self.assertEqual(client.get('/api/consultations/requests/').json()['results'], [])
+        self.assertEqual(client.get(chat_url).status_code, 403)
+        client.force_login(other)
+        self.assertEqual(client.get('/api/consultations/requests/').json()['results'][0]['student_id'], student.pk)

@@ -343,7 +343,7 @@ const initManagerApp = async () => {
                     if (note === null) return;
                     rejectBtn.disabled = true;
                     try {
-                        const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+                        const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then(r => r.json());
                         const res = await fetch(`/api/consultations/manager/applications/${app.id}/decision/`, {
                             method: "POST",
                             credentials: "same-origin",
@@ -800,7 +800,7 @@ const initManagerApp = async () => {
         if (errEl) errEl.style.display = "none";
 
         try {
-            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then(r => r.json());
             const res = await fetch(`/api/consultations/manager/applications/${appId}/decision/`, {
                 method: "POST",
                 credentials: "same-origin",
@@ -851,7 +851,7 @@ const initManagerApp = async () => {
         if (errEl) errEl.style.display = "none";
 
         try {
-            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then(r => r.json());
             const res = await fetch(`/api/manager/users/${userId}/password/`, {
                 method: "POST",
                 credentials: "same-origin",
@@ -902,7 +902,7 @@ const initManagerApp = async () => {
         if (errEl) errEl.style.display = "none";
 
         try {
-            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then(r => r.json());
             const res = await fetch("/api/manager/consultants/create/", {
                 method: "POST",
                 credentials: "same-origin",
@@ -951,7 +951,7 @@ const initManagerApp = async () => {
         if (errEl) errEl.style.display = "none";
 
         try {
-            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then(r => r.json());
             const res = await fetch(`/api/manager/consultants/${consultantToDelete.id}/delete/`, {
                 method: "POST",
                 credentials: "same-origin",
@@ -1001,7 +1001,7 @@ const initManagerApp = async () => {
         if (errEl) errEl.style.display = "none";
 
         try {
-            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then(r => r.json());
             const res = await fetch("/api/manager/students/create/", {
                 method: "POST",
                 credentials: "same-origin",
@@ -1040,7 +1040,7 @@ const initManagerApp = async () => {
         if (errEl) errEl.style.display = "none";
 
         try {
-            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then(r => r.json());
             const res = await fetch(`/api/manager/students/${studentToDelete.id}/delete/`, {
                 method: "POST",
                 credentials: "same-origin",
@@ -1111,7 +1111,7 @@ const initManagerApp = async () => {
         if (errEl) errEl.style.display = "none";
 
         try {
-            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then(r => r.json());
             const res = await fetch(`/api/manager/students/${studentId}/assign/`, {
                 method: "POST",
                 credentials: "same-origin",
@@ -1341,7 +1341,7 @@ const initManagerApp = async () => {
         pwdMsg.textContent = "در حال تغییر رمز عبور…";
 
         try {
-            const csrf = await fetch("/api/auth/csrf/", { credentials: "same-origin" }).then(r => r.json());
+            const csrf = await fetch(`/api/auth/csrf/?_t=${Date.now()}`, { credentials: "same-origin", cache: "no-store" }).then(r => r.json());
             const res = await fetch("/api/auth/password/change/", {
                 method: "POST",
                 credentials: "same-origin",

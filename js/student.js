@@ -1233,9 +1233,9 @@ const initStudentApp = async () => {
                     duration: durStr
                 };
             });
-            combined = [...apiItems, ...defaultFeedbacks];
+            combined = apiItems;
         } else {
-            combined = defaultFeedbacks;
+            combined = [];
         }
 
         const filtered = combined.filter(item => {
@@ -1301,90 +1301,17 @@ const initStudentApp = async () => {
         const weekdayNames = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه"];
         const todayName = new Intl.DateTimeFormat("fa-IR", { weekday: "long", timeZone: "Asia/Tehran" }).format(new Date());
 
-        const defaultPlanDays = [
-            {
-                day: "شنبه",
-                tag: "تکمیل شده",
-                is_today: todayName.includes("شنبه"),
-                sessions: [
-                    { subj: "زیست‌شناسی ۳", time: "۳ ساعت", tests: "۱۱۰ تست", note: "گفتار ۲ فصل ۳" },
-                    { subj: "فیزیک ۳", time: "۲.۵ ساعت", tests: "۵۰ تست", note: "دینامیک تست‌های تسلط" },
-                    { subj: "شیمی ۳", time: "۲ ساعت", tests: "۴۵ تست", note: "ترمودینامیک و بازده" }
-                ]
-            },
-            {
-                day: "یکشنبه",
-                tag: "تکمیل شده",
-                is_today: todayName.includes("یکشنبه"),
-                sessions: [
-                    { subj: "ریاضی ۳", time: "۳ ساعت", tests: "۶۰ تست", note: "مشتق پذیری و فرمول‌ها" },
-                    { subj: "زیست‌شناسی ۲", time: "۲.۵ ساعت", tests: "۹۰ تست", note: "حواس و دستگاه عصبی" },
-                    { subj: "زمین‌شناسی", time: "۱.۵ ساعت", tests: "۴۰ تست", note: "فصل منابع معدنی" }
-                ]
-            },
-            {
-                day: "دوشنبه",
-                tag: "امروز",
-                is_today: todayName.includes("دوشنبه") || (!todayName.includes("شنبه") && !todayName.includes("یکشنبه") && !todayName.includes("سه‌شنبه") && !todayName.includes("چهارشنبه") && !todayName.includes("پنجشنبه") && !todayName.includes("جمعه")),
-                sessions: [
-                    { subj: "فیزیک ۳", time: "۳ ساعت", tests: "۷۰ تست", note: "حرکت‌شناسی و سرعت متوسط" },
-                    { subj: "شیمی ۳", time: "۲.۵ ساعت", tests: "۶۵ تست", note: "اسید و باز مسائل PH" },
-                    { subj: "زیست‌شناسی ۳", time: "۲ ساعت", tests: "۸۰ تست", note: "مرور سریع ژنتیک" }
-                ]
-            },
-            {
-                day: "سه‌شنبه",
-                tag: "برنامه فردا",
-                is_today: todayName.includes("سه‌شنبه"),
-                sessions: [
-                    { subj: "زیست‌شناسی ۳", time: "۳.۵ ساعت", tests: "۱۲۰ تست", note: "سراسری‌های ۴ سال اخیر" },
-                    { subj: "ریاضی ۳", time: "۲.۵ ساعت", tests: "۵۵ تست", note: "کاربرد مشتق و اکسترمم" },
-                    { subj: "فیزیک ۲", time: "۱.۵ ساعت", tests: "۴۰ تست", note: "الکتریسیته جاری" }
-                ]
-            },
-            {
-                day: "چهارشنبه",
-                tag: "در انتظار",
-                is_today: todayName.includes("چهارشنبه"),
-                sessions: [
-                    { subj: "شیمی ۲", time: "۲.۵ ساعت", tests: "۶۰ تست", note: "ردپای گازها در جو" },
-                    { subj: "فیزیک ۳", time: "۲.۵ ساعت", tests: "۵۰ تست", note: "نوسان و امواج" },
-                    { subj: "ریاضی ۳", time: "۲ ساعت", tests: "۴۵ تست", note: "تست‌های ترکیبی مثلثات" }
-                ]
-            },
-            {
-                day: "پنجشنبه",
-                tag: "پیش‌آزمون",
-                is_today: todayName.includes("پنجشنبه"),
-                sessions: [
-                    { subj: "جمع‌بندی سرفصل‌ها", time: "۴ ساعت", tests: "۱۵۰ تست", note: "شبیه‌ساز دفترچه تخصصی" },
-                    { subj: "مرور نکات نشان‌دار", time: "۲ ساعت", tests: "—", note: "دفترچه خودنگاره" }
-                ]
-            },
-            {
-                day: "جمعه",
-                tag: "آزمون و تحلیل",
-                is_today: todayName.includes("جمعه"),
-                sessions: [
-                    { subj: "شرکت در آزمون", time: "۴ ساعت", tests: "دفترچه کامل", note: "حضور راس ساعت ۸ صبح" },
-                    { subj: "تحلیل جامع آزمون", time: "۳ ساعت", tests: "بررسی نزده‌ها", note: "ارسال کارنامه به مشاور" }
-                ]
-            }
-        ];
-
-        if (sessions && sessions.length) {
-            defaultPlanDays.forEach(d => {
-                const daySessions = sessions.filter(s => s.weekday === d.day);
-                if (daySessions.length) {
-                    d.sessions = daySessions.map(s => ({
-                        subj: s.subject,
-                        time: `${Math.round(s.planned_minutes / 60)} ساعت`,
-                        tests: `${Math.round(s.planned_minutes * 0.45)} تست`,
-                        note: s.instructions || "مطالعه و حل تست"
-                    }));
-                }
-            });
-        }
+        const defaultPlanDays = weekdayNames.map((day, weekday) => ({
+            day,
+            tag: todayName === day ? "امروز" : "برنامه هفتگی",
+            is_today: todayName === day,
+            sessions: (sessions || []).filter(s => s.weekday === weekday).map(s => ({
+                subj: s.subject,
+                time: `${s.planned_minutes} دقیقه`,
+                tests: s.test_count ? `${s.test_count} تست` : "",
+                note: s.instructions || ""
+            }))
+        }));
 
         grid.innerHTML = defaultPlanDays.map(item => `
             <div class="payeh-consultant-day-card${item.is_today ? " is-today" : ""}">
@@ -1450,21 +1377,21 @@ const initStudentApp = async () => {
             }
         ];
 
-        let displayRows = defaultLogs;
+        let displayRows = [];
         if (reports && reports.length) {
             const apiRows = reports.slice(0, 10).map((r, idx) => {
                 const fb = (feedbacks || []).find(f => f.study_date === r.study_date) || feedbacks[idx];
-                const hoursVal = r.minutes ? `${Math.floor(r.minutes / 60)} ساعت و ${r.minutes % 60} دقیقه` : "۷ ساعت و ۳۰ دقیقه";
-                const testsVal = r.test_count ? `${new Intl.NumberFormat("fa-IR").format(r.test_count)} تست` : "۱۸۰ تست";
+                const hoursVal = r.minutes ? `${Math.floor(r.minutes / 60)} ساعت و ${r.minutes % 60} دقیقه` : "۰ دقیقه";
+                const testsVal = r.test_count ? `${new Intl.NumberFormat("fa-IR").format(r.test_count)} تست` : "۰ تست";
                 return {
                     date: toPersianDate(r.study_date),
                     hours: hoursVal,
                     tests: testsVal,
                     status_html: '<span class="payeh-status-pill-ok"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> بررسی و تایید شده</span>',
-                    answer: fb ? fb.feedback_text : `گزارش مطالعه روزانه توسط ${consultantName} بررسی و در سامانه تایید گردید.`
+                    answer: fb ? fb.feedback_text : "هنوز بازخوردی ثبت نشده است."
                 };
             });
-            displayRows = [...apiRows, ...defaultLogs.slice(apiRows.length)];
+            displayRows = apiRows;
         }
 
         tbody.innerHTML = displayRows.map(row => `
@@ -1526,7 +1453,7 @@ const initStudentApp = async () => {
         const daysTextEl = document.getElementById("myconsultant-days-text");
 
         const hasAssigned = assignedReq && (assignedReq.status === "approved" || assignedReq.assigned_consultant_name);
-        const consultantName = hasAssigned ? assignedReq.assigned_consultant_name : "دکتر امیرحسین فرهمند";
+        const consultantName = hasAssigned ? assignedReq.assigned_consultant_name : "مشاوری اختصاص داده نشده است";
         const consultantInitials = consultantName.split(" ").slice(0, 2).map(w => w[0]).join("") || "مش";
 
         let consultantBio = "";
@@ -1538,7 +1465,7 @@ const initStudentApp = async () => {
             if (assignedReq.assigned_consultant_bio) parts.push(assignedReq.assigned_consultant_bio);
             consultantBio = parts.join(" · ");
         } else {
-            consultantBio = "رتبه ۸ کنکور سراسری تجربی · پزشکی دانشگاه علوم پزشکی تهران · طراح برنامه‌ریزی راهبردی آکادمی پایه";
+            consultantBio = hasAssigned ? "اطلاعات مشاور ثبت نشده است." : "پس از اختصاص مشاور، اطلاعات او اینجا نمایش داده می‌شود.";
         }
 
         if (nameEl) nameEl.textContent = consultantName;
@@ -1551,15 +1478,15 @@ const initStudentApp = async () => {
             }
         }
         if (planTextEl) {
-            planTextEl.textContent = assignedReq?.plan_label ? `پلن ${assignedReq.plan_label}` : "پلن VIP نظارت روزانه";
+            planTextEl.textContent = assignedReq?.plan_label ? `پلن ${assignedReq.plan_label}` : "بدون پلن فعال";
         }
         if (daysTextEl) {
-            const daysCount = reports.length > 0 ? reports.length : 48;
+            const daysCount = reports.length;
             daysTextEl.textContent = `${fa.format(daysCount)} روز همراهی مستمر`;
         }
 
-        const totalReportsCount = reports.length > 0 ? reports.length : 48;
-        const totalFeedbacksCount = feedbacks.length > 0 ? feedbacks.length : 44;
+        const totalReportsCount = reports.length;
+        const totalFeedbacksCount = feedbacks.length;
         const statReports = document.getElementById("myconsultant-stat-reports");
         const statFeedbacks = document.getElementById("myconsultant-stat-feedbacks");
         const statRate = document.getElementById("myconsultant-stat-rate");
@@ -1567,8 +1494,8 @@ const initStudentApp = async () => {
 
         if (statReports) statReports.textContent = `${fa.format(totalReportsCount)} گزارش`;
         if (statFeedbacks) statFeedbacks.textContent = `${fa.format(totalFeedbacksCount)} بازخورد`;
-        if (statRate) statRate.textContent = "۹۸٪";
-        if (statPlan) statPlan.textContent = "هفته جاری تنظیم‌شده";
+        if (statRate) statRate.textContent = "—";
+        if (statPlan) statPlan.textContent = sessions.length ? "برنامه ثبت شده" : "برنامه‌ای ثبت نشده";
 
         const countBadge = document.getElementById("events-feedbacks-count");
         if (countBadge) countBadge.textContent = fa.format(totalFeedbacksCount);
@@ -1579,9 +1506,9 @@ const initStudentApp = async () => {
         const kpiAvgTime = document.getElementById("kpi-avg-time");
 
         if (kpiReports) kpiReports.textContent = `${fa.format(totalReportsCount)} روز`;
-        if (kpiRate) kpiRate.textContent = "۹۸٪";
+        if (kpiRate) kpiRate.textContent = "—";
         if (kpiFeedbacks) kpiFeedbacks.textContent = `${fa.format(totalFeedbacksCount)} پاسخ`;
-        if (kpiAvgTime) kpiAvgTime.textContent = "۳۵ دقیقه";
+        if (kpiAvgTime) kpiAvgTime.textContent = "—";
 
         // Action buttons
         const chatBtn = document.getElementById("btn-consultant-open-chat");
